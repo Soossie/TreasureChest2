@@ -1,3 +1,275 @@
+--PROJEKTI - aarrearkku-tietokannan luominen (treasure_chest)
+
+--tietokanta tulee luoda root-käyttäjällä, ja omalle käyttäjälle antaa oikeudet tietokannan käyttöön, sen jälkeen käyttäjä voi muokata tietokantaa.
+CREATE database treasure_chest;
+USE treasure_chest;
+
+-- luo käyttäjä treasure, jonka salasana on chest:
 CREATE USER treasure@localhost IDENTIFIED BY 'chest';
 
+--anna käyttäjälle oikeudet muokata:
+--	GRANT SELECT, INSERT, UPDATE ON database_name.* TO username@localhost;
 GRANT SELECT, INSERT, UPDATE, DELETE ON treasure_chest.* TO treasure@localhost;
+
+
+--taulut tulee luoda sellaisessa järjestyksessä, että vierasavaimilla viitataan jo olemassa olevaan tauluun!
+
+
+--luo ensin tietokanta, sitten lisää sinne lentopelin luontiskripti (alla oleva linkki luo vain taulut airport ja country ilman viiteavaimia
+--	https://moodle.metropolia.fi/pluginfile.php/1127689/mod_resource/content/0/lp_project_base.sql
+
+--tallenna yllä oleva tekstitiedosto omalle koneelle, ja aja mariadb:ssä seuraava komento, tiedoston voi vaan raahata mariadb:hen:
+source (linkki_tiedoston_polkuun);
+
+
+--country-tauluun tulee lisätä capital-sarake
+
+--lisää viiteavaimet airport-country
+
+--luontijärjestys uusiin tauluihin: wise_man_questions, difficulty, rewards, game, game_airports
+
+
+--------------------------------------------------------------------------------------------------------
+
+--tietokannan rakenteen muokkaus:
+--ALTER table
+
+--sarakkeen poisto:
+alter table taulun_nimi drop kolumn kolumnin_nimi;
+
+--muokkaa sarakkeen nimeä:
+alter table taulun_nimi change vanha_nimi uusi_nimi tietotyyppi;
+
+--lisää pääavainmääritys:
+alter table taulun_nimi add primary key(kolumnin_nimi);
+
+--lisää sarake:
+alter table taulun_nimi add sarakkeen_nimi varhar(40);
+
+-lisää viiteavainmääritys:
+alter table taulun_nimi add foreign key(kolumnin_nimi) references taulun_nimi(kolumnin_nimi);
+
+
+
+
+---------------------------------------------------------------------------------------------------------
+--viiteavain airportista countryyn:
+alter table airport add foreign key(iso_country) references country(iso_country);
+
+
+---------------------------------------------------------------------------------------------------------
+
+
+--kuinka monta merkkiä tarvii question-sarakkeeseen, kuinka pitkiä kysymykset on? 40, 60, 100??
+
+CREATE table wise_man_questions(
+ID int not null auto_increment,
+question varchar(100),
+answer varchar(40),
+primary key (ID)
+);
+
+
+
+CREATE table difficulty(
+level varchar(40) not null,
+country_count int,
+airports_in_treasure_land varchar(40),
+wise_man_count int,
+starting_money int,
+wise_man_cost int,
+wise_man_reward int,
+primary key (level)
+);
+
+
+
+CREATE table rewards(
+id int not null auto_increment,
+name varchar(40),
+difficulty_level varchar(40),
+primary key (id),
+foreign key(difficulty_level) REFERENCES difficulty(level)
+);
+
+
+
+CREATE table game(
+id int not null auto_increment,
+screen_name varchar(40),
+money int,
+home_airport varchar(40),
+location varchar(40),
+difficulty_level varchar(40),
+primary key (id),
+foreign key (location) REFERENCES airport(ident),
+foreign key (difficulty_level) REFERENCES difficulty(level)
+);
+
+--game_airports-taulun game_id, pitääkö olla auto_increment, entä wise_man_question_id??
+
+
+
+CREATE table game_airports(
+id int not null auto_increment,
+game_id int,
+airport_ident varchar(40),
+wise_man_question_id int,
+answered varchar(10),
+has_treasure varchar(10),
+is_default_airport varchar(10),
+primary key (id),
+foreign key (game_id) REFERENCES game(id),
+foreign key (airport_ident) REFERENCES airport(ident),
+foreign key (wise_man_question_id) REFERENCES wise_man_questions(id)
+);
+
+--taulujen luomisen jälkeen lisätään data (ks. vko5_tietokanta-tiedosto)
+
+--alla testikysymyksiä, voidaan testata tietokantaa:
+
+insert into wise_man_questions(question, answer)
+VALUES ("Mikä on Ranskan pääkaupunki? A. Reykjavik, B. Oslo, C. Pariisi", "Pariisi"),
+("Mikä on Suomen pääkaupunki? A. Turku, B. Helsinki, C. Rovaniemi", "Helsinki"),
+("Kuinka monta kirjainta on sanassa 'MEOW'? A. 2, B. 4, C. 5", "4");
+
+
+--lisää country-tauluun capital-sarake:
+alter table country add capital varchar(40);
+
+----------------------------------------------------------------------------------------------------------------
+
+--lisätään dataa difficulty-tauluun:
+
+insert into difficulty(level, country_count, airports_in_treasure_land, wise_man_count, starting_money, wise_man_cost, wise_man_reward)
+values ("easy", 10, 10, 4, 1500, 100, 200),
+("normal", 20, 20, 8, 3000, 200, 500),
+("hard", 30, 40, 16, 5000, 400, 1000);
+
+--lisätään dataa rewards-tauluun:
+insert into rewards(name, difficulty_level)
+values ("gold ring", "easy"), ("magic carpet", "easy"),
+("gold bar", "normal"), ("magic wand", "normal"),
+("world peace", "hard"), ("time machine", "hard"), ("diamond collection", "hard");
+
+--dataa game-tauluun (tämä vain testiversiossa, oikea on aluksi tyhjä):
+insert into game(screen_name, money, home_airport, location, difficulty_level)
+values ("Pelaaja", 1500, "EFHK", "EFHK", "easy");
+
+--game_airportsiin testi, OLETUSLENTOKENTÄT:
+insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport)
+values (1, "EETN", null, "no", "no", "yes"),
+(1, "EDDV", null, "no", "no", "yes"),
+(1, "BIKF", null, "no", "no", "yes"),
+(1, "EGAA", null, "no", "no", "yes"),
+(1, "ENVA", null, "no", "no", "yes"),
+(1, "EKBI", null, "no", "no", "yes"),
+(1, "LEMD", null, "no", "no", "yes"),
+(1, "LFBD", 1, "no", "no", "yes"),
+(1, "EHEH", null, "no", "no", "yes"),
+(1, "ESGG", null, "no", "no", "yes");
+
+
+--lisätään game_airportsiin oikean maan lentokentät, testi:
+insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport)
+values
+(1, "FR-0125", null, "no", "no", "no"),
+(1, "FR-0335", null, "no", "no", "no"),
+(1, "FR-0454", null, "no", "no", "no"),
+(1, "FR-0208", null, "no", "no", "no"),
+(1, "LFMR", null, "no", "no", "no"),
+(1, "LFCP", null, "no", "no", "no"),
+(1, "FR-0244", null, "no", "no", "no"),
+(1, "LFAP", null, "no", "no", "no"),
+(1, "LFGL", null, "no", "no", "no"),
+(1, "LFXU", null, "no", "no", "no"),
+(1, "FR-0481", null, "no", "no", "no"),
+(1, "LFPD", null, "no", "no", "no"),
+(1, "LFPP", 2, "no", "yes", "no"),
+(1, "LFET", null, "no", "no", "no"),
+(1, "LFMP", null, "no", "no", "no"),
+(1, "LFCN", null, "no", "no", "no"),
+(1, "FR-0297", 3, "no", "no", "no"),
+(1, "FR-0286", null, "no", "no", "no"),
+(1, "FR-0365", null, "no", "no", "no"),
+(1, "LFQO", null, "no", "no", "no");
+
+
+--pitää vielä lisätä kaikki Euroopan pääkaupungit country-tauluun (50 maata):
+
+--alla voi tehdä yksitellen (älä käytä, on helpompi tapa)
+update country
+set capital = "kaupungin_nimi"
+where iso_country = "maan_tunnus";
+
+--esim.
+update country
+set capital = "Helsinki"
+where iso_country = "FI";
+
+--lisää pääkaupungit country-tauluun:
+
+update country
+set capital = case
+	when name='Andorra' then 'Andorra la Vella'
+	when name='Albania' then 'Tirana'
+	when name='Austria' then 'Vienna'
+	when name='Bosnia and Herzegovina' then 'Sarajevo'
+	when name='Belgium' then 'Brussels'
+	when name='Bulgaria' then 'Sofia'
+	when name='Belarus' then 'Minsk'
+	when name='Switzerland' then 'Bern'
+	when name='Czech Republic' then 'Prague'
+	when name='Germany' then 'Berlin'
+	when name='Denmark' then 'Copenhagen'
+	when name='Estonia' then 'Tallinn'
+	when name='Spain' then 'Madrid'
+	when name='Finland' then 'Helsinki'
+	when name='Faroe Islands' then 'NULL'
+	when name='France' then 'Paris'
+	when name='United Kingdom' then 'London'
+	when name='Guernsey' then 'NULL'
+	when name='Gibraltar' then 'NULL'
+	when name='Greece' then 'Athens'
+	when name='Croatia' then 'Zagreb'
+	when name='Hungary' then 'Budapest'
+	when name='Ireland' then 'Dublin'
+	when name='Isle of Man' then 'NULL'
+	when name='Iceland' then 'Reykjavik'
+	when name='Italy' then 'Rome'
+	when name='Jersey' then 'NULL'
+	when name='Liechtenstein' then 'Vaduz'
+	when name='Lithuania' then 'Vilnius'
+	when name='Luxembourg' then 'Luxembourg'
+	when name='Latvia' then 'Riga'
+	when name='Monaco' then 'Monaco'
+	when name='Moldova' then 'Chisinau'
+	when name='Montenegro' then 'Podgorica'
+	when name='North Macedonia' then 'Skopje'
+	when name='Malta' then 'Valletta'
+	when name='Netherlands' then 'Amsterdam'
+	when name='Norway' then 'Oslo'
+	when name='Poland' then 'Warsaw'
+	when name='Portugal' then 'Lisbon'
+	when name='Romania' then 'Bucharest'
+	when name='Serbia' then 'Belgrade'
+	when name='Russia' then 'Moscow'
+	when name='Sweden' then 'Stockholm'
+	when name='Slovenia' then 'Ljubljana'
+	when name='Slovakia' then 'Bratislava'
+	when name='San Marino' then 'San Marino'
+	when name='Ukraine' then 'Kiev'
+	when name='Vatican City' then 'Vatican City'
+	when name='Kosovo' then 'Pristina'
+	end
+where continent='EU';
+
+------------------------------------------------------------------------
+
+--tällä käskyllä voi muuttaa jotakin arvoa (ei tarvitse nyt lisätä, koska tämä on jo laitettu aiemmin)
+update game_airports
+set wise_man_question_id = 1
+where airport_ident = "LFBD";
+
+--limit50 -komennolla voi rajata, että tulee 50 lentokenttää. Rand() arpoo suoraan mysql:ssä halutun määrän kenttiä.
+
