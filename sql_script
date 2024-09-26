@@ -126,7 +126,7 @@ foreign key (wise_man_question_id) REFERENCES wise_man_questions(id)
 
 --taulujen luomisen jälkeen lisätään data (ks. vko5_tietokanta-tiedosto)
 
---alla testikysymyksiä, voidaan testata tietokantaa:
+--alla testikysymyksiä, voidaan testata tietokantaa (älä lisää oikeaan tietokantaan):
 
 insert into wise_man_questions(question, answer)
 VALUES ("Mikä on Ranskan pääkaupunki? A. Reykjavik, B. Oslo, C. Pariisi", "Pariisi"),
@@ -152,10 +152,12 @@ values ("gold ring", "easy"), ("magic carpet", "easy"),
 ("gold bar", "normal"), ("magic wand", "normal"),
 ("world peace", "hard"), ("time machine", "hard"), ("diamond collection", "hard");
 
+----TESTI, älä lisää näitä:
 --dataa game-tauluun (tämä vain testiversiossa, oikea on aluksi tyhjä):
 insert into game(screen_name, money, home_airport, location, difficulty_level)
 values ("Pelaaja", 1500, "EFHK", "EFHK", "easy");
 
+--TESTI:
 --game_airportsiin testi, OLETUSLENTOKENTÄT:
 insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport)
 values (1, "EETN", null, "no", "no", "yes"),
@@ -169,7 +171,7 @@ values (1, "EETN", null, "no", "no", "yes"),
 (1, "EHEH", null, "no", "no", "yes"),
 (1, "ESGG", null, "no", "no", "yes");
 
-
+--ÄLÄ lisää alla olevia, testi
 --lisätään game_airportsiin oikean maan lentokentät, testi:
 insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport)
 values
