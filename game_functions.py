@@ -15,14 +15,26 @@ connection = mysql.connector.connect(
 
 
 def get_game_countries(difficulty_level):
-    sql = f'select country_count from difficulty where level = "{difficulty_level}";'
+    sql = (f'select country_count, airports_in_treasure_land from difficulty '
+           f'where level = "{difficulty_level}";')
     cursor = connection.cursor()
     cursor.execute(sql)
-    countries_for_difficulty_level = cursor.fetchone()[0]
-    #print(countries_for_difficulty_level)
+    result = cursor.fetchone()
+    print(result)
+    countries_for_difficulty_level = result[0]
+    min_countries_in_treasure_land = int(int(result[1]) / 2)
+    print(f'{countries_for_difficulty_level}, {min_countries_in_treasure_land}')
 
-    sql = (f'SELECT name FROM country where continent = "EU" '
-           f'order by rand() limit {countries_for_difficulty_level};')
+    #sql = (f'SELECT name FROM country where continent = "EU" '
+    #       f'order by rand() limit {countries_for_difficulty_level};')
+
+    sql = (f'select country.name, count(*) from country '
+           f'left join airport on airport.iso_country = country.iso_country '
+           f'where country.continent = "EU" group by country.iso_country '
+           f'having count(*) >= {min_countries_in_treasure_land} '
+           f'order by rand() '
+           f'limit {countries_for_difficulty_level};')
+
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
@@ -102,4 +114,12 @@ def get_treasure_land_airports(difficulty_level, country_name):
         results.append(item[0])
     return results
 
-#def start_game()
+
+def get_wise_man_count(difficulty_level):
+    sql = (f'select wise_man_count from difficulty '
+           f'where level = "{difficulty_level}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    wise_man_count = cursor.fetchone()[0]
+    return wise_man_count
+
