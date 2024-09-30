@@ -68,9 +68,8 @@ def start_game():
 
     # sijoita pelaajan tiedot game taulukkoon: screen_name, money, home_airport, location, difficulty_level
     # lisää tietokantaan pelaajan maa kenttä (?)
-    print(
-        f'\nscreen_name: {player}\nmoney: {money}\nhome_country: {home_country}\nhome_airport: {home_airport}\nlocation: {home_airport}\n'
-        f'difficulty_level: {difficulty_level}\n')
+    print(f'\nscreen_name: {player}\nmoney: {money}\nhome_country: {home_country}\nhome_airport: {home_airport}\n'
+          f'location: {home_airport}\ndifficulty_level: {difficulty_level}\n')
 
     # arvo maa missä aarrearkku on
     treasure_land_country = False
@@ -94,8 +93,8 @@ def start_game():
     while treasure_land_default_airport == treasure_chest_airport:
         treasure_chest_airport = random.choice(treasure_land_airports)
 
-    print(
-        f'Aarremaan oletuslentokenttä [{treasure_land_default_airport}], aarrearkun lentokenttä [{treasure_chest_airport}]')
+    print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport}]\n'
+          f'Aarrearkun lentokenttä [{treasure_chest_airport}]\n')
 
     # selvitä kuinka monta tietäjää pelissä on
     wise_man_count = get_wise_man_count(difficulty_level)
@@ -124,33 +123,5 @@ def start_game():
     ###
 
     print(wise_man_airports)
-
-
-start_game()home_country, home_airport = random.choice(list(countries_with_default_airports.items()))
-    #print(f'{home_country}, {home_airport}')
-
-    # sijoita pelaajan tiedot game taulukkoon: screen_name, money, home_airport, location, difficulty_level
-    # lisää tietokantaan pelaajan maa kenttä (?)
-    print(f'\nscreen_name: {player}\nmoney: {money}\nhome_country: {home_country}\nhome_airport: {home_airport}\nlocation: {home_airport}\n'
-          f'difficulty_level: {difficulty_level}\n')
-
-    # arvo maa missä aarrearkku on
-    treasure_land_country = False
-    while not treasure_land_country:
-        country = random.choice(list(countries_with_default_airports.keys()))
-
-        # aarremaa ei saa olla pelaajan aloitusmaa
-        if country != home_country:
-            treasure_land_country = country
-
-    # arvo aarremaalle lentokentät
-    treasure_land_airports = get_treasure_land_airports(difficulty_level, treasure_land_country)
-    print(treasure_land_airports)
-
-    # arvo maan sisältä aarrearkun lentokenttä
-    #treasure_land_airport = ?
-
-    print(treasure_land_country)
-    #print(treasure_land_airport)
 
 start_game()
