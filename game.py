@@ -94,7 +94,7 @@ def start_game():
     while treasure_land_default_airport == treasure_chest_airport:
         treasure_chest_airport = random.choice(treasure_land_airports)
 
-    print(f'{treasure_land_default_airport}, {treasure_chest_airport}')
+    print(f'Aarremaan oletuslentokenttä [{treasure_land_default_airport}], aarrearkun lentokenttä [{treasure_chest_airport}]')
 
     # selvitä kuinka monta tietäjää pelissä on
     wise_man_count = get_wise_man_count(difficulty_level)
@@ -102,24 +102,23 @@ def start_game():
 
     # arvo tietäjien lentokentät
     wise_man_airports = [treasure_land_default_airport]
-    wise_man_airports.extend(random.choices(list(treasure_land_airports), k=wise_man_count - 1))
-    print(wise_man_airports)
+    wise_man_airports.extend(random.sample(list(treasure_land_airports), k=wise_man_count - 1))
+    #print(wise_man_airports)
 
-    ### ei toimi kunnolla
-    # testit
     # listalla ei saa olla aarrearkun lentokenttää, mutta listalla pitää olla maan oletuslentokenttä
+    # poista aarrearkun lentokenttä tietäjien lentokentistä jos se on listassa
     while treasure_chest_airport in wise_man_airports:
         wise_man_airports.remove(treasure_chest_airport)
-        print('poista')
+        print(f'poista {treasure_chest_airport}')
 
-        # arvo uusi lentokenttä, testaa että kentällä ei ole jo tietäjää
+        # arvo uusi lentokenttä, testaa että kenttä ei ole jo listassa
         new_airport = random.choice(list(treasure_land_airports))
         while new_airport in wise_man_airports:
             new_airport = random.choice(list(treasure_land_airports))
 
         # lisää arvottu uusi lentokenttä listaan
         wise_man_airports.append(new_airport)
-        print('lisää')
+        print(f'lisää {new_airport}')
 
     ###
 
