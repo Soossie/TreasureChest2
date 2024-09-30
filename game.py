@@ -15,7 +15,7 @@ story = ("You receive a mysterious envelope containing a golden key and an old t
 
 def start_game():
     # kysyy pelaajan nimen
-    #input('Input player name: ')
+    #player = input('Input player name: ')
     player = 'Pelaaja1'
 
     # tulostaa tarinan
@@ -60,7 +60,7 @@ def start_game():
     for country_name in game_countries:
         default_airport = get_default_airport_for_country(country_name)
         countries_with_default_airports.update({country_name: default_airport})
-        #print(f'{country_default_airport} from {country_name} ({get_biggest_airport_size_for_country(country_name)})')
+        #print(f'{default_airport} from {country_name} ({get_biggest_airport_size_for_country(country_name)})')
     #print(f'{countries_with_default_airports.items()}')
 
     # valitse yksi maista aloitusmaaksi ja maan oletuslentokenttä aloituslentokentäksi
