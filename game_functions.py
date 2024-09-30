@@ -101,3 +101,5 @@ def get_treasure_land_airports(difficulty_level, country_name):
     for item in result:
         results.append(item[0])
     return results
+
+#def start_game()

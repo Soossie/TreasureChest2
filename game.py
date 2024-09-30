@@ -82,7 +82,6 @@ def start_game():
             treasure_land_country = country
 
     # arvo aarremaalle lentokentät
-    # tekemättä: rajaa lentokentän koon mukaan
     treasure_land_airports = get_treasure_land_airports(difficulty_level, treasure_land_country)
     print(treasure_land_airports)
 
