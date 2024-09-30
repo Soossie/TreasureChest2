@@ -52,7 +52,7 @@ def start_game():
 
     # arvo 20 maata
     game_countries = get_game_countries(difficulty_level)
-    print(f'{len(game_countries)}: {game_countries}')
+    #print(f'{len(game_countries)}: {game_countries}')
 
     # arvo jokaiselle maalle oletuslentokenttä
     countries_with_default_airports = {}
@@ -86,43 +86,9 @@ def start_game():
     print(treasure_land_airports)
 
     # arvo maan sisältä aarrearkun lentokenttä
-    treasure_land_default_airport = countries_with_default_airports[treasure_land_country]
-    treasure_chest_airport = random.choice(treasure_land_airports)
-    print(f'{treasure_land_country} {len(treasure_land_airports)}')
+    #treasure_land_airport = ?
 
-    # testaa että aarrearkun lentokenttä ei ole sama kuin maan oletuslentokenttä
-    while treasure_land_default_airport == treasure_chest_airport:
-        treasure_chest_airport = random.choice(treasure_land_airports)
-
-    print(f'Aarremaan oletuslentokenttä [{treasure_land_default_airport}], aarrearkun lentokenttä [{treasure_chest_airport}]')
-
-    # selvitä kuinka monta tietäjää pelissä on
-    wise_man_count = get_wise_man_count(difficulty_level)
-    print(wise_man_count)
-
-    # arvo tietäjien lentokentät
-    wise_man_airports = [treasure_land_default_airport]
-    wise_man_airports.extend(random.sample(list(treasure_land_airports), k=wise_man_count - 1))
-    #print(wise_man_airports)
-
-    # listalla ei saa olla aarrearkun lentokenttää, mutta listalla pitää olla maan oletuslentokenttä
-    # poista aarrearkun lentokenttä tietäjien lentokentistä jos se on listassa
-    while treasure_chest_airport in wise_man_airports:
-        wise_man_airports.remove(treasure_chest_airport)
-        print(f'poista {treasure_chest_airport}')
-
-        # arvo uusi lentokenttä, testaa että kenttä ei ole jo listassa
-        new_airport = random.choice(list(treasure_land_airports))
-        while new_airport in wise_man_airports:
-            new_airport = random.choice(list(treasure_land_airports))
-
-        # lisää arvottu uusi lentokenttä listaan
-        wise_man_airports.append(new_airport)
-        print(f'lisää {new_airport}')
-
-    ###
-
-    print(wise_man_airports)
-
+    print(treasure_land_country)
+    #print(treasure_land_airport)
 
 start_game()
