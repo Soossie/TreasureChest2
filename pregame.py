@@ -15,23 +15,18 @@ def get_story():
 
 
 def start_game():
-    # kysyy pelaajan nimen
-    # player = input('Input player name: ')
-    player = 'Pelaaja1'
 
-    # tulostaa tarinan
-    print(f'Treasure Chest\n{get_story()}')
-
-    # esittelee vaikeustasot
     print('Difficulty levels: easy, normal, hard.\n'
-          'Difficulty level determines how many countries and airports the game generates.')
+        'Difficulty level determines how many countries and airports the game generates.')
+        
+        # esittelee vaikeustasot
 
     difficulty_level = False
     while not difficulty_level:
 
         # kysyy käyttäjältä vaikeustason
-        # difficulty_level_input = input('Input e for easy, n for normal, h for hard: ')
-        difficulty_level_input = 'n'
+        difficulty_level_input = input('Input e for easy, n for normal, h for hard: ')
+        # difficulty_level_input = 'n'
 
         # muuttaa käyttäjän syöteen pieniksi kirjaimiksi
         difficulty_level_input = difficulty_level_input.lower()
@@ -48,12 +43,22 @@ def start_game():
 
     # print(difficulty_level)
 
+    # kysyy pelaajan nimen
+    player = input('Input player name: ')
+    while not player:
+        player = input('Name cannot be blank. Input player name: ')
+    # player = 'Pelaaja1'
+
+    # tulostaa tarinan
+    print(f'\nTreasure Chest\n\n{get_story()}')
+    input('Press Enter to start the game.')
+
     # määritä pelaajan aloitusrahan määrä vaikeustason mukaan
     money = get_default_money(difficulty_level)
 
     # arvo 20 maata
     game_countries = get_game_countries(difficulty_level)
-    print(f'{len(game_countries)}: {game_countries}')
+    # print(f'{len(game_countries)}: {game_countries}')
 
     # arvo jokaiselle maalle oletuslentokenttä
     countries_with_default_airports = {}
@@ -70,8 +75,8 @@ def start_game():
 
     # sijoita pelaajan tiedot game taulukkoon: screen_name, money, home_airport, location, difficulty_level
     # lisää tietokantaan pelaajan maa kenttä (?)
-    print(f'\nscreen_name: {player}\nmoney: {money}\nhome_country: {home_country}\nhome_airport: {home_airport}\n'
-          f'location: {home_airport}\ndifficulty_level: {difficulty_level}\n')
+    # print(f'\nscreen_name: {player}\nmoney: {money}\nhome_country: {home_country}\nhome_airport: {home_airport}\n'
+    #      f'location: {home_airport}\ndifficulty_level: {difficulty_level}\n')
 
     # arvo maa missä aarrearkku on
     treasure_land_country = False
@@ -84,23 +89,23 @@ def start_game():
 
     # arvo aarremaalle lentokentät
     treasure_land_airports = get_treasure_land_airports(difficulty_level, treasure_land_country)
-    print(treasure_land_airports)
+    # print(treasure_land_airports)
 
     # arvo maan sisältä aarrearkun lentokenttä
     treasure_land_default_airport = countries_with_default_airports[treasure_land_country]
     treasure_chest_airport = random.choice(treasure_land_airports)
-    print(f'{treasure_land_country} {len(treasure_land_airports)}')
+    # print(f'{treasure_land_country} {len(treasure_land_airports)}')
 
     # testaa että aarrearkun lentokenttä ei ole sama kuin maan oletuslentokenttä
     while treasure_land_default_airport == treasure_chest_airport:
         treasure_chest_airport = random.choice(treasure_land_airports)
 
-    print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport}]\n'
-          f'Aarrearkun lentokenttä [{treasure_chest_airport}]\n')
+    # print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport}]\n'
+    #      f'Aarrearkun lentokenttä [{treasure_chest_airport}]\n')
 
     # selvitä kuinka monta tietäjää pelissä on
     wise_man_count = get_wise_man_count(difficulty_level)
-    print(wise_man_count)
+   # print(wise_man_count)
 
     # arvo tietäjien lentokentät
     wise_man_airports = [treasure_land_default_airport]
@@ -111,7 +116,7 @@ def start_game():
     # poista aarrearkun lentokenttä tietäjien lentokentistä jos se on listassa
     while treasure_chest_airport in wise_man_airports:
         wise_man_airports.remove(treasure_chest_airport)
-        print(f'poista {treasure_chest_airport}')
+        # print(f'poista {treasure_chest_airport}')
 
         # arvo uusi lentokenttä, testaa että kenttä ei ole jo listassa
         new_airport = random.choice(list(treasure_land_airports))
@@ -120,10 +125,4 @@ def start_game():
 
         # lisää arvottu uusi lentokenttä listaan
         wise_man_airports.append(new_airport)
-        print(f'lisää {new_airport}')
-
-    ###
-
-    print(wise_man_airports)
-
-start_game()
+        # print(f'lisää {new_airport}')

@@ -20,10 +20,10 @@ def get_game_countries(difficulty_level):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    print(result)
+    # print(result)
     countries_for_difficulty_level = result[0]
     min_countries_in_treasure_land = int(int(result[1]) / 2)
-    print(f'{countries_for_difficulty_level}, {min_countries_in_treasure_land}')
+    # print(f'{countries_for_difficulty_level}, {min_countries_in_treasure_land}')
 
     #sql = (f'SELECT name FROM country where continent = "EU" '
     #       f'order by rand() limit {countries_for_difficulty_level};')
