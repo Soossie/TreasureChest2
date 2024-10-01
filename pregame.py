@@ -16,8 +16,10 @@ def get_story():
 
 def start_game():
     # kysyy pelaajan nimen
-    # player = input('Input player name: ')
-    player = 'Pelaaja1'
+    #player = input('Input player name: ')
+    player = 'Pelaaja6'
+    #while screen_name_exists(player):
+    #    player = input('Player name exists. Input a new name: ')
 
     # tulostaa tarinan
     print(f'Treasure Chest\n{get_story()}')
@@ -130,7 +132,13 @@ def start_game():
     home_airport_ident = get_airport_ident_from_name(home_airport)
     print(home_airport_ident)
 
+    # tallenna pelaajan tiedot game tauluun
     input_player_info(player, money, home_airport_ident, home_airport_ident, difficulty_level)
+
+    # tallenna tietokantaan pelin lentokentät
+    player_id = get_screen_name_id(player)
+    print(player_id)
+
 
 
 

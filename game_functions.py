@@ -137,3 +137,25 @@ def get_airport_ident_from_name(airport_name):
     cursor.execute(sql)
     ident = cursor.fetchone()[0]
     return ident
+
+
+# kesken
+def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport):
+    sql = (f'insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport) '
+           f'values("{game_id}", "{airport_ident}", "{wise_man_question_id}", "{answered}", "{has_treasure}", "{is_default_airport}");')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+
+
+def get_screen_name_id(screen_name):
+    sql = f'select id from game where screen_name = "{screen_name}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    return cursor.fetchone()[0]
+
+
+def screen_name_exists(screen_name):
+    # tarkista löytyykö pelaajan nimi tietokannasta
+    # miten ?
+
+    return False
