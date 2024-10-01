@@ -19,10 +19,10 @@ alter table country add capital varchar(40);
 --luodaan tietokannan taulut:
 
 CREATE table wise_man_questions(
-ID int not null auto_increment,
+id int not null auto_increment,
 question varchar(100),
 answer varchar(40),
-primary key (ID)
+primary key (id)
 );
 
 CREATE table difficulty(
