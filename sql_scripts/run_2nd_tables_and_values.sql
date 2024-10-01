@@ -7,6 +7,9 @@ DROP TABLE IF EXISTS wise_man_questions;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS difficulty;
 
+--poista country taulusta sarake capital
+ALTER TABLE IF EXISTS country DROP COLUMN capital;
+
 ---------------------------------------------------------------------------------------------------------
 --viiteavain airportista countryyn:
 alter table airport add foreign key(iso_country) references country(iso_country);
