@@ -1,20 +1,22 @@
 --Treasure_chest-tietokannan luominen
 
---poista taulut jos olemassa (tässä järjestyksessä)
+--poista taulut, jos olemassa (tässä järjestyksessä)
 DROP TABLE IF EXISTS rewards;
 DROP TABLE IF EXISTS game_airports;
 DROP TABLE IF EXISTS wise_man_questions;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS difficulty;
 
---poista country taulusta sarake capital
+--poista country-taulusta sarake capital, jos olemassa:
 ALTER TABLE IF EXISTS country DROP COLUMN capital;
 
----------------------------------------------------------------------------------------------------------
---viiteavain airportista countryyn:
+--lisätään viiteavain airport-taulusta country-tauluun:
 alter table airport add foreign key(iso_country) references country(iso_country);
 
----------------------------------------------------------------------------------------------------------
+--lisätään country-tauluun capital-sarake:
+alter table country add capital varchar(40);
+
+--luodaan tietokannan taulut:
 
 CREATE table wise_man_questions(
 ID int not null auto_increment,
@@ -22,7 +24,6 @@ question varchar(100),
 answer varchar(40),
 primary key (ID)
 );
-
 
 CREATE table difficulty(
 level varchar(40) not null,
@@ -35,7 +36,6 @@ wise_man_reward int,
 primary key (level)
 );
 
-
 CREATE table rewards(
 id int not null auto_increment,
 name varchar(40),
@@ -43,7 +43,6 @@ difficulty_level varchar(40),
 primary key (id),
 foreign key(difficulty_level) REFERENCES difficulty(level)
 );
-
 
 CREATE table game(
 id int not null auto_increment,
@@ -56,7 +55,6 @@ primary key (id),
 foreign key (location) REFERENCES airport(ident),
 foreign key (difficulty_level) REFERENCES difficulty(level)
 );
-
 
 CREATE table game_airports(
 id int not null auto_increment,
@@ -72,24 +70,19 @@ foreign key (airport_ident) REFERENCES airport(ident),
 foreign key (wise_man_question_id) REFERENCES wise_man_questions(id)
 );
 
---lisää country-tauluun capital-sarake:
-alter table country add capital varchar(40);
-
-----------------------------------------------------------------------------------------------------------------
-
 --lisätään dataa difficulty-tauluun:
 insert into difficulty(level, country_count, airports_in_treasure_land, wise_man_count, starting_money, wise_man_cost, wise_man_reward)
-values ("easy", 10, 10, 4, 1500, 100, 200),
-("normal", 20, 20, 8, 3000, 200, 500),
-("hard", 30, 40, 16, 5000, 400, 1000);
+values ('easy', 10, 10, 4, 1500, 100, 200),
+('normal', 20, 20, 8, 3000, 200, 500),
+('hard', 30, 40, 16, 5000, 400, 1000);
 
 --lisätään dataa rewards-tauluun:
 insert into rewards(name, difficulty_level)
-values ("gold ring", "easy"), ("magic carpet", "easy"),
-("gold bar", "normal"), ("magic wand", "normal"),
-("world peace", "hard"), ("time machine", "hard"), ("diamond collection", "hard");
+values ('gold ring', 'easy'), ('magic carpet', 'easy'), ('silver tiara', 'easy')
+('gold bar', 'normal'), ('magic wand', 'normal'), (),
+('world peace', 'hard'), ('time machine', 'hard'), ('diamond collection', 'hard'), ();
 
---lisätään dataa wise_man_questions-tauluun:
+--lisätään dataa (kysymykset, vastaukset) wise_man_questions-tauluun:
 insert into wise_man_questions(question, answer)
 values('What is the capital of France? A) London B) Paris C) San Marino', 'Paris'),
 ('What is the capital of Portugal? A) Skopje B) Valletta C) Lisbon', 'Lisbon'),
@@ -173,11 +166,3 @@ set capital = case
 	when name='Kosovo' then 'Pristina'
 	end
 where continent='EU';
-
-
-insert into wise_man_questions(question, answer)
-values
-    ('What is the capital of France? A) London B) Paris C) San Marino', 'Paris'),
-    ('What is the capital of Portugal? A) Skopje B) Valletta C) Lisbon', 'Lisbon'),
-    ('What is the capital of Serbia? A) Helsinki B) Belgrade C) Ljubljana', 'Belgrade')
-;
