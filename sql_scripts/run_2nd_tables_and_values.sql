@@ -173,3 +173,11 @@ set capital = case
 	when name='Kosovo' then 'Pristina'
 	end
 where continent='EU';
+
+
+insert into wise_man_questions(question, answer)
+values
+    ('What is the capital of France? A) London B) Paris C) San Marino', 'Paris'),
+    ('What is the capital of Portugal? A) Skopje B) Valletta C) Lisbon', 'Lisbon'),
+    ('What is the capital of Serbia? A) Helsinki B) Belgrade C) Ljubljana', 'Belgrade')
+;
