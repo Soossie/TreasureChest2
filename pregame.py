@@ -123,7 +123,15 @@ def start_game():
         print(f'lisää {new_airport}')
 
     ###
-
     print(wise_man_airports)
+
+    print(home_airport)
+
+    home_airport_ident = get_airport_ident_from_name(home_airport)
+    print(home_airport_ident)
+
+    input_player_info(player, money, home_airport_ident, home_airport_ident, difficulty_level)
+
+
 
 start_game()
