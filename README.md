@@ -1,8 +1,9 @@
-# Welcome to Treasure Chest!
+# Welcome to search the Treasure Chest!
 
 ## Prequisites before playing
+To play, you must have MariaDB and mysql installed.
 1. Open your terminal or command prompt.
-2.  Run the following in a terminal:
+2.  Run the following:
     ```sh
     mysql
     ```
