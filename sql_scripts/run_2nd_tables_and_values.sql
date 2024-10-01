@@ -79,8 +79,8 @@ values ('easy', 10, 10, 4, 1500, 100, 200),
 --lisätään dataa rewards-tauluun:
 insert into rewards(name, difficulty_level)
 values ('gold ring', 'easy'), ('magic carpet', 'easy'), ('silver tiara', 'easy')
-('gold bar', 'normal'), ('magic wand', 'normal'), (),
-('world peace', 'hard'), ('time machine', 'hard'), ('diamond collection', 'hard'), ();
+('gold bar', 'normal'), ('magic wand', 'normal'), ('diamond crown', 'normal'),
+('world peace', 'hard'), ('time machine', 'hard'), ('diamond collection', 'hard');
 
 --lisätään dataa (kysymykset, vastaukset) wise_man_questions-tauluun:
 insert into wise_man_questions(question, answer)
