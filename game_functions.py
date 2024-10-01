@@ -123,3 +123,17 @@ def get_wise_man_count(difficulty_level):
     wise_man_count = cursor.fetchone()[0]
     return wise_man_count
 
+
+def input_player_info(screen_name, money, home_airport, location, difficulty_level):
+    sql = (f'insert into game(screen_name, money, home_airport, location, difficulty_level) '
+           f'values("{screen_name}", "{money}", "{home_airport}", "{location}", "{difficulty_level}");')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+
+
+def get_airport_ident_from_name(airport_name):
+    sql = f'select ident from airport where name = "{airport_name}";'
+    cursor = connection.cursor(buffered=True)
+    cursor.execute(sql)
+    ident = cursor.fetchone()[0]
+    return ident
