@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS difficulty;
 
 --poista country-taulusta sarake capital, jos olemassa:
-ALTER TABLE IF EXISTS country DROP COLUMN capital;
+ALTER TABLE IF EXISTS country DROP COLUMN IF EXISTS capital;
 
 --lisätään viiteavain airport-taulusta country-tauluun:
 alter table airport add foreign key(iso_country) references country(iso_country);
@@ -78,7 +78,7 @@ values ('easy', 10, 10, 4, 1500, 100, 200),
 
 --lisätään dataa rewards-tauluun:
 insert into rewards(name, difficulty_level)
-values ('gold ring', 'easy'), ('magic carpet', 'easy'), ('silver tiara', 'easy')
+values ('gold ring', 'easy'), ('magic carpet', 'easy'), ('silver tiara', 'easy'),
 ('gold bar', 'normal'), ('magic wand', 'normal'), ('diamond crown', 'normal'),
 ('world peace', 'hard'), ('time machine', 'hard'), ('diamond collection', 'hard');
 
