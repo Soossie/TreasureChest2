@@ -139,7 +139,6 @@ def get_airport_ident_from_name(airport_name):
     return ident
 
 
-# kesken
 def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport):
     sql = (f'insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport) '
            f'values("{game_id}", "{airport_ident}", "{wise_man_question_id}", "{answered}", "{has_treasure}", "{is_default_airport}");')
@@ -147,7 +146,7 @@ def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, 
     cursor.execute(sql)
 
 
-def get_screen_name_id(screen_name):
+def get_screen_name_game_id(screen_name):
     sql = f'select id from game where screen_name = "{screen_name}";'
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -156,7 +155,22 @@ def get_screen_name_id(screen_name):
 
 def screen_name_exists(screen_name):
     # tarkista löytyykö pelaajan nimi tietokannasta
-    # miten ?
+    sql = f'select screen_name from game;'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
 
-    return False
+    # muuttaa tulokset listaksi
+    results = [item[0] for item in result]
 
+    # palauttaa True jos samanniminen pelaaja on olemassa, muuten palauttaa False
+    return screen_name in results
+
+
+def get_random_unused_question_id(game_id):
+    sql = (f'select id from wise_man_questions '
+           f'where id not in (select wise_man_question_id from game_airports where game_id = "{game_id}") '
+           f'order by rand();')
+    cursor = connection.cursor(buffered=True)
+    cursor.execute(sql)
+    return cursor.fetchone()[0]
