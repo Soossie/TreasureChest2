@@ -1,7 +1,8 @@
 # Treasure Chest (Aarrearkku)
-
+import itertools
 from game_functions import *
 import random
+
 
 # tarina
 def get_story():
@@ -31,7 +32,7 @@ def start_game():
     difficulty_level = False
     while not difficulty_level:
         # kysyy käyttäjältä vaikeustason
-        # difficulty_level_input = input('Input e for easy, n for normal, h for hard: ')
+        # difficulty_level_input = input('Choose difficulty level. Input e for easy, n for normal, h for hard: ')
         difficulty_level_input = 'n'
 
         # muuttaa käyttäjän syöteen pieniksi kirjaimiksi
@@ -94,8 +95,8 @@ def start_game():
     while treasure_land_default_airport == treasure_chest_airport:
         treasure_chest_airport = random.choice(treasure_land_airports)
 
-    #print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport}]\n'
-    #      f'Aarrearkun lentokenttä [{treasure_chest_airport}]\n')
+    print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport} ({get_airport_ident_from_name(treasure_land_default_airport)})]\n'
+          f'Aarrearkun lentokenttä [{treasure_chest_airport} ({get_airport_ident_from_name(treasure_chest_airport)})]\n')
 
     # selvitä kuinka monta tietäjää pelissä on
     wise_man_count = get_wise_man_count(difficulty_level)
@@ -135,19 +136,27 @@ def start_game():
     #print(game_id)
 
     # tallenna oletuslentokenttien tiedot tietokantaan
-    for airport in countries_and_default_airports.values():
+    for airport in itertools.chain(countries_and_default_airports.values(), treasure_land_airports):
+        #print(f'{airport} ({airport in treasure_land_airports})')
 
         # hae tallennettavat arvot
         airport_ident = get_airport_ident_from_name(airport)
-        question_id = get_random_unused_question_id(game_id)
+
+        question_id = False  #get_random_unused_question_id(game_id)
+        if airport in wise_man_airports:
+            #print('wise man airport')
+            if airport == treasure_land_default_airport:
+                question_id = get_random_question_id()
+            else:
+                question_id = get_random_unused_question_id(game_id)
+
+        answered = False
         has_treasure = bool(airport == treasure_chest_airport)
-        answered = 'no'
-        is_default_airport = 'yes'  # bool(airport in countries_and_default_airports.values())
+        is_default_airport = bool(airport in countries_and_default_airports.values())
 
         #print(f'-\n{game_id}\n{airport_ident}\n{question_id}\n{answered}\n{has_treasure}\n{is_default_airport}\n')
         save_airport_to_game_airports(game_id, airport_ident, question_id, answered, has_treasure, is_default_airport)
 
-    # tallenna aarremaan lentokenttien tiedot tietokantaan
-
+    return game_id
 
 start_game()

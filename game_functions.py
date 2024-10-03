@@ -140,8 +140,17 @@ def get_airport_ident_from_name(airport_name):
 
 
 def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport):
-    sql = (f'insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport) '
-           f'values("{game_id}", "{airport_ident}", "{wise_man_question_id}", "{answered}", "{has_treasure}", "{is_default_airport}");')
+    # parannusehdotus: yhdistä kyselyt yhdeksi. ongelma on sijoittaa NULL arvo tietokantaan, mutta se on myös jo oletusarvo
+
+    if not wise_man_question_id:
+        # ei tietäjän kysymystä
+        sql = (f'insert into game_airports(game_id, airport_ident, answered, has_treasure, is_default_airport) '
+               f'values("{game_id}", "{airport_ident}", "{answered}", "{has_treasure}", "{is_default_airport}");')
+
+    else:
+        sql = (f'insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport) '
+               f'values("{game_id}", "{airport_ident}", "{wise_man_question_id}", "{answered}", "{has_treasure}", "{is_default_airport}");')
+
     cursor = connection.cursor()
     cursor.execute(sql)
 
@@ -168,9 +177,21 @@ def screen_name_exists(screen_name):
 
 
 def get_random_unused_question_id(game_id):
+
     sql = (f'select id from wise_man_questions '
-           f'where id not in (select wise_man_question_id from game_airports where game_id = "{game_id}") '
+           f'where id not in (select wise_man_question_id from game_airports where game_id = 56 and '
+           f'wise_man_question_id != NULL) '
            f'order by rand();')
+
+    cursor = connection.cursor(buffered=True)
+    cursor.execute(sql)
+    #print(cursor.fetchone())
+    return cursor.fetchone()[0]
+
+
+def get_random_question_id():
+    sql = f'select id from wise_man_questions order by rand();'
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     return cursor.fetchone()[0]
+
