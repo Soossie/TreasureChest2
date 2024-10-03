@@ -150,9 +150,9 @@ def start_game():
             else:
                 question_id = get_random_unused_question_id(game_id)
 
-        answered = False
-        has_treasure = bool(airport == treasure_chest_airport)
-        is_default_airport = bool(airport in countries_and_default_airports.values())
+        answered = 0
+        has_treasure = 1 if bool(airport == treasure_chest_airport) else 0
+        is_default_airport = 1 if bool(airport in countries_and_default_airports.values()) else 0
 
         #print(f'-\n{game_id}\n{airport_ident}\n{question_id}\n{answered}\n{has_treasure}\n{is_default_airport}\n')
         save_airport_to_game_airports(game_id, airport_ident, question_id, answered, has_treasure, is_default_airport)
