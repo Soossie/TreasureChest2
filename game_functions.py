@@ -195,3 +195,40 @@ def get_random_question_id():
     cursor.execute(sql)
     return cursor.fetchone()[0]
 
+# hae home_airportin icao-koodi
+def get_home_airport_icao(game_id):
+    sql = f'select home_airport from game where id = "{game_id}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(result)
+    return result[0]
+
+# hae lentokentän nimi
+def get_airport_name(airport_icao):
+    sql = f'select airport.name from airport where ident = "{airport_icao}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(result)
+    return result[0]
+
+# hae maan nimi
+def get_country_name(airport_icao):
+    sql = (f'select country.name from country inner join airport on country.iso_country = airport.iso_country '
+           f'where ident = "{airport_icao}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(result)
+    return result[0]
+
+# hae käytössä oleva raha
+def get_player_money(game_id):
+    sql = (f'select money from game where id = "{game_id}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(result)
+    return result[0]
+

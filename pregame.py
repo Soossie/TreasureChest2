@@ -159,4 +159,4 @@ def start_game():
 
     return game_id
 
-start_game()
+#start_game()   #tämä pitää poistaa valmiissa pelissä
