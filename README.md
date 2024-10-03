@@ -1,4 +1,4 @@
-# Welcome to search the Treasure Chest!
+# Welcome to the search of the Treasure Chest!
 
 ## Prequisites before playing
 To play, you must have MariaDB and mysql installed.
@@ -19,5 +19,6 @@ To play, you must have MariaDB and mysql installed.
     ```sql
     USE treasure_chest
     SOURCE "path/to/1"
-    SOURCE "path/to/2";
+    SOURCE "path/to/2"
+    ;
     ```
