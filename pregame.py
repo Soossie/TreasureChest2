@@ -16,14 +16,13 @@ def get_story():
 
 
 def start_game():
+    print(f'Treasure Chest\n{get_story()}')
+
     # kysyy pelaajan nimen
     player = input('Input player name: ')
     #player = 'Pelaaja'
     while screen_name_exists(player):
         player = input('Player name exists. Input a new name: ')
-
-    # tulostaa tarinan
-    print(f'Treasure Chest\n{get_story()}')
 
     # esittelee vaikeustasot
     print('Difficulty levels: easy, normal, hard.\n'
@@ -95,8 +94,8 @@ def start_game():
     while treasure_land_default_airport == treasure_chest_airport:
         treasure_chest_airport = random.choice(treasure_land_airports)
 
-    print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport} ({get_airport_ident_from_name(treasure_land_default_airport)})]\n'
-          f'Aarrearkun lentokenttä [{treasure_chest_airport} ({get_airport_ident_from_name(treasure_chest_airport)})]\n')
+    #print(f'\nAarremaan oletuslentokenttä [{treasure_land_default_airport} ({get_airport_ident_from_name(treasure_land_default_airport)})]\n'
+    #      f'Aarrearkun lentokenttä [{treasure_chest_airport} ({get_airport_ident_from_name(treasure_chest_airport)})]\n')
 
     # selvitä kuinka monta tietäjää pelissä on
     wise_man_count = get_wise_man_count(difficulty_level)

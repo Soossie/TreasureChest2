@@ -18,7 +18,7 @@ money = get_player_money(game_id)
 
 # aloitustilanne        #######tähän asti toimii
 print(f"You're in {home_country} at {home_airport}. You have {money} $. "
-      f"Where would you like to travel? Input country number.\noptions: ")
+      f"Where would you like to travel? Input country number.\nOptions: ")
 
 #####tämä kesken
 for i in game_countries:
@@ -42,4 +42,4 @@ else:
     print("Where would you like to travel to next? Input country country number. \n options:")
     for i in game_countries:
         print(i)
-"""
+
