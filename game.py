@@ -26,10 +26,20 @@ def get_clue():
     sql = f'select airport_ident from game_airports where wise_man_question_id != "NULL" and game_id = {game_id} limit 1;'
     cursor = connection.cursor()
     cursor.execute(sql)
-    hint_letter = cursor.fetchone()[0]
-    hint_letter = hint_letter[0]
+    airport_icao = cursor.fetchone()[0]
+    country_name = get_country_name(airport_icao)
+    hint_letter = country_name[0]    #tämä ottaa icao-koodin 1. kirjaimen!
     clue = (f'Clue: the treasure is hidden in the country whose first letter is {hint_letter}.')
     return clue
+
+def get_country_name(airport_icao):
+    sql = (f'select country.name from country inner join airport on country.iso_country = airport.iso_country '
+           f'where ident = "{airport_icao}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(result)
+    return result[0]
 
 # hae vihje
 clue = get_clue()
