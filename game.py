@@ -1,3 +1,5 @@
+from geopy.units import kilometers
+
 from pregame import *
 from game_functions import *
 
@@ -23,9 +25,32 @@ money = get_player_money(game_id)
 print(f"You're in {home_country} at {home_airport}. You have {money} $. "
       f"Where would you like to travel? Input country number.\nOptions: ")
 
-#####tämä kesken
-for i in game_countries:
-    print(i)
+# peli tulostaa järjestysnumeron, maan nimen, etäisyyden ja lentolipun hinnan
+i = 0
+distance =
+#tähän funktion kutsu, joka hakee etäisyydet nykyisestä paikasta
+#ticket_cost =  #tähän funktion kutsu, hakee lentolipun hinnan
+for country in game_countries:
+    i += 1
+    print(f'{i}. {country}')
+
+#laske lentolipun hinta etäisyyden perusteella
+def count_ticket_cost(distance):
+    if distance < 200:
+        ticket_cost = ticket_cost_between_countries_under_200km
+    if distance <
+
+#lentolippujen hinnat dollareina per kilometri, maiden väliset lennot
+ticket_cost_between_countries_under_200km = 100 + 1,00 * distance
+ticket_cost_between_countries_200_to_500km = 100 + 0,70 * distance
+ticket_cost_between_countries_501_to_800km = 100 + 0,40 * distance
+ticket_cost_between_countries_over_800km = 100 + 0,25 * distance
+
+#maan sisäisten lentojen hinnat
+ticket_cost_inside_country_under_200km = 100 + 1.25 * distance
+ticket_cost_inside_country_200_to_500km = 100 + 0.85 * distance
+ticket_cost_inside_country_501_to_800km = 100 + 0.55 * distance
+ticket_cost_inside_country_over_800km = 100 + 0.40 * distance
 
 #Pelaaja valitsee ensimmäisen maan, jos oikea niin seuraava vaihe, jos väärä niin looppaa
 next_country = input("")
