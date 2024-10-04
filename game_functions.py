@@ -259,4 +259,5 @@ def get_current_location(game_id):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
+    result = int(result)
     return result[0]
