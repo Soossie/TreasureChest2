@@ -97,14 +97,20 @@ def get_default_money(difficulty_level):
     return result[0]
 
 
-def get_treasure_land_airports(difficulty_level, country_name):
+def get_treasure_land_airports(difficulty_level, country_name, treausure_land_default_airport_ident):
     sql = f'select airports_in_treasure_land from difficulty where level = "{difficulty_level}";'
     cursor = connection.cursor()
     cursor.execute(sql)
     airport_count = cursor.fetchone()[0]
 
+    # hae satunnaiset aarremaan lentokentät. testaa että ei ole aarremaan oletuslentokenttä
     sql = (f'SELECT airport.name FROM airport inner join country on airport.iso_country = country.iso_country '
-           f'where country.name = "{country_name}" order by rand() limit {airport_count};')
+           f'where country.name = "{country_name}" and airport.type != "closed" and airport.ident != "{treausure_land_default_airport_ident}" '
+           f'order by rand() limit {airport_count};')
+
+    # original
+    #sql = (f'SELECT airport.name FROM airport inner join country on airport.iso_country = country.iso_country '
+    #       f'where country.name = "{country_name}" order by rand() limit {airport_count};')
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()

@@ -73,16 +73,20 @@ def start_game():
     #      f'location: {home_airport}\ndifficulty_level: {difficulty_level}\n')
 
     # arvo maa missä aarrearkku on
-    treasure_land_country = False
+    treasure_land_country, treausure_land_default_airport_ident = False, False
     while not treasure_land_country:
         country = random.choice(list(countries_and_default_airports.keys()))
 
         # aarremaa ei saa olla pelaajan aloitusmaa
         if country != home_country:
             treasure_land_country = country
+            treausure_land_default_airport_ident = get_airport_ident_from_name(countries_and_default_airports[country])
+
+    #print(f'{treasure_land_country}, {treausure_land_default_airport_ident}')
 
     # arvo aarremaalle lentokentät
-    treasure_land_airports = get_treasure_land_airports(difficulty_level, treasure_land_country)
+    treasure_land_airports = get_treasure_land_airports(difficulty_level, treasure_land_country,
+                                                        treausure_land_default_airport_ident)
     #print(treasure_land_airports)
 
     # arvo maan sisältä aarrearkun lentokenttä
