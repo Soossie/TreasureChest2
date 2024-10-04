@@ -140,6 +140,14 @@ else:
         print(i)
 """
 
-# tietäjän kohtaaminen
-#def meet_wise_man():
-
+# tietäjän kohtaaminen      #####kesken
+def meet_wise_man():
+    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    question_id = cursor.fetchone()[0]
+    sql = (f'select question, answer from wise_man_questions where id = "{question_id}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result   #tässä pitää palautua kysymys ja vastaus?
