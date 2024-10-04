@@ -1,5 +1,6 @@
 import random
-from geopy import distance
+#from geopy import distance
+import geopy.distance
 import mysql.connector
 
 
@@ -251,7 +252,7 @@ def get_used_airport_coordinates(airport_icao):
 def get_distance_between_airports(airport_icao1, airport_icao2):
     coordinates1 = get_used_airport_coordinates(airport_icao1)
     coordinates2 = get_used_airport_coordinates(airport_icao2)
-    distance = distance.distance(coordinates1, coordinates2).km
+    distance = geopy.distance.distance(coordinates1, coordinates2).km
     distance = int(distance)
     return distance
 

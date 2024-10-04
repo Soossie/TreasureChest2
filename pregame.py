@@ -32,7 +32,7 @@ def start_game():
     while not difficulty_level:
         # kysyy käyttäjältä vaikeustason
         #difficulty_level_input = input('Choose difficulty level. Input e for easy, n for normal, h for hard: ')
-        difficulty_level_input = 'n'
+        difficulty_level_input = 'h'
 
         # muuttaa käyttäjän syöteen pieniksi kirjaimiksi
         difficulty_level_input = difficulty_level_input.lower()

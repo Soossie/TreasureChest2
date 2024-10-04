@@ -28,70 +28,57 @@ print(f"You're in {home_country} at {home_airport}. You have {money} $. "
 # peli tulostaa järjestysnumeron, maan nimen, etäisyyden ja lentolipun hinnan
 def travel_between_countries():
     i = 0
-    #tähän funktion kutsu, joka hakee etäisyydet nykyisestä paikasta
-    #ticket_cost =  #tähän funktion kutsu, hakee lentolipun hinnan
     for country in game_countries:
-        i += 1
         location = get_current_location(game_id)
-        airport_icao1 = get_airport_ident_from_name(location)
-        airport_icao2 = get_airport_ident_from_name(country)
+        airport_icao1 = location
+        default_airport = get_default_airport_for_country(country)
+        airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
-        ticket_cost = count_ticket_cost_between_countries(distance)
-        print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.')
-    return
+        ticket_cost = int(count_ticket_cost_between_countries(distance))
+        if airport_icao1 != airport_icao2:
+            i += 1
+            print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.')
 
+#tähän pitää muuttaa eri tuloste (lentokenttien nimet)
 def travel_inside_country():
     i = 0
-    #tähän funktion kutsu, joka hakee etäisyydet nykyisestä paikasta
-    #ticket_cost =  #tähän funktion kutsu, hakee lentolipun hinnan
     for country in game_countries:
-        i += 1
         location = get_current_location(game_id)
-        airport_icao1 = get_airport_ident_from_name(location)
-        airport_icao2 = get_airport_ident_from_name(country)
+        airport_icao1 = location
+        default_airport = get_default_airport_for_country(country)
+        airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
-        print(distance)
-        ticket_cost = count_ticket_cost_inside_country(distance)
-        print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.')
+        ticket_cost = int(count_ticket_cost_inside_country(distance))
+        if airport_icao1 != airport_icao2:
+            i += 1
+            print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.')
 
 #laske maiden välisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_between_countries(distance):
     if distance < 200:
-        ticket_cost = ticket_cost_between_countries_under_200km
+        ticket_cost = 100 + 1.00 * distance
     if 200 <= distance <= 500:
-        ticket_cost = ticket_cost_between_countries_200_to_500km
+        ticket_cost = 100 + 0.70 * distance
     if 500 < distance < 800:
-        ticket_cost = ticket_cost_between_countries_200_to_500km
+        ticket_cost = 100 + 0.40 * distance
     if distance > 800:
-        ticket_cost = ticket_cost_between_countries_under_200km
+        ticket_cost = 100 + 0.25 * distance
     return ticket_cost
 
 #laske maan sisäisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_inside_country(distance):
     if distance < 200:
-        ticket_cost = ticket_cost_inside_country_under_200km
+        ticket_cost = 100 + 1.25 * distance
     if 200 <= distance <= 500:
-        ticket_cost = ticket_cost_inside_country_200_to_500km
+        ticket_cost = 100 + 0.85 * distance
     if 500 < distance < 800:
-        ticket_cost = ticket_cost_inside_country_200_to_500km
+        ticket_cost = 100 + 0.55 * distance
     if distance > 800:
-        ticket_cost = ticket_cost_inside_country_under_200km
+        ticket_cost = 100 + 0.40 * distance
     return ticket_cost
 
-print(distance)
-#lentolippujen hinnat dollareina per kilometri, maiden väliset lennot
-ticket_cost_between_countries_under_200km = 100 + 1,00 * distance
-ticket_cost_between_countries_200_to_500km = 100 + 0,70 * distance
-ticket_cost_between_countries_501_to_800km = 100 + 0,40 * distance
-ticket_cost_between_countries_over_800km = 100 + 0,25 * distance
-
-#maan sisäisten lentojen hinnat
-ticket_cost_inside_country_under_200km = 100 + 1.25 * distance
-ticket_cost_inside_country_200_to_500km = 100 + 0.85 * distance
-ticket_cost_inside_country_501_to_800km = 100 + 0.55 * distance
-ticket_cost_inside_country_over_800km = 100 + 0.40 * distance
-
 travel_between_countries()
+travel_inside_country()
 
 """
 #Pelaaja valitsee ensimmäisen maan, jos oikea niin seuraava vaihe, jos väärä niin looppaa
