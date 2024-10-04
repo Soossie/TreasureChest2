@@ -263,3 +263,13 @@ def get_current_location(game_id):
     cursor.execute(sql)
     result = cursor.fetchone()
     return result[0]
+
+def get_random_reward(difficulty_level):
+    sql = f'select name, id from rewards where difficulty_level = "{difficulty_level}" order by rand() limit 1;'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result[0]
+
+
+
