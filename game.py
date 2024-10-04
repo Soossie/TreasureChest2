@@ -1,10 +1,10 @@
 from geopy.units import kilometers
-
+from tabulate import tabulate
 from pregame import *
 from game_functions import *
 
 # tallenna pelin id muuttujaan ja tallenna data tietokantaan (start_game)
-game_id, countries_and_default_airports, game_countries, default_airport = start_game()
+game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports = start_game()
 
 #print(game_countries)
 #print(game_id)
@@ -23,9 +23,11 @@ money = get_player_money(game_id)
 
 # aloitustilanne        #######tähän asti toimii
 print(f"You're in {home_country} at {home_airport}. You have {money} $. "
-      f"Where would you like to travel? Input country number.\nOptions: ")
+      f"Where would you like to travel?\nOptions: ")
 
-# peli tulostaa järjestysnumeron, maan nimen, etäisyyden ja lentolipun hinnan
+country_list = []
+
+# matkusta maiden välillä
 def travel_between_countries():
     i = 0
     for country in game_countries:
@@ -37,21 +39,29 @@ def travel_between_countries():
         ticket_cost = int(count_ticket_cost_between_countries(distance))
         if airport_icao1 != airport_icao2:
             i += 1
-            print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.')
+            country_list.append([i, country, distance, ticket_cost])
+            # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.\n')
+            # country_list.append(country)
+    print(tabulate(country_list, headers=["Number", "Country", "Distance (km)", "Ticket cost (€)"], tablefmt="pretty"))
 
-#tähän pitää muuttaa eri tuloste (lentokenttien nimet)
+airport_list = []
+
+# matkusta maan sisällä
 def travel_inside_country():
     i = 0
-    for country in game_countries:
+    for airport in treasure_land_airports:
         location = get_current_location(game_id)
         airport_icao1 = location
-        default_airport = get_default_airport_for_country(country)
-        airport_icao2 = get_airport_ident_from_name(default_airport)
+        airport_icao2 = get_airport_ident_from_name(airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_inside_country(distance))
         if airport_icao1 != airport_icao2:
             i += 1
-            print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} $.')
+            airport_list.append([i, airport, distance, ticket_cost])
+            # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} $.\n')
+            # airport_list.append(airport)
+    print(tabulate(airport_list, headers=["Number", "Airport", "Distance (km)", "Ticket cost (€)"], tablefmt="pretty"))
+
 
 #laske maiden välisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_between_countries(distance):
@@ -77,19 +87,18 @@ def count_ticket_cost_inside_country(distance):
         ticket_cost = 100 + 0.40 * distance
     return ticket_cost
 
+#Pelaaja valitsee ensimmäisen maan, jos oikea niin seuraava vaihe, jos väärä niin looppaa
 travel_between_countries()
-travel_inside_country()
+next_country = int(input("Input country number: "))
+next_country -= 1
+if next_country not in range(len(country_list)):
+    print("Select one of the countries from the list: ")
+    next_country = input("")
+print(f"The ticket to {country_list[next_country]} costs {ticket_cost} and the distance there is {distance}. You have {money} left.")
 
 """
-#Pelaaja valitsee ensimmäisen maan, jos oikea niin seuraava vaihe, jos väärä niin looppaa
-next_country = input("")
-if next_country not in game_countries:
-    print("Select one of the countries from the list.")
-    next_country = input("")
-
 game_countries.remove(next_country)
 
-print(f"The ticket to {next_country} costs {cost} and the distance there is {distance}. You have {money} left.")
 
 if next_country == treasure_land_country:
     print(f"You're traveling to {next_country} {next_country(get_default_airport_for_country)}. The treasure resides in this country!")
