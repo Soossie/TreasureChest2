@@ -130,13 +130,14 @@ def input_player_info(screen_name, money, home_airport, location, difficulty_lev
     cursor = connection.cursor()
     cursor.execute(sql)
 
-
+# hakee lentokentän ICAO-koodin
 def get_airport_ident_from_name(airport_name):
     sql = f'select ident from airport where name = "{airport_name}";'
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     ident = cursor.fetchone()[0]
     return ident
+
 
 
 def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport):
@@ -232,3 +233,16 @@ def get_player_money(game_id):
     #print(result)
     return result[0]
 
+# hae lentokentän koordinaatit
+def get_used_airport_coordinates(airport_icao):
+    sql = f'select latitude_deg, longitude_deg from airport where ident = "{airport_icao}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result
+
+# laske lentokenttien välinen etäisyys
+def get_distance_between_airports(airport_icao1, airport_icao2):
+    coordinates1 = get_used_airport_coordinates(airport_icao1)
+    coordinates2 = get_used_airport_coordinates(airport_icao2)
+    return distance.distance(coordinates1, coordinates2).km
