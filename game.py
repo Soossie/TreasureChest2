@@ -9,7 +9,7 @@ game_id, countries_and_default_airports, game_countries, default_airport, treasu
 #print(game_countries)
 #print(game_id)
 
-# tallenna home_airportin icao-koodi
+# hae kotilentokentän icao-koodi
 home_airport_icao = get_home_airport_icao(game_id)
 
 # hae kotilentokentän nimi
@@ -21,10 +21,24 @@ home_country = get_country_name(home_airport_icao)
 # hae aloitusraha
 money = get_player_money(game_id)
 
-# aloitustilanne        #######tähän asti toimii
+# määritä vihje: hae aarremaan ensimmäinen kirjain
+def get_clue():
+    sql = f'select airport_ident from game_airports where wise_man_question_id != "NULL" and game_id = {game_id} limit 1;'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    hint_letter = cursor.fetchone()[0]
+    hint_letter = hint_letter[0]
+    clue = (f'Clue: the first letter of the country is {hint_letter}.')
+    return clue
+
+# hae vihje
+clue = get_clue()
+
+########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE?
+
+# aloitustilanne
 print(f"You're in {home_country} at {home_airport}. You have {money} €. "
-#tässä välissä pitää antaa vihje aarremaasta: joku funktio hakee maan 1. kirjaimen tietokannasta?
-      f"Where would you like to travel?\nOptions: ")
+      f"Where would you like to travel?\n{clue}\nOptions: ")
 
 country_list = []
 
@@ -96,8 +110,8 @@ next_country -= 1
 if next_country not in range(len(country_list)):
     print("Select one of the countries from the list: ")
     next_country = input("")
-money -= ticket_cost    #päivitä pelaajan rahamäärä (money - ticket_cost)
-print(f"The ticket to {country_list[next_country]} costs {ticket_cost} and the distance there is {distance}. You have {money} left.")
+#money -= ticket_cost    #päivitä pelaajan rahamäärä (money - ticket_cost)
+#print(f"The ticket to {country_list[next_country]} costs {ticket_cost} and the distance there is {distance}. You have {money} left.")
 
 """
 game_countries.remove(next_country)
