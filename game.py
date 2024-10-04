@@ -3,7 +3,7 @@ from tabulate import tabulate
 from pregame import *
 from game_functions import *
 
-# tallenna pelin id muuttujaan ja tallenna data tietokantaan (start_game)
+# tallenna pelin id ym. muuttujaan ja tallenna data tietokantaan (start_game)
 game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports = start_game()
 
 #print(game_countries)
@@ -28,7 +28,7 @@ def get_clue():
     cursor.execute(sql)
     hint_letter = cursor.fetchone()[0]
     hint_letter = hint_letter[0]
-    clue = (f'Clue: the first letter of the country is {hint_letter}.')
+    clue = (f'Clue: the treasure is hidden in the country whose first letter is {hint_letter}.')
     return clue
 
 # hae vihje
@@ -37,8 +37,8 @@ clue = get_clue()
 ########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE?
 
 # aloitustilanne
-print(f"You're in {home_country} at {home_airport}. You have {money} €. "
-      f"Where would you like to travel?\n{clue}\nOptions: ")
+print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
+      f'Where would you like to travel?\n{clue}\nOptions: ')
 
 country_list = []
 
@@ -57,7 +57,7 @@ def travel_between_countries():
             country_list.append([i, country, distance, ticket_cost])
             # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
             # country_list.append(country)
-    print(tabulate(country_list, headers=["Number", "Country", "Distance (km)", "Ticket cost (€)"], tablefmt="pretty"))
+    print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)'], tablefmt='pretty'))
 
 airport_list = []
 
@@ -75,7 +75,7 @@ def travel_inside_country():
             airport_list.append([i, airport, distance, ticket_cost])
             # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
             # airport_list.append(airport)
-    print(tabulate(airport_list, headers=["Number", "Airport", "Distance (km)", "Ticket cost (€)"], tablefmt="pretty"))
+    print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)'], tablefmt='pretty'))
 
 #^tulostuvaan taulukkoon pitää lisätä sarake "Enough money for the ticket (x)" tms.
 

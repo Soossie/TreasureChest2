@@ -6,17 +6,17 @@ import random
 
 # tarina
 def get_story():
-    story = ("You receive a mysterious envelope containing a golden key and an old treasure map.\n"
-         "The magical treasure is hidden in one of the countries shown on the map.\n"
+    story = ('You receive a mysterious envelope containing a golden key and an old treasure map.\n'
+         'The magical treasure is hidden in one of the countries shown on the map.\n\n'
 
-         "First, you need to find the country where the treasure is located, and then the correct airport.\n"
-         "You travel by airplane and need money for the tickets. Along the way, you may encounter\n"
-         "wise men who can help you earn more money if you answer their questions correctly.\n")
+         'First, you need to find the country where the treasure is located, and then the correct airport.\n'
+         'You travel by airplane and need money for the tickets. Along the way, you may encounter\n'
+         'wise men who can help you earn more money if you answer their questions correctly.\n')
     return story
 
 
 def start_game():
-    print(f'Treasure Chest\n{get_story()}')
+    print(f'Treasure Chest\n\n{get_story()}')
 
     # kysyy pelaajan nimen
     player = input('Input player name: ')
@@ -25,7 +25,7 @@ def start_game():
         player = input('Player name exists. Input a new name: ')
 
     # esittelee vaikeustasot
-    print('Difficulty levels: easy, normal, hard.\n'
+    print('\nDifficulty levels: easy, normal, hard.\n'
           'Difficulty level determines how many countries and airports the game generates.')
 
     difficulty_level = False
