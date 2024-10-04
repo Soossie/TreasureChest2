@@ -251,7 +251,9 @@ def get_used_airport_coordinates(airport_icao):
 def get_distance_between_airports(airport_icao1, airport_icao2):
     coordinates1 = get_used_airport_coordinates(airport_icao1)
     coordinates2 = get_used_airport_coordinates(airport_icao2)
-    return distance.distance(coordinates1, coordinates2).km
+    distance = distance.distance(coordinates1, coordinates2).km
+    distance = int(distance)
+    return distance
 
 # hae pelaajan nykyinen sijainti
 def get_current_location(game_id):
