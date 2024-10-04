@@ -2,7 +2,10 @@ from pregame import *
 from game_functions import *
 
 # tallenna pelin id muuttujaan ja tallenna data tietokantaan (start_game)
-game_id = start_game()
+game_id, game_countries = start_game()
+
+#print(game_countries)
+#print(game_id)
 
 # tallenna home_airportin icao-koodi
 home_airport_icao = get_home_airport_icao(game_id)

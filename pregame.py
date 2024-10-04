@@ -156,6 +156,6 @@ def start_game():
         #print(f'-\n{game_id}\n{airport_ident}\n{question_id}\n{answered}\n{has_treasure}\n{is_default_airport}\n')
         save_airport_to_game_airports(game_id, airport_ident, question_id, answered, has_treasure, is_default_airport)
 
-    return game_id
+    return game_id, game_countries
 
 #start_game()   #tämä pitää poistaa valmiissa pelissä
