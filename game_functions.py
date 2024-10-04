@@ -252,3 +252,11 @@ def get_distance_between_airports(airport_icao1, airport_icao2):
     coordinates1 = get_used_airport_coordinates(airport_icao1)
     coordinates2 = get_used_airport_coordinates(airport_icao2)
     return distance.distance(coordinates1, coordinates2).km
+
+# hae pelaajan nykyinen sijainti
+def get_current_location(game_id):
+    sql = f'select location from game where id = "{game_id}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result[0]
