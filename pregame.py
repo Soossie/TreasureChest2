@@ -162,4 +162,4 @@ def start_game():
 
     return game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports
 
-#start_game()   #tämä pitää poistaa valmiissa pelissä
+
