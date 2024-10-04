@@ -44,7 +44,8 @@ def get_country_name(airport_icao):
 # hae vihje
 clue = get_clue()
 
-########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE?
+########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE? (vihjeellä peli on helppo)
+########## annetaanko vihje vain helpossa tasossa?? Normaalissa vihje maksaa ja vaikeassa ei vihjettä??
 
 # aloitustilanne
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
@@ -113,7 +114,7 @@ def count_ticket_cost_inside_country(distance):
         ticket_cost = 100 + 0.40 * distance
     return ticket_cost
 
-# pelaaja valitsee ensimmäisen maan, jos oikea niin seuraava vaihe, jos väärä niin looppaa
+# pelaaja valitsee ensimmäisen maan. Jos syöte on väärä (ei listalla), pelaaja valitsee uudelleen
 travel_between_countries()
 next_country = int(input("Input country number: "))
 next_country -= 1
@@ -122,6 +123,8 @@ if next_country not in range(len(country_list)):
     next_country = input("")
 #money -= ticket_cost    #päivitä pelaajan rahamäärä (money - ticket_cost)
 #print(f"The ticket to {country_list[next_country]} costs {ticket_cost} and the distance there is {distance}. You have {money} left.")
+
+#tässä pitää tarkistaa, onko lentokentällä tietäjä (jos on, kutsu tietäjä-funktiota)
 
 """
 game_countries.remove(next_country)
@@ -132,10 +135,11 @@ if next_country == treasure_land_country:
 else:
     print(f"You're traveling to {next_country} {next_country(get_default_airport_for_country)}. The treasure is not in this country.")
 
-#tähän pitää laittaa taas vihje aarremaasta (1. kirjain)
-
-    print("Where would you like to travel to next? Input country country number. \n options:")
+    print("Where would you like to travel to next?\n{clue}\nInput country country number. \n options:")
     for i in game_countries:
         print(i)
 """
+
+# tietäjän kohtaaminen
+#def meet_wise_man():
 
