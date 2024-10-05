@@ -6,7 +6,7 @@ from pregame import *
 from game_functions import *
 
 # tallenna pelin id ym. muuttujaan ja tallenna data tietokantaan (start_game)
-game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports = start_game()
+game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports, treasure_land_country, treasure_chest_airport = start_game()
 
 #print(game_countries)
 #print(game_id)
@@ -52,7 +52,7 @@ clue = get_clue()
 # aloitustilanne
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
       f'Where would you like to travel?\n{clue}\nOptions: ')
-
+print(treasure_land_country)
 country_list = []
 
 # matkusta maiden välillä
@@ -65,12 +65,16 @@ def travel_between_countries():
         airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_between_countries(distance))
+        if money < ticket_cost:
+            can_travel = False
+        else:
+            can_travel = True
         if airport_icao1 != airport_icao2:
             i += 1
-            country_list.append([i, country, distance, ticket_cost])
+            country_list.append([i, country, distance, ticket_cost, can_travel])
             # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
             # country_list.append(country)
-    print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)'], tablefmt='pretty'))
+    print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
 
 airport_list = []
 
@@ -83,12 +87,16 @@ def travel_inside_country():
         airport_icao2 = get_airport_ident_from_name(airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_inside_country(distance))
+        if money < ticket_cost:
+            can_travel = False
+        else:
+            can_travel = True
         if airport_icao1 != airport_icao2:
             i += 1
-            airport_list.append([i, airport, distance, ticket_cost])
+            airport_list.append([i, airport, distance, ticket_cost, can_travel])
             # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
             # airport_list.append(airport)
-    print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)'], tablefmt='pretty'))
+    print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
 
 #^tulostuvaan taulukkoon pitää lisätä sarake "Enough money for the ticket (x)" tms.
 
@@ -120,28 +128,70 @@ def count_ticket_cost_inside_country(distance):
 travel_between_countries()
 next_country = int(input("Input country number: "))
 next_country -= 1
-if next_country not in range(len(country_list)):
-    print("Select one of the countries from the list: ")
-    next_country = input("")
-#money -= ticket_cost    #päivitä pelaajan rahamäärä (money - ticket_cost)
-#print(f"The ticket to {country_list[next_country]} costs {ticket_cost} and the distance there is {distance}. You have {money} left.")
+
+while next_country not in range(len(country_list)): # taitaa loopata ikuisesti atm
+    next_country = int(input("Select one of the countries from the list: "))
+    next_country -= 1
+
+# päivitä pelaajan rahamäärä (money - ticket_cost)
+def current_ticket_cost_between_countries():
+    next_default_airport = get_default_airport_for_country(next_country)
+    current_ticket_cost = count_ticket_cost_between_countries(get_distance_between_airports(get_current_location(game_id), next_default_airport))
+    return current_ticket_cost
+
+# päivittää pelaajan rahan
+money -= country_list[next_country][3]
+
+print(f"The ticket from {get_country_name(get_current_location(game_id))} to {country_list[next_country][1]} costs {country_list[next_country][3]}€ and the distance there is {country_list[next_country][2]} kilometers. You have {money}€ left.\n...")
+update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
+
+#looppaa kunnes pelaaja saapuu aarremaahan
+while country_list[next_country][1] != treasure_land_country:
+    print(f"You have landed at {get_default_airport_for_country(next_country)}. The treasure is not in this country.")
+    print("Where would you like to travel to next?\n{clue}\nInput country country number. \n options:")
+    country_list.clear()
+    travel_between_countries()
+    next_country = int(input("Input country number: "))
+    next_country -= 1
+    money -= country_list[next_country][3]
+    print(f"The ticket from {get_country_name(get_current_location(game_id))} to {country_list[next_country][1]} costs {country_list[next_country][3]}€ and the distance there is {country_list[next_country][2]} kilometers. You have {money}€ left.\n...")
+    update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
+    while next_country not in range(len(country_list)): # taitaa loopata ikuisesti atm
+        next_country = int(input("Select one of the countries from the list: "))
+        next_country -= 1
+
+# muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
+print(f"You have landed at {get_default_airport_for_country(next_country)}. The treasure resides in this country!")
+print("You now must find the treasure chest hidden in one of the airports. Where would you like to travel next?\n options:")
+# wise man juttu
+airport_list.clear()
+travel_inside_country()
+next_airport = int(input("Input airport number: "))
+next_airport -= 1
+while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
+    next_airport = int(input("Select one of the airports from the list: "))
+    next_airport -= 1
+
+# looppaa kunnes pelaaja saapuu aarrelentokentälle
+while airport_list[next_airport][1] != treasure_chest_airport:
+    print(f"You have landed at {get_airport_name(get_current_location(game_id))}. The treasure is not in this airport.")
+    print("Where would you like to travel to next?\n options:")
+    airport_list.clear()
+    travel_inside_country()
+    next_airport = int(input("Input airport number: "))
+    next_airport -= 1
+    while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
+        next_airport = int(input("Select one of the airports from the list: "))
+        next_airport -= 1
+    money -= airport_list[next_airport][3]
+    print(f"The ticket from {get_airport_name(get_current_location(game_id))} to {airport_list[next_airport][1]} costs {airport_list[next_airport][3]}€ and the distance there is {airport_list[next_airport][2]} kilometers. You have {money}€ left.\n...")
+    update_current_location(game_id, get_airport_ident_from_name(country_list[next_country][1]))
+    if airport_list[next_airport][1] == treasure_chest_airport:
+        print(f"You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!") # voittoviesti tähän
 
 #tässä pitää tarkistaa, onko lentokentällä tietäjä (jos on, kutsu tietäjä-funktiota)
 
 """
-game_countries.remove(next_country)
-
-
-if next_country == treasure_land_country:
-    print(f"You're traveling to {next_country} {next_country(get_default_airport_for_country)}. The treasure resides in this country!")
-else:
-    print(f"You're traveling to {next_country} {next_country(get_default_airport_for_country)}. The treasure is not in this country.")
-
-    print("Where would you like to travel to next?\n{clue}\nInput country country number. \n options:")
-    for i in game_countries:
-        print(i)
-"""
-
 # tarkista, onko lentokentällä tietäjä
 def check_if_wise_man(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
@@ -202,3 +252,4 @@ if wise_man != None:
 else:
     print('No wise man here.')
 
+"""

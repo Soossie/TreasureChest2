@@ -278,5 +278,7 @@ def get_random_reward(difficulty_level):
     result = cursor.fetchone()
     return result[0]
 
-
-
+def update_current_location(game_id, new_location_icao):
+    sql = f'update game set location = "{new_location_icao}" where id = "{game_id}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
