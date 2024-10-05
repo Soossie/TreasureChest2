@@ -6,7 +6,7 @@ from pregame import *
 from game_functions import *
 
 # tallenna pelin id ym. muuttujaan ja tallenna data tietokantaan (start_game)
-game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports, treasure_land_country, treasure_chest_airport, difficulty_level = start_game()
+game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports, difficulty_level, treasure_land_country, treasure_chest_airport, = start_game()
 
 #print(game_countries)
 #print(game_id)
@@ -42,18 +42,6 @@ def get_country_name(airport_icao):
     result = cursor.fetchone()
     #print(result)
     return result[0]
-
-# hae vihje
-clue = get_clue()
-
-########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE? (vihjeellä peli on helppo)
-########## annetaanko vihje vain helpossa tasossa?? Normaalissa vihje maksaa ja vaikeassa ei vihjettä??
-
-# aloitustilanne
-print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
-      f'Where would you like to travel?\n{clue}\nOptions: ')
-print(treasure_land_country)
-country_list = []
 
 # matkusta maiden välillä
 def travel_between_countries():
@@ -124,6 +112,18 @@ def count_ticket_cost_inside_country(distance):
         ticket_cost = 100 + 0.40 * distance
     return ticket_cost
 
+# hae vihje
+clue = get_clue()
+print(treasure_land_country)
+print(treasure_chest_airport)
+########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE? (vihjeellä peli on helppo)
+########## annetaanko vihje vain helpossa tasossa?? Normaalissa vihje maksaa ja vaikeassa ei vihjettä??
+
+# aloitustilanne
+print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
+      f'Where would you like to travel?\n{clue}\nOptions: ')
+country_list = []
+
 # pelaaja valitsee ensimmäisen maan. Jos syöte on väärä (ei listalla), pelaaja valitsee uudelleen
 travel_between_countries()
 next_country = int(input('Input country number: ')) #MITÄ JOS KÄYTTÄJÄ SYÖTTÄÄ KIRJAIMEN?
@@ -168,6 +168,7 @@ airport_list.clear()
 travel_inside_country()
 next_airport = int(input("Input airport number: "))
 next_airport -= 1
+
 while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
     next_airport = int(input("Select one of the airports from the list: "))
     next_airport -= 1
@@ -185,9 +186,10 @@ while airport_list[next_airport][1] != treasure_chest_airport:
         next_airport -= 1
     money -= airport_list[next_airport][3]
     print(f"The ticket from {get_airport_name(get_current_location(game_id))} to {airport_list[next_airport][1]} costs {airport_list[next_airport][3]}€ and the distance there is {airport_list[next_airport][2]} kilometers. You have {money}€ left.\n...")
-    update_current_location(game_id, get_airport_ident_from_name(country_list[next_country][1]))
-    if airport_list[next_airport][1] == treasure_chest_airport:
-        print(f"You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!") # voittoviesti tähän
+    update_current_location(game_id, get_airport_ident_from_name(country_list[next_country][1])) # tulee error kun pääsee aarrelentokentälle
+
+# tässä kohtaa pelaaja voittaa
+print(f"You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!") # voittoviesti tähän
 
 #tässä pitää tarkistaa, onko lentokentällä tietäjä (jos on, kutsu tietäjä-funktiota)
 
