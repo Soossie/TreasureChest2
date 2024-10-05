@@ -141,21 +141,14 @@ def input_player_info(screen_name, money, home_airport, location, difficulty_lev
 def get_airport_ident_from_name(airport_name):
     #print(airport_name)
 
-    try:
-        # toimii jos nimessä on "
+    # vaihtoehtoiset tavat sql kyselylle riippuen minkälainen lainausmerkki nimessä on
+    if '"' in airport_name:
         sql = f"select ident from airport where name = '{airport_name}';"
-        cursor = connection.cursor(buffered=True)
-        cursor.execute(sql)
-    except (Exception,):
-        # toimii jos nimessä on '
+    else:
         sql = f'select ident from airport where name = "{airport_name}";'
-        cursor = connection.cursor(buffered=True)
-        cursor.execute(sql)
 
-    # kyselyn lainausmerkit pitää olla näin, koska joidenkin lentokenttien nimi sisältää lainausmerkkejä
-    #sql = f"select ident from airport where name = '{airport_name}';"
-    #cursor = connection.cursor(buffered=True)
-    #cursor.execute(sql)
+    cursor = connection.cursor(buffered=True)
+    cursor.execute(sql)
     ident = cursor.fetchone()[0]
     return ident
 
