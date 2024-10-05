@@ -6,7 +6,7 @@ from pregame import *
 from game_functions import *
 
 # tallenna pelin id ym. muuttujaan ja tallenna data tietokantaan (start_game)
-game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports, treasure_land_country, treasure_chest_airport = start_game()
+game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports, treasure_land_country, treasure_chest_airport, difficulty_level = start_game()
 
 #print(game_countries)
 #print(game_id)
@@ -126,7 +126,7 @@ def count_ticket_cost_inside_country(distance):
 
 # pelaaja valitsee ensimmäisen maan. Jos syöte on väärä (ei listalla), pelaaja valitsee uudelleen
 travel_between_countries()
-next_country = int(input("Input country number: "))
+next_country = int(input('Input country number: ')) #MITÄ JOS KÄYTTÄJÄ SYÖTTÄÄ KIRJAIMEN?
 next_country -= 1
 
 while next_country not in range(len(country_list)): # taitaa loopata ikuisesti atm
@@ -217,30 +217,41 @@ def get_wise_man_question(location, game_id):
 
 # tarkista, onko lentokentällä tietäjä
 #location = get_current_location(game_id)
-location = "EIDW" #kentällä LFSB ei tietäjää    #TESTIARVOT
+location = "EYVI" #kentällä EFHK ei tietäjää    #TESTIARVOT
 wise_man = check_if_wise_man(location, 1)  #TESTIARVOT
 #wise_man = check_if_wise_man(location, game_id)
 
-# hae tietäjän maksu ja palkinto (tähän funktio/sql-kysely)
-wise_man_cost = 200
-wise_man_reward = 400
+# hae tietäjän maksu ja palkinto
+def get_wise_man_cost_and_reward(difficulty_level):
+    sql = f'select wise_man_cost, wise_man_reward from difficulty where level = "{difficulty_level}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result
+
+wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
+wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
 
 #tietäjän kohtaaminen
+#def meet_wise_man(wise_man):   #jos tämän laittaa funktioon niin money ei ole määritelty, miksi??
 if wise_man != None:
     question = get_wise_man_question(location, 1)[0]
     answer = get_wise_man_question(location, 1)[1]
     user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
-          f'Input Y (yes) or N (no): ')
+          f'Input y (yes) or n (no): ')
     user_input = user_input.lower()
+    while user_input not in ('y', 'yes', 'n', 'no'):
+        user_input = input('Invalid input. Input y (yes) or n (no): ')
     print(user_input)
     if user_input in ('y', 'yes'):
         money -= wise_man_cost
+        ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
         print(f'You have {money} €.')
         print(f'Question: {question}')
-        user_answer = input('Input answer (A, B or C): ')
+        user_answer = input('Input answer (a, b or c): ')
         user_answer = user_answer.lower()
         while user_answer not in ('a', 'b', 'c'):
-            user_answer = input('Invalid input. Input answer (A, B or C): ')
+            user_answer = input('Invalid input. Input answer (a, b or c): ')
             user_answer = user_answer.lower()
         if user_answer == answer:
             money += wise_man_reward
@@ -248,8 +259,10 @@ if wise_man != None:
         else:
             print(f'Wrong! Correct answer is {answer}.')
     elif user_input in ('n', 'no'):
-        print('Bye!')
+        print('No question this time. Bye!')
 else:
     print('No wise man here.')
+
+#meet_wise_man(wise_man)
 
 """
