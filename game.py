@@ -165,8 +165,6 @@ def get_wise_man_question(location, game_id):
     result = cursor.fetchall()
     return result[0]   #palauttaa monikkona kysymyksen ja vastauksen
 
-#pitää vastaus tallentaa tietokantaan a b c
-
 # tarkista, onko lentokentällä tietäjä
 #location = get_current_location(game_id)
 location = "LHBP" #kentällä LWSK ei tietäjää    #TESTIARVOT
