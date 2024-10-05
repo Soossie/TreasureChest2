@@ -113,8 +113,6 @@ def count_ticket_cost_inside_country(distance):
 clue = get_clue()
 print(treasure_land_country)
 print(treasure_chest_airport)
-#### HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE? (vihjeellä peli on helppo)
-#### annetaanko vihje vain helpossa tasossa?? Normaalissa vihje maksaa ja vaikeassa ei vihjettä??
 
 # aloitustilanne
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
@@ -172,7 +170,7 @@ while country_list[next_country][1] != treasure_land_country:
 
 ###tästä alkaa tietäjäjutut
 
-location = get_current_location(game_id)
+location = get_current_location(game_id)        #toimiiko tämä kun matkustaa maan sisällä??
 # tarkista, onko lentokentällä tietäjä
 def check_if_wise_man(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
@@ -182,7 +180,7 @@ def check_if_wise_man(location, game_id):
     result = cursor.fetchone()
     return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
 
-# hae tietäjän kysymys ja vastaus     ###toimii, jos locationissa on kysymys
+# hae tietäjän kysymys ja vastaus     ###toimii, jos locationissa on kysymys, muuten error?
 def get_wise_man_question_and_answer(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
            f'game_id = "{game_id}";')
