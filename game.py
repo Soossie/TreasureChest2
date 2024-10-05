@@ -28,7 +28,7 @@ def get_clue():
     cursor.execute(sql)
     airport_icao = cursor.fetchone()[0]
     country_name = get_country_name(airport_icao)
-    hint_letter = country_name[0]    #tämä ottaa icao-koodin 1. kirjaimen!
+    hint_letter = country_name[0]
     clue = (f'Clue: the treasure is hidden in the country whose first letter is {hint_letter}.')
     return clue
 
@@ -140,14 +140,32 @@ else:
         print(i)
 """
 
-# tietäjän kohtaaminen      #####kesken
-def meet_wise_man():
-    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}";')
+# hae tietäjän kysymys ja vastaus     ###toimii, jos locationissa on kysymys
+def get_wise_man_question(location, game_id):
+    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
+           f'game_id = "{game_id}";')
     cursor = connection.cursor()
     cursor.execute(sql)
-    question_id = cursor.fetchone()[0]
+    question_id = cursor.fetchone()
+    question_id = question_id[0]
     sql = (f'select question, answer from wise_man_questions where id = "{question_id}";')
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
-    return result   #tässä pitää palautua kysymys ja vastaus?
+    return result[0]   #palauttaa monikkona kysymyksen ja vastauksen
+
+#pitääkö vastaus tallentaa tietokantaan a b c ??
+
+# tallenna tietäjän kysymys ja vastaus
+#location = get_current_location(game_id)
+#print(location)
+#question = get_wise_man_question(location, game_id)[0]
+#answer = get_wise_man_question(location, game_id)[1]
+
+#testi, näillä arvoilla toimii:
+location = "LHBP"
+question = get_wise_man_question(location, 86)[0]
+answer = get_wise_man_question(location, 86)[1]
+
+print(f'kysymys: {question}\nvastaus: {answer}')
+
