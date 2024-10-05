@@ -1,12 +1,11 @@
-from symbol import continue_stmt
-
 from geopy.units import kilometers
 from tabulate import tabulate
 from pregame import *
 from game_functions import *
 
-# tallenna pelin id ym. muuttujaan ja tallenna data tietokantaan (start_game)
-game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports, difficulty_level, treasure_land_country, treasure_chest_airport, = start_game()
+# tallenna muuttujat ja tallenna data tietokantaan
+(game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
+ difficulty_level, treasure_land_country, treasure_chest_airport) = start_game()
 
 #print(game_countries)
 #print(game_id)
@@ -86,8 +85,6 @@ def travel_inside_country():
             # airport_list.append(airport)
     print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
 
-#^tulostuvaan taulukkoon pitää lisätä sarake "Enough money for the ticket (x)" tms.
-
 #laske maiden välisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_between_countries(distance):
     if distance < 200:
@@ -116,8 +113,8 @@ def count_ticket_cost_inside_country(distance):
 clue = get_clue()
 print(treasure_land_country)
 print(treasure_chest_airport)
-########## HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE? (vihjeellä peli on helppo)
-########## annetaanko vihje vain helpossa tasossa?? Normaalissa vihje maksaa ja vaikeassa ei vihjettä??
+#### HALUTAANKO ETTÄ PELAAJA SAA VALITA TULEEKO VIHJE VAI EI? MAKSAAKO VIHJE? (vihjeellä peli on helppo)
+#### annetaanko vihje vain helpossa tasossa?? Normaalissa vihje maksaa ja vaikeassa ei vihjettä??
 
 # aloitustilanne
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
@@ -130,7 +127,7 @@ next_country = int(input('Input country number: ')) #MITÄ JOS KÄYTTÄJÄ SYÖT
 next_country -= 1
 
 while next_country not in range(len(country_list)): # taitaa loopata ikuisesti atm
-    next_country = int(input("Select one of the countries from the list: "))
+    next_country = int(input("Invalid input. Select one of the countries from the list: "))
     next_country -= 1
 
 # päivitä pelaajan rahamäärä (money - ticket_cost)
@@ -142,58 +139,40 @@ def current_ticket_cost_between_countries():
 # päivittää pelaajan rahan
 money -= country_list[next_country][3]
 
-print(f"The ticket from {get_country_name(get_current_location(game_id))} to {country_list[next_country][1]} costs {country_list[next_country][3]}€ and the distance there is {country_list[next_country][2]} kilometers. You have {money}€ left.\n...")
+country1 = get_country_name(get_current_location(game_id))
+country2 = country_list[next_country][1]
+ticket_price = country_list[next_country][3]
+distance1 = country_list[next_country][2]
+
+print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
 update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
 
-#looppaa kunnes pelaaja saapuu aarremaahan
+airport_name = get_default_airport_for_country(next_country)
+print(airport_name) ###tulostuu False, joku next_countryssa on väärin??
+
+country1 = get_country_name(get_current_location(game_id))
+country2 = country_list[next_country][1]
+ticket_price = country_list[next_country][3]
+distance1 = country_list[next_country][2]
+
+#looppaa kunnes pelaaja saapuu aarremaahan               #country2-kohdassa tulostuu joskus sama arvo kuin country1 ???
 while country_list[next_country][1] != treasure_land_country:
-    print(f"You have landed at {get_default_airport_for_country(next_country)}. The treasure is not in this country.")
-    print("Where would you like to travel to next?\n{clue}\nInput country country number. \n options:")
+    print(f'You have landed at {airport_name}. The treasure is not in this country.')
+    print(f'Where would you like to travel next?\n{clue}\nOptions: ')
     country_list.clear()
     travel_between_countries()
-    next_country = int(input("Input country number: "))
+    next_country = int(input('Input country number: '))
     next_country -= 1
     money -= country_list[next_country][3]
-    print(f"The ticket from {get_country_name(get_current_location(game_id))} to {country_list[next_country][1]} costs {country_list[next_country][3]}€ and the distance there is {country_list[next_country][2]} kilometers. You have {money}€ left.\n...")
+    print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
     update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
     while next_country not in range(len(country_list)): # taitaa loopata ikuisesti atm
         next_country = int(input("Select one of the countries from the list: "))
         next_country -= 1
 
-# muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
-print(f"You have landed at {get_default_airport_for_country(next_country)}. The treasure resides in this country!")
-print("You now must find the treasure chest hidden in one of the airports. Where would you like to travel next?\n options:")
-# wise man juttu
-airport_list.clear()
-travel_inside_country()
-next_airport = int(input("Input airport number: "))
-next_airport -= 1
+###tästä alkaa tietäjäjutut
 
-while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
-    next_airport = int(input("Select one of the airports from the list: "))
-    next_airport -= 1
-
-# looppaa kunnes pelaaja saapuu aarrelentokentälle
-while airport_list[next_airport][1] != treasure_chest_airport:
-    print(f"You have landed at {get_airport_name(get_current_location(game_id))}. The treasure is not in this airport.")
-    print("Where would you like to travel to next?\n options:")
-    airport_list.clear()
-    travel_inside_country()
-    next_airport = int(input("Input airport number: "))
-    next_airport -= 1
-    while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
-        next_airport = int(input("Select one of the airports from the list: "))
-        next_airport -= 1
-    money -= airport_list[next_airport][3]
-    print(f"The ticket from {get_airport_name(get_current_location(game_id))} to {airport_list[next_airport][1]} costs {airport_list[next_airport][3]}€ and the distance there is {airport_list[next_airport][2]} kilometers. You have {money}€ left.\n...")
-    update_current_location(game_id, get_airport_ident_from_name(country_list[next_country][1])) # tulee error kun pääsee aarrelentokentälle
-
-# tässä kohtaa pelaaja voittaa
-print(f"You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!") # voittoviesti tähän
-
-#tässä pitää tarkistaa, onko lentokentällä tietäjä (jos on, kutsu tietäjä-funktiota)
-
-"""
+location = get_current_location(game_id)
 # tarkista, onko lentokentällä tietäjä
 def check_if_wise_man(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
@@ -204,7 +183,7 @@ def check_if_wise_man(location, game_id):
     return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
 
 # hae tietäjän kysymys ja vastaus     ###toimii, jos locationissa on kysymys
-def get_wise_man_question(location, game_id):
+def get_wise_man_question_and_answer(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
            f'game_id = "{game_id}";')
     cursor = connection.cursor()
@@ -217,12 +196,6 @@ def get_wise_man_question(location, game_id):
     result = cursor.fetchall()
     return result[0]   #palauttaa monikkona kysymyksen ja vastauksen
 
-# tarkista, onko lentokentällä tietäjä
-#location = get_current_location(game_id)
-location = "EYVI" #kentällä EFHK ei tietäjää    #TESTIARVOT
-wise_man = check_if_wise_man(location, 1)  #TESTIARVOT
-#wise_man = check_if_wise_man(location, game_id)
-
 # hae tietäjän maksu ja palkinto
 def get_wise_man_cost_and_reward(difficulty_level):
     sql = f'select wise_man_cost, wise_man_reward from difficulty where level = "{difficulty_level}";'
@@ -233,38 +206,74 @@ def get_wise_man_cost_and_reward(difficulty_level):
 
 wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
+money = money
 
-#tietäjän kohtaaminen
-#def meet_wise_man(wise_man):   #jos tämän laittaa funktioon niin money ei ole määritelty, miksi??
-if wise_man != None:
-    question = get_wise_man_question(location, 1)[0]
-    answer = get_wise_man_question(location, 1)[1]
-    user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
-          f'Input y (yes) or n (no): ')
-    user_input = user_input.lower()
-    while user_input not in ('y', 'yes', 'n', 'no'):
-        user_input = input('Invalid input. Input y (yes) or n (no): ')
-    print(user_input)
-    if user_input in ('y', 'yes'):
-        money -= wise_man_cost
-        ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
-        print(f'You have {money} €.')
-        print(f'Question: {question}')
-        user_answer = input('Input answer (a, b or c): ')
-        user_answer = user_answer.lower()
-        while user_answer not in ('a', 'b', 'c'):
-            user_answer = input('Invalid input. Input answer (a, b or c): ')
+#tietäjän kohtaaminen           #money ei ole määritelty tms, miksi??
+def meet_wise_man_if_exists(wise_man):
+    if wise_man != None:
+        question = get_wise_man_question_and_answer(location, game_id)[0]
+        answer = get_wise_man_question_and_answer(location, game_id)[1]
+        user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
+              f'Input y (yes) or n (no): ')
+        user_input = user_input.lower()
+        while user_input not in ('y', 'yes', 'n', 'no'):
+            user_input = input('Invalid input. Input y (yes) or n (no): ')
+        if user_input in ('y', 'yes'):
+            #money -= wise_man_cost         ##tässä kohtaa on joku ongelma money-termin kanssa???!!!
+            ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
+            print(f'You have {money} €.')
+            print(f'Question: {question}')
+            user_answer = input('Input answer (a, b or c): ')
             user_answer = user_answer.lower()
-        if user_answer == answer:
-            money += wise_man_reward
-            print(f'Correct! You won {wise_man_reward} €.\nYou have {money} €.')
-        else:
-            print(f'Wrong! Correct answer is {answer}.')
-    elif user_input in ('n', 'no'):
-        print('No question this time. Bye!')
-else:
-    print('No wise man here.')
+            while user_answer not in ('a', 'b', 'c'):
+                user_answer = input('Invalid input. Input answer (a, b or c): ')
+                user_answer = user_answer.lower()
+            if user_answer == answer:
+                #money += wise_man_reward           #tässäkin sama rahaongelma
+                print(f'Correct! You won {wise_man_reward} €.\nYou have {money} €.')
+            else:
+                print(f'Wrong! Correct answer is {answer}.')
+        elif user_input in ('n', 'no'):
+            print('No question this time. Bye!')
+    else:
+        print('No wise man here.')
 
-#meet_wise_man(wise_man)
+###tietäjähommelit loppuu
 
-"""
+
+# muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
+print(f'You have landed at {get_default_airport_for_country(next_country)}. The treasure is in this country!')
+wise_man = check_if_wise_man(location, game_id)
+meet_wise_man_if_exists(wise_man)
+print('Now you must find the treasure chest hidden in one of the airports. Where would you like to travel next?\nOptions: ')
+airport_list.clear()
+travel_inside_country()
+next_airport = int(input('Input airport number: '))
+next_airport -= 1
+
+while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
+    next_airport = int(input('Select one of the airports from the list: '))
+    next_airport -= 1
+
+# looppaa kunnes pelaaja saapuu aarrelentokentälle
+while airport_list[next_airport][1] != treasure_chest_airport:
+    print(f'You have landed at {get_airport_name(get_current_location(game_id))}. The treasure is not in this airport.')
+    wise_man = check_if_wise_man(location, game_id)
+    meet_wise_man_if_exists(wise_man)
+    print('Where would you like to travel next?\nOptions: ')
+    airport_list.clear()
+    travel_inside_country()
+    next_airport = int(input('Input airport number: '))
+    next_airport -= 1
+    while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
+        next_airport = int(input('Select one of the airports from the list: '))
+        next_airport -= 1
+    money -= airport_list[next_airport][3]
+    print(f'The ticket from {get_airport_name(get_current_location(game_id))} to {airport_list[next_airport][1]} costs {airport_list[next_airport][3]} € and the distance there is {airport_list[next_airport][2]} km. You have {money} € left.\n...')
+    update_current_location(game_id, get_airport_ident_from_name(country_list[next_country][1])) # tulee error kun pääsee aarrelentokentälle
+
+# pelaaja voittaa
+print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!') # voittoviesti tähän
+
+# rahat loppuu tai ei riitä mihinkään lentolippuun
+print(f'Out of money! You can not afford a ticket. Game over!')
