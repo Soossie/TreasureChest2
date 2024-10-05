@@ -1,3 +1,5 @@
+from symbol import continue_stmt
+
 from geopy.units import kilometers
 from tabulate import tabulate
 from pregame import *
@@ -140,6 +142,15 @@ else:
         print(i)
 """
 
+# tarkista, onko lentokentällä tietäjä
+def check_if_wise_man(location, game_id):
+    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
+           f'game_id = "{game_id}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
+
 # hae tietäjän kysymys ja vastaus     ###toimii, jos locationissa on kysymys
 def get_wise_man_question(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
@@ -154,18 +165,42 @@ def get_wise_man_question(location, game_id):
     result = cursor.fetchall()
     return result[0]   #palauttaa monikkona kysymyksen ja vastauksen
 
-#pitääkö vastaus tallentaa tietokantaan a b c ??
+#pitää vastaus tallentaa tietokantaan a b c
 
-# tallenna tietäjän kysymys ja vastaus
+# tarkista, onko lentokentällä tietäjä
 #location = get_current_location(game_id)
-#print(location)
-#question = get_wise_man_question(location, game_id)[0]
-#answer = get_wise_man_question(location, game_id)[1]
+location = "LHBP" #kentällä LWSK ei tietäjää    #TESTIARVOT
+wise_man = check_if_wise_man(location, 86)  #TESTIARVOT
+#wise_man = check_if_wise_man(location, game_id)
 
-#testi, näillä arvoilla toimii:
-location = "LHBP"
-question = get_wise_man_question(location, 86)[0]
-answer = get_wise_man_question(location, 86)[1]
+# hae tietäjän maksu ja palkinto (tähän funktio/sql-kysely)
+wise_man_cost = 200
+wise_man_reward = 400
 
-print(f'kysymys: {question}\nvastaus: {answer}')
+#tietäjän kohtaaminen
+if wise_man != None:
+    question = get_wise_man_question(location, 86)[0]
+    answer = get_wise_man_question(location, 86)[1]
+    user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
+          f'Input Y (yes) or N (no): ')
+    user_input = user_input.lower()
+    print(user_input)
+    if user_input in ('y', 'yes'):
+        money -= wise_man_cost
+        print(f'You have {money} €.')
+        print(f'Question: {question}')
+        user_answer = input('Input answer (A, B or C): ')
+        user_answer = user_answer.lower()
+        while user_answer not in ('a', 'b', 'c'):
+            user_answer = input('Invalid input. Input answer (A, B or C): ')
+            user_answer = user_answer.lower()
+        if user_answer == answer:
+            money += wise_man_reward
+            print(f'Correct! You won {wise_man_reward} €.\nYou have {money} €.')
+        else:
+            print(f'Wrong! Correct answer is {answer}.')
+    elif user_input in ('n', 'no'):
+        print('Bye!')
+else:
+    print('No wise man here.')
 
