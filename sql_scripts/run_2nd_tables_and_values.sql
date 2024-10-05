@@ -66,7 +66,7 @@ has_treasure int,
 is_default_airport int,
 primary key (id),
 foreign key (game_id) REFERENCES game(id),
-foreign key (airport_ident) REFERENCES airport(ident),
+--foreign key (airport_ident) REFERENCES airport(ident),
 foreign key (wise_man_question_id) REFERENCES wise_man_questions(id)
 );
 
