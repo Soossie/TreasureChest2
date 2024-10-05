@@ -167,8 +167,8 @@ def get_wise_man_question(location, game_id):
 
 # tarkista, onko lentokentällä tietäjä
 #location = get_current_location(game_id)
-location = "LHBP" #kentällä LWSK ei tietäjää    #TESTIARVOT
-wise_man = check_if_wise_man(location, 86)  #TESTIARVOT
+location = "EIDW" #kentällä LFSB ei tietäjää    #TESTIARVOT
+wise_man = check_if_wise_man(location, 1)  #TESTIARVOT
 #wise_man = check_if_wise_man(location, game_id)
 
 # hae tietäjän maksu ja palkinto (tähän funktio/sql-kysely)
@@ -177,8 +177,8 @@ wise_man_reward = 400
 
 #tietäjän kohtaaminen
 if wise_man != None:
-    question = get_wise_man_question(location, 86)[0]
-    answer = get_wise_man_question(location, 86)[1]
+    question = get_wise_man_question(location, 1)[0]
+    answer = get_wise_man_question(location, 1)[1]
     user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
           f'Input Y (yes) or N (no): ')
     user_input = user_input.lower()
