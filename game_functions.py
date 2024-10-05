@@ -23,7 +23,7 @@ def get_game_countries(difficulty_level):
     result = cursor.fetchone()
     # print(result)
     countries_for_difficulty_level = result[0]
-    min_countries_in_treasure_land = int(int(result[1]) / 2)
+    min_airports_in_treasure_land = int(int(result[1]) / 2)
     # print(f'{countries_for_difficulty_level}, {min_countries_in_treasure_land}')
 
     #sql = (f'SELECT name FROM country where continent = "EU" '
@@ -32,7 +32,7 @@ def get_game_countries(difficulty_level):
     sql = (f'select country.name, count(*) from country '
            f'left join airport on airport.iso_country = country.iso_country '
            f'where country.continent = "EU" group by country.iso_country '
-           f'having count(*) >= {min_countries_in_treasure_land} '
+           f'having count(*) >= {min_airports_in_treasure_land} '
            f'order by rand() '
            f'limit {countries_for_difficulty_level};')
 
@@ -139,9 +139,23 @@ def input_player_info(screen_name, money, home_airport, location, difficulty_lev
 
 # hakee lentokentän ICAO-koodin
 def get_airport_ident_from_name(airport_name):
-    sql = f'select ident from airport where name = "{airport_name}";'
-    cursor = connection.cursor(buffered=True)
-    cursor.execute(sql)
+    #print(airport_name)
+
+    try:
+        # toimii jos nimessä on "
+        sql = f"select ident from airport where name = '{airport_name}';"
+        cursor = connection.cursor(buffered=True)
+        cursor.execute(sql)
+    except (Exception,):
+        # toimii jos nimessä on '
+        sql = f'select ident from airport where name = "{airport_name}";'
+        cursor = connection.cursor(buffered=True)
+        cursor.execute(sql)
+
+    # kyselyn lainausmerkit pitää olla näin, koska joidenkin lentokenttien nimi sisältää lainausmerkkejä
+    #sql = f"select ident from airport where name = '{airport_name}';"
+    #cursor = connection.cursor(buffered=True)
+    #cursor.execute(sql)
     ident = cursor.fetchone()[0]
     return ident
 
