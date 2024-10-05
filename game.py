@@ -183,7 +183,7 @@ wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
 
 #tietäjän kohtaaminen
-#def meet_wise_man(wise_man):
+#def meet_wise_man(wise_man):   #jos tämän laittaa funktioon niin money ei ole määritelty, miksi??
 if wise_man != None:
     question = get_wise_man_question(location, 1)[0]
     answer = get_wise_man_question(location, 1)[1]
@@ -195,6 +195,7 @@ if wise_man != None:
     print(user_input)
     if user_input in ('y', 'yes'):
         money -= wise_man_cost
+        ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
         print(f'You have {money} €.')
         print(f'Question: {question}')
         user_answer = input('Input answer (a, b or c): ')
