@@ -43,6 +43,7 @@ def get_country_name(airport_icao):
     return result[0]
 
 # matkusta maiden välillä
+country_list = []
 def travel_between_countries():
     i = 0
     for country in game_countries:
@@ -63,9 +64,8 @@ def travel_between_countries():
             # country_list.append(country)
     print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
 
-airport_list = []
-
 # matkusta maan sisällä
+airport_list = []
 def travel_inside_country():
     i = 0
     for airport in treasure_land_airports:
@@ -117,7 +117,6 @@ print(treasure_chest_airport)
 # aloitustilanne
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
       f'Where would you like to travel?\n{clue}\nOptions: ')
-country_list = []
 
 # pelaaja valitsee ensimmäisen maan. Jos syöte on väärä (ei listalla), pelaaja valitsee uudelleen
 travel_between_countries()
@@ -165,10 +164,10 @@ while country_list[next_country][1] != treasure_land_country:
     next_country -= 1
     money -= country_list[next_country][3]
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
-    update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
     while next_country not in range(len(country_list)): # taitaa loopata ikuisesti atm
         next_country = int(input("Select one of the countries from the list: "))
         next_country -= 1
+    update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
 
 ###tästä alkaa tietäjäjutut
 
