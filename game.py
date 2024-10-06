@@ -134,6 +134,7 @@ while not next_country_number:
     else:
         print('Invalid input.')
 
+
 # päivitä pelaajan rahamäärä (money - ticket_cost)
 def current_ticket_cost_between_countries():
     next_default_airport = get_default_airport_for_country(next_country)
@@ -141,15 +142,15 @@ def current_ticket_cost_between_countries():
     return current_ticket_cost
 
 # päivittää pelaajan rahan
-money -= country_list[next_country][3]
+money -= country_list[next_country_number][3]
 
 country1 = get_country_name(get_current_location(game_id))
-country2 = country_list[next_country][1]
-ticket_price = country_list[next_country][3]
-distance1 = country_list[next_country][2]
+country2 = country_list[next_country_number][1]
+ticket_price = country_list[next_country_number][3]
+distance1 = country_list[next_country_number][2]
 
 print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
-update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
+update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
 location = get_current_location(game_id)
 print(f'sijainti: {location}')
 
@@ -159,12 +160,12 @@ airport_name = get_default_airport_for_country(country2)
 print(f'Lentokentän nimi: {airport_name}') ###tulostuu False, joku next_countryssa on väärin??
 
 country1 = get_country_name(get_current_location(game_id))
-country2 = country_list[next_country][1]
-ticket_price = country_list[next_country][3]
-distance1 = country_list[next_country][2]
+country2 = country_list[next_country_number][1]
+ticket_price = country_list[next_country_number][3]
+distance1 = country_list[next_country_number][2]
 
 #looppaa kunnes pelaaja saapuu aarremaahan               #country2-kohdassa tulostuu joskus sama arvo kuin country1 ???
-while country_list[next_country][1] != treasure_land_country:
+while country_list[next_country_number][1] != treasure_land_country:
     print(f'You have landed at {airport_name}. The treasure is not in this country.')
     print(f'Where would you like to travel next?\n{clue}\nOptions: ')
     country_list.clear()
@@ -258,7 +259,7 @@ def meet_wise_man_if_exists(wise_man):
 
 # muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
 #update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
-print(f'You have landed at {get_default_airport_for_country(next_country)}. The treasure is in this country!')
+print(f'You have landed at {get_default_airport_for_country(next_country_number)}. The treasure is in this country!')
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man)
 print('Now you must find the treasure chest hidden in one of the airports. Where would you like to travel next?\nOptions: ')
@@ -271,7 +272,7 @@ next_airport -= 1
 while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
     next_airport = int(input('Select one of the airports from the list: '))
     next_airport -= 1
-update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
+update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
 
 # looppaa kunnes pelaaja saapuu aarrelentokentälle          #sijainti ei päivity?
 while airport_list[next_airport][1] != treasure_chest_airport:
