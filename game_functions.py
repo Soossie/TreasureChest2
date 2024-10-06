@@ -31,7 +31,8 @@ def get_game_countries(difficulty_level):
 
     sql = (f'select country.name, count(*) from country '
            f'left join airport on airport.iso_country = country.iso_country '
-           f'where country.continent = "EU" group by country.iso_country '
+           f'where country.continent = "EU" and airport.type != "closed" '
+           f'group by country.iso_country '
            f'having count(*) >= {min_airports_in_treasure_land} '
            f'order by rand() '
            f'limit {countries_for_difficulty_level};')
