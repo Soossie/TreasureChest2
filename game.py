@@ -144,6 +144,9 @@ distance1 = country_list[next_country][2]
 
 print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
 update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
+#onko sijainti ok?
+location = get_current_location(game_id)
+print(f'sijainti: {location}')
 
 airport_name = get_default_airport_for_country(next_country)
 print(airport_name) ###tulostuu False, joku next_countryssa on väärin??
@@ -173,12 +176,18 @@ while country_list[next_country][1] != treasure_land_country:
 location = get_current_location(game_id)        #toimiiko tämä kun matkustaa maan sisällä??
 # tarkista, onko lentokentällä tietäjä
 def check_if_wise_man(location, game_id):
+    location = get_current_location(game_id)
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
            f'game_id = "{game_id}";')
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
+    print(location)
+    print(result)
+    if result != None:
+        return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
+    else:
+        return None
 
 # hae tietäjän kysymys ja vastaus     ###toimii, jos locationissa on kysymys, muuten error?
 def get_wise_man_question_and_answer(location, game_id):
@@ -204,10 +213,11 @@ def get_wise_man_cost_and_reward(difficulty_level):
 
 wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
-money = money
 
 #tietäjän kohtaaminen           #money ei ole määritelty tms, miksi??
 def meet_wise_man_if_exists(wise_man):
+    print(wise_man)
+    location = get_current_location(game_id)
     if wise_man != None:
         question = get_wise_man_question_and_answer(location, game_id)[0]
         answer = get_wise_man_question_and_answer(location, game_id)[1]
@@ -236,10 +246,11 @@ def meet_wise_man_if_exists(wise_man):
     else:
         print('No wise man here.')
 
-###tietäjähommelit loppuu
+###tietäjäjutut loppuu
 
 
 # muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
+#update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
 print(f'You have landed at {get_default_airport_for_country(next_country)}. The treasure is in this country!')
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man)
@@ -252,9 +263,11 @@ next_airport -= 1
 while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
     next_airport = int(input('Select one of the airports from the list: '))
     next_airport -= 1
+update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
 
-# looppaa kunnes pelaaja saapuu aarrelentokentälle
+# looppaa kunnes pelaaja saapuu aarrelentokentälle          #sijainti ei päivity?
 while airport_list[next_airport][1] != treasure_chest_airport:
+    #update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country][1])))
     print(f'You have landed at {get_airport_name(get_current_location(game_id))}. The treasure is not in this airport.')
     wise_man = check_if_wise_man(location, game_id)
     meet_wise_man_if_exists(wise_man)
