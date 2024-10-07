@@ -51,13 +51,13 @@ travel_between_countries()
 
 #looppaa kunnes pelaaja saapuu aarremaahan
 while country_list[next_country_number][1] != treasure_land_country:
-    airport_name = get_default_airport_for_country(country_list[next_country_number][1])
+    airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
     print(f'You have landed at {airport_name}. The treasure is not in this country.')
     print(f'Where would you like to travel next?\n{clue}\nOptions: ')
     travel_between_countries()
 
 # muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
-print(f'You have landed at {get_default_airport_for_country(next_country_number)}. The treasure is in this country!')
+print(f'You have landed at {get_country_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))}. The treasure is in this country!')
 location = get_current_location(game_id)
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man)

@@ -313,7 +313,7 @@ def travel_between_countries(game_id, game_countries, money):
     for country in game_countries:
         location = get_current_location(game_id)
         airport_icao1 = location
-        default_airport = get_default_airport_for_country(country)
+        default_airport = get_default_airport_ident_for_country(game_id, country)
         airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_between_countries(distance))
@@ -345,7 +345,7 @@ def travel_between_countries(game_id, game_countries, money):
     ticket_price = country_list[next_country_number][3]
     distance1 = country_list[next_country_number][2]
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
-    update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
+    update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
     return next_country_number
 
 # matkusta maan sisällä
