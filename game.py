@@ -6,6 +6,7 @@ import time
 ###
 # to do:
 # korjaa kysymyksissä portugalin pääkaupunki
+# tietäjä antaa kysymyksen vaikka pelaajalla ei ole riittävästi rahaa (pelaajan raha menee miinukselle)
 ###
 
 # tallenna muuttujat ja tallenna data tietokantaan
@@ -27,10 +28,10 @@ home_country = get_country_name(home_airport_icao)
 # hae aloitusraha
 money = get_player_money(game_id)
 
-# hae wise man hinta
+# hae tietäjän hinta
 wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 
-# hae wise man palkinto
+# hae tietäjän palkinto
 wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
 
 # hae vihje
