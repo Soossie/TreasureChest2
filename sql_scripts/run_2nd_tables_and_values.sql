@@ -1,22 +1,22 @@
---Treasure_chest-tietokannan luominen
+-- Treasure_chest-tietokannan luominen
 
---poista taulut, jos olemassa (tässä järjestyksessä)
+-- poista taulut, jos olemassa (tässä järjestyksessä)
 DROP TABLE IF EXISTS rewards;
 DROP TABLE IF EXISTS game_airports;
 DROP TABLE IF EXISTS wise_man_questions;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS difficulty;
 
---poista country-taulusta sarake capital, jos olemassa:
+-- poista country-taulusta sarake capital, jos olemassa
 ALTER TABLE IF EXISTS country DROP COLUMN IF EXISTS capital;
 
---lisätään viiteavain airport-taulusta country-tauluun:
+-- lisätään viiteavain airport-taulusta country-tauluun
 alter table airport add foreign key(iso_country) references country(iso_country);
 
---lisätään country-tauluun capital-sarake:
+-- lisätään country-tauluun capital-sarake
 alter table country add capital varchar(40);
 
---luodaan tietokannan taulut:
+-- luodaan tietokannan taulut
 
 CREATE table wise_man_questions(
 id int not null auto_increment,
@@ -69,19 +69,19 @@ foreign key (game_id) REFERENCES game(id),
 foreign key (wise_man_question_id) REFERENCES wise_man_questions(id)
 );
 
---lisätään dataa difficulty-tauluun:
+-- lisätään dataa difficulty-tauluun
 insert into difficulty(level, country_count, airports_in_treasure_land, wise_man_count, starting_money, wise_man_cost, wise_man_reward)
 values ('easy', 10, 10, 4, 1500, 100, 200),
 ('normal', 20, 20, 8, 3000, 200, 500),
 ('hard', 30, 40, 16, 5000, 400, 1000);
 
---lisätään dataa rewards-tauluun:
+-- lisätään dataa rewards-tauluun
 insert into rewards(name, difficulty_level)
 values ('gold ring', 'easy'), ('magic carpet', 'easy'), ('silver tiara', 'easy'),
 ('gold bar', 'normal'), ('magic wand', 'normal'), ('diamond crown', 'normal'),
 ('world peace', 'hard'), ('time machine', 'hard'), ('diamond collection', 'hard');
 
---lisätään dataa (kysymykset, vastaukset) wise_man_questions-tauluun:
+-- lisätään dataa (kysymykset, vastaukset) wise_man_questions-tauluun
 insert into wise_man_questions(question, answer)
 values('What is the capital of France? a) London b) Paris c) San Marino', 'b'),
 ('What is the capital of Portugal? a) Skopje b) Valletta c) Lisbon', 'c'),
@@ -110,7 +110,7 @@ values('What is the capital of France? a) London b) Paris c) San Marino', 'b'),
 ('What is the correct answer to [1 + 2 + 3]? a) 6 b) 5 c) 7', 'a'),
 ('What is the correct answer to [2 * 2 * 2 * 2]? a) 8 b) 16 c) 32', 'b');
 
---lisää pääkaupungit country-tauluun:
+-- lisää pääkaupungit country-tauluun
 update country
 set capital = case
 	when name='Andorra' then 'Andorra la Vella'
