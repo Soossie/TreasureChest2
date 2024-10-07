@@ -313,7 +313,7 @@ def travel_between_countries(game_id, game_countries, money):
     for country in game_countries:
         location = get_current_location(game_id)
         airport_icao1 = location
-        default_airport = get_default_airport_ident_for_country(game_id, country)
+        default_airport = get_airport_name(get_default_airport_ident_for_country(game_id, country))
         airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_between_countries(distance))
@@ -346,10 +346,10 @@ def travel_between_countries(game_id, game_countries, money):
     distance1 = country_list[next_country_number][2]
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
     update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
-    return next_country_number
+    return next_country_number, country_list
 
 # matkusta maan sisällä
-def travel_inside_country(game_id, treasure_land_airports, money):
+def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward):
     i = 0
     airport_list = []
     for airport in treasure_land_airports:
@@ -388,7 +388,8 @@ def travel_inside_country(game_id, treasure_land_airports, money):
     print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
     update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport][1]))
     wise_man = check_if_wise_man(location, game_id)
-    meet_wise_man_if_exists(wise_man)
+    meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
+    return airport_list
 
 #laske maiden välisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_between_countries(distance):
