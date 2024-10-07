@@ -4,6 +4,7 @@ import geopy.distance
 import mysql.connector
 from tabulate import tabulate
 import sys
+import time
 
 connection = mysql.connector.connect(
     host='localhost',
@@ -349,8 +350,20 @@ def travel_between_countries(game_id, game_countries, money):
     country2 = country_list[next_country_number][1]
     ticket_price = country_list[next_country_number][3]
     distance1 = country_list[next_country_number][2]
-    print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
+    next_airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
+    time.sleep(1)
+    print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n')
+    time.sleep(1)
     update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
+    for i in range(len(next_airport_name) + 14):
+        print(".", end="")
+    print(f"\nTravelling to {next_airport_name}")
+    total_dots = len(next_airport_name) + 14
+    sleep_time = 3 / total_dots
+    for i in range(total_dots):
+        print(".", end="")
+        time.sleep(sleep_time)
+    print("")
     return next_country_number, country_list, money
 
 # matkusta maan sisällä
@@ -393,8 +406,19 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
     airport2 = airport_list[next_airport_number][1]
     ticket_price = airport_list[next_airport_number][3]
     distance1 = airport_list[next_airport_number][2]
-    print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km.\n...')
+    time.sleep(1)
+    print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km.\n')
+    time.sleep(1)
     update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport_number][1]))
+    for i in range(len(airport2) + 14):
+        print(".", end="")
+    print(f"\nTravelling to {airport2}")
+    total_dots = len(airport2) + 14
+    sleep_time = 3 / total_dots
+    for i in range(total_dots):
+        print(".", end="")
+        time.sleep(sleep_time)
+    print("")
     wise_man = check_if_wise_man(location, game_id)
     meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
     return next_airport_number, airport_list, money
@@ -486,15 +510,19 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
     if wise_man != None:
         question = get_wise_man_question_and_answer(location, game_id)[0]
         answer = get_wise_man_question_and_answer(location, game_id)[1]
+        time.sleep(1)
         user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
               f'Input y (yes) or n (no): ')
+        time.sleep(1)
         user_input = user_input.lower()
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
             money -= wise_man_cost
             ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
+            time.sleep(1)
             print(f'You have {money} €.')
+            time.sleep(1)
             print(f'Question: {question}')
             user_answer = input('Input answer (a, b or c): ')
             user_answer = user_answer.lower()
@@ -508,8 +536,10 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
                 print(f'Wrong! Correct answer is {answer}.')
         elif user_input in ('n', 'no'):
             print('No question this time. Bye!')
+            time.sleep(1)
     else:
         print('No wise man here.')
+        time.sleep(1)
     return money
 
 # rahat loppuu tai ei riitä mihinkään lentolippuun
@@ -518,7 +548,10 @@ def game_over(game_id):
     # tähän että game_id pelaaja hävisi tietokantaan?
     sys.exit()
 
-def game_won(game_id):
+def game_won(game_id, difficulty_level):
+    time.sleep(1)
+    print(f"You open the treasure chest and find...\n a {get_random_reward(difficulty_level)}!")
+    time.sleep(1)
     print(f'Congratulations! You won the game!')
     # tähän että game_id pelaaja voitti tietokantaan?
     sys.exit()
