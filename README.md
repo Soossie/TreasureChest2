@@ -12,13 +12,11 @@ To play, you must have MariaDB and mysql installed.
     CREATE DATABASE treasure_chest;
     CREATE USER 'treasure'@'localhost' IDENTIFIED BY 'chest';
     GRANT SELECT, INSERT, UPDATE, DELETE ON treasure_chest.* TO 'treasure'@'localhost';
-    ```
-3. Download the following: [1](sql_scripts/run_1st_project_base.sql) and [2](sql_scripts/run_2nd_tables_and_values.sql)
-    
-4. Execute the following SQL command in a code editor terminal:
+    ```  
+3. Execute the following SQL command in a code editor terminal:
     ```sql
     USE treasure_chest
-    SOURCE creation script.sql
+    SOURCE creation_script.sql
     ;
     ```
     The game can be run in a code editor, such as PyCharm or VS Code
