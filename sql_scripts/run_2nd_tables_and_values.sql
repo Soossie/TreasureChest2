@@ -71,9 +71,9 @@ foreign key (wise_man_question_id) REFERENCES wise_man_questions(id)
 
 -- lisätään dataa difficulty-tauluun
 insert into difficulty(level, country_count, airports_in_treasure_land, wise_man_count, starting_money, wise_man_cost, wise_man_reward)
-values ('easy', 10, 10, 4, 2500, 100, 200),
-('normal', 20, 20, 8, 3000, 200, 500),
-('hard', 30, 40, 16, 5000, 400, 1000);
+values ('easy', 10, 10, 4, 3000, 100, 500),
+('normal', 20, 20, 8, 3000, 100, 600),
+('hard', 30, 40, 16, 5000, 200, 1000);
 
 -- lisätään dataa rewards-tauluun
 insert into rewards(name, difficulty_level)
