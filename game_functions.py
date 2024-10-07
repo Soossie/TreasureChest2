@@ -494,7 +494,7 @@ def get_wise_man_question_and_answer(location, game_id):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
-    return result[0]   #palauttaa monikkona kysymyksen ja vastauksen
+    return result[0]   # palauttaa monikkona kysymyksen ja vastauksen
 
 # hae tietäjän maksu ja palkinto
 def get_wise_man_cost_and_reward(difficulty_level):
@@ -505,7 +505,7 @@ def get_wise_man_cost_and_reward(difficulty_level):
     return result
 
 def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
-    print(wise_man)     #kysymyksen id tulostuu
+    print(wise_man)     # kysymyksen id tulostuu
     location = get_current_location(game_id)
     if wise_man != None:
         question = get_wise_man_question_and_answer(location, game_id)[0]
