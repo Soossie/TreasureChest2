@@ -2,6 +2,11 @@ from geopy.units import kilometers
 from pregame import *
 from game_functions import *
 
+# to do:
+# korjaa kysymyksissä portugalin pääkaupunki
+# ikuinen luuppi aarremaassa
+
+
 # tallenna muuttujat ja tallenna data tietokantaan
 (game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
  difficulty_level, treasure_land_country, treasure_chest_airport) = start_game()
@@ -34,12 +39,6 @@ if want_clue == 'y' or 'yes':
 else:
     clue = ''
 
-# pari oletusarvoa muuttujille
-next_country_number = 45
-country_list = []
-next_airport_number = 45
-airport_list = []
-
 # aloitustilanne
 # hae vihje
 
@@ -47,7 +46,8 @@ print(treasure_land_country) # debug
 print(treasure_chest_airport) # debug
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
       f'Where would you like to travel?\n{clue}\nOptions: ')
-next_country_number, country_list = travel_between_countries(game_id, game_countries, money)
+next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
+
 
 #looppaa kunnes pelaaja saapuu aarremaahan
 while country_list[next_country_number][1] != treasure_land_country:

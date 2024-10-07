@@ -244,6 +244,7 @@ def get_home_airport_icao(game_id):
 
 # hae lentokentän nimi
 def get_airport_name(airport_icao):
+    print(f'test icao {airport_icao}')
     sql = f'select airport.name from airport where ident = "{airport_icao}";'
     cursor = connection.cursor()
     cursor.execute(sql)
