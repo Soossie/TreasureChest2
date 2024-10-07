@@ -20,7 +20,7 @@ alter table country add capital varchar(40);
 
 CREATE table wise_man_questions(
 id int not null auto_increment,
-question varchar(100),
+question varchar(150),
 answer varchar(40),
 primary key (id)
 );
