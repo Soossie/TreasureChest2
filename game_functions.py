@@ -346,7 +346,7 @@ def travel_between_countries(game_id, game_countries, money):
     distance1 = country_list[next_country_number][2]
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
     update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
-    return next_country_number, country_list
+    return next_country_number, country_list, money
 
 # matkusta maan sisällä
 def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward):
@@ -374,7 +374,7 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
         if next_airport_input.isnumeric():
             next_airport_input = int(next_airport_input)
             if 1 <= next_airport_input <= len(airport_list):
-                next_airport = next_airport_input
+                next_airport_number = next_airport_input
             else:
                 print('Invalid input. Select number from the list.')
         else:
@@ -389,7 +389,7 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
     update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport][1]))
     wise_man = check_if_wise_man(location, game_id)
     meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
-    return airport_list
+    return airport_list, next_airport_number, money
 
 #laske maiden välisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_between_countries(distance):
@@ -502,6 +502,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
             print('No question this time. Bye!')
     else:
         print('No wise man here.')
+    return money
 
 # rahat loppuu tai ei riitä mihinkään lentolippuun
 def game_over():
