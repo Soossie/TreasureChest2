@@ -15,10 +15,10 @@ To play, you must have MariaDB and mysql installed.
     ```
 3. Download the following: [1](sql_scripts/run_1st_project_base.sql) and [2](sql_scripts/run_2nd_tables_and_values.sql)
     
-4. Execute the following SQL commands:
+4. Execute the following SQL command in a code editor terminal:
     ```sql
     USE treasure_chest
-    SOURCE "path/to/1"
-    SOURCE "path/to/2"
+    SOURCE creation script.sql
     ;
     ```
+    The game can be run in a code editor, such as PyCharm or VS Code
