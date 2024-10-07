@@ -4,6 +4,7 @@ from game_functions import *
 ###
 # to do:
 # korjaa kysymyksissä portugalin pääkaupunki
+# tietäjä antaa kysymyksen vaikka pelaajalla ei ole riittävästi rahaa (pelaajan raha menee miinukselle)
 ###
 
 # tallenna muuttujat ja tallenna data tietokantaan
