@@ -1,11 +1,10 @@
 from geopy.units import kilometers
 from pregame import *
 from game_functions import *
-
+###
 # to do:
 # korjaa kysymyksissä portugalin pääkaupunki
-# ikuinen luuppi aarremaassa
-
+###
 
 # tallenna muuttujat ja tallenna data tietokantaan
 (game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
@@ -26,6 +25,8 @@ home_country = get_country_name(home_airport_icao)
 # hae aloitusraha
 money = get_player_money(game_id)
 
+money = 500
+
 # hae wise man hinta
 wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 
@@ -40,8 +41,6 @@ else:
     clue = ''
 
 # aloitustilanne
-# hae vihje
-
 print(treasure_land_country) # debug
 print(treasure_chest_airport) # debug
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
@@ -51,6 +50,8 @@ next_country_number, country_list, money = travel_between_countries(game_id, gam
 
 #looppaa kunnes pelaaja saapuu aarremaahan
 while country_list[next_country_number][1] != treasure_land_country:
+    if money <= 0:
+        game_over(game_id)
     airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
     print(f'You have landed at {airport_name}. The treasure is not in this country.')
     print(f'Where would you like to travel next?\n{clue}\nOptions: ')
@@ -67,6 +68,8 @@ next_airport_number, airport_list, money = travel_inside_country(game_id, treasu
 
 # looppaa kunnes pelaaja saapuu aarrelentokentälle
 while airport_list[next_airport_number][1] != treasure_chest_airport:
+    if money <= 0:
+        game_over(game_id)
     print(f'You have landed at {airport_list[next_airport_number][1]}. The treasure chest is not here.')
     print('Where would you like to travel next?\nOptions: ')
     next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)

@@ -3,6 +3,7 @@ import random
 import geopy.distance
 import mysql.connector
 from tabulate import tabulate
+import sys
 
 connection = mysql.connector.connect(
     host='localhost',
@@ -328,15 +329,17 @@ def travel_between_countries(game_id, game_countries, money):
             # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
             # country_list.append(country)
     print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
+    if can_travel == False:
+        game_over(game_id)
     next_country_number = False
     while not next_country_number:
         next_country_number_input = input('Input country number: ')
         if next_country_number_input.isnumeric():
             next_country_number_input = int(next_country_number_input)
-            if 1 <= next_country_number_input <= len(country_list):
+            if 1 <= next_country_number_input <= len(country_list) and country_list[next_country_number_input - 1][4] == True:
                 next_country_number = next_country_number_input
             else:
-                print('Invalid input. Select number from the list.')
+                print('Invalid input. Select a country number from the list that you can afford.')
         else:
             print('Invalid input.')
     next_country_number -= 1
@@ -369,28 +372,28 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
             # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
             # airport_list.append(airport)
     print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
-    next_airport = False
-    while not next_airport:
-        next_airport_input = input('Input airport number: ')
-        if next_airport_input.isnumeric():
-            next_airport_input = int(next_airport_input)
-            if 1 <= next_airport_input <= len(airport_list):
-                next_airport_number = next_airport_input
+    next_airport_number = False
+    while not next_airport_number:
+        next_airport_number_input = input('Input airport number: ')
+        if next_airport_number_input.isnumeric():
+            next_airport_number_input = int(next_airport_number_input)
+            if 1 <= next_airport_number_input <= len(airport_list) and airport_list[next_airport_number_input - 1][4] == True:
+                next_airport_number = next_airport_number_input
             else:
                 print('Invalid input. Select number from the list.')
         else:
             print('Invalid input.')
-    next_airport -= 1
-    money -= airport_list[next_airport][3]
+    next_airport_number -= 1
+    money -= airport_list[next_airport_number][3]
     airport1 = get_airport_name(get_current_location(game_id))
-    airport2 = airport_list[next_airport][1]
-    ticket_price = airport_list[next_airport][3]
-    distance1 = airport_list[next_airport][2]
+    airport2 = airport_list[next_airport_number][1]
+    ticket_price = airport_list[next_airport_number][3]
+    distance1 = airport_list[next_airport_number][2]
     print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
-    update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport][1]))
+    update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport_number][1]))
     wise_man = check_if_wise_man(location, game_id)
     meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
-    return airport_list, next_airport_number, money
+    return next_airport_number, airport_list, money
 
 #laske maiden välisen lennon hinta etäisyyden perusteella
 def count_ticket_cost_between_countries(distance):
@@ -506,5 +509,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
     return money
 
 # rahat loppuu tai ei riitä mihinkään lentolippuun
-def game_over():
+def game_over(game_id):
     print(f'Out of money! You can not afford a ticket. Game over!')
+    # tähän että game_id pelaaja hävisi tietokantaan?
+    sys.exit()
