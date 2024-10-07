@@ -60,7 +60,7 @@ def start_game():
     countries_and_default_airports = {}
 
     for country_name in game_countries:
-        default_airport = get_default_airport_for_country(country_name)
+        default_airport = get_random_default_airport_for_country(country_name)
         countries_and_default_airports.update({country_name: default_airport})
         # print(f'{default_airport} from {country_name} ({get_biggest_airport_size_for_country(country_name)})')
     # print(f'{countries_and_default_airports.items()}')
