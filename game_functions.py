@@ -2,7 +2,7 @@ import random
 #from geopy import distance
 import geopy.distance
 import mysql.connector
-
+from tabulate import tabulate
 
 connection = mysql.connector.connect(
     host='localhost',
@@ -70,7 +70,7 @@ def get_biggest_airport_size_for_country(country_name):
     return size
 
 
-def get_default_airport_for_country(country_name):
+def get_random_default_airport_for_country(country_name):
     # hae maan suurimman lentokentän koko
     biggest_airport_size = get_biggest_airport_size_for_country(country_name)
 
@@ -88,6 +88,28 @@ def get_default_airport_for_country(country_name):
     result = cursor.fetchone()
 
     # palauttaa tuloksen ensimmäisen arvon jos tulos on olemassa
+    return result[0] if result else False
+
+
+def get_default_airport_ident_for_country(game_id, country_name):
+    # vaihtoehtoiset tavat sql kyselylle riippuen minkälainen lainausmerkki nimessä on
+    if '"' in country_name:
+        sql = (f"SELECT game_airports.airport_ident, country.name FROM game_airports "
+               f"INNER JOIN game ON game_airports.game_id = game.id "
+               f"INNER JOIN airport ON game_airports.airport_ident = airport.ident "
+               f"INNER JOIN country ON airport.iso_country = country.iso_country "
+               f"WHERE game.id = {game_id} AND game_airports.is_default_airport = 1 AND country.name = '{country_name}';")
+    else:
+        sql = (f'SELECT game_airports.airport_ident, country.name FROM game_airports '
+               f'INNER JOIN game ON game_airports.game_id = game.id '
+               f'INNER JOIN airport ON game_airports.airport_ident = airport.ident '
+               f'INNER JOIN country ON airport.iso_country = country.iso_country '
+               f'WHERE game.id = {game_id} AND game_airports.is_default_airport = 1 AND country.name = "{country_name}";')
+
+    cursor = connection.cursor(buffered=True)
+    cursor.execute(sql)
+    result = cursor.fetchone()
+
     return result[0] if result else False
 
 
@@ -283,3 +305,203 @@ def update_current_location(game_id, new_location_icao):
     sql = f'update game set location = "{new_location_icao}" where id = "{game_id}";'
     cursor = connection.cursor()
     cursor.execute(sql)
+
+# matkusta maiden välillä
+def travel_between_countries(game_id, game_countries, money):
+    i = 0
+    country_list = []
+    for country in game_countries:
+        location = get_current_location(game_id)
+        airport_icao1 = location
+        default_airport = get_default_airport_ident_for_country(game_id, country)
+        airport_icao2 = get_airport_ident_from_name(default_airport)
+        distance = get_distance_between_airports(airport_icao1, airport_icao2)
+        ticket_cost = int(count_ticket_cost_between_countries(distance))
+        if money < ticket_cost:
+            can_travel = False
+        else:
+            can_travel = True
+        if airport_icao1 != airport_icao2:
+            i += 1
+            country_list.append([i, country, distance, ticket_cost, can_travel])
+            # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
+            # country_list.append(country)
+    print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
+    next_country_number = False
+    while not next_country_number:
+        next_country_number_input = input('Input country number: ')
+        if next_country_number_input.isnumeric():
+            next_country_number_input = int(next_country_number_input)
+            if 1 <= next_country_number_input <= len(country_list):
+                next_country_number = next_country_number_input
+            else:
+                print('Invalid input. Select number from the list.')
+        else:
+            print('Invalid input.')
+    next_country_number -= 1
+    money -= country_list[next_country_number][3]
+    country1 = get_country_name(get_current_location(game_id))
+    country2 = country_list[next_country_number][1]
+    ticket_price = country_list[next_country_number][3]
+    distance1 = country_list[next_country_number][2]
+    print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
+    update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
+    return next_country_number
+
+# matkusta maan sisällä
+def travel_inside_country(game_id, treasure_land_airports, money):
+    i = 0
+    airport_list = []
+    for airport in treasure_land_airports:
+        location = get_current_location(game_id)
+        airport_icao1 = location
+        airport_icao2 = get_airport_ident_from_name(airport)
+        distance = get_distance_between_airports(airport_icao1, airport_icao2)
+        ticket_cost = int(count_ticket_cost_inside_country(distance))
+        if money < ticket_cost:
+            can_travel = False
+        else:
+            can_travel = True
+        if airport_icao1 != airport_icao2:
+            i += 1
+            airport_list.append([i, airport, distance, ticket_cost, can_travel])
+            # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
+            # airport_list.append(airport)
+    print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
+    next_airport = False
+    while not next_airport:
+        next_airport_input = input('Input airport number: ')
+        if next_airport_input.isnumeric():
+            next_airport_input = int(next_airport_input)
+            if 1 <= next_airport_input <= len(airport_list):
+                next_airport = next_airport_input
+            else:
+                print('Invalid input. Select number from the list.')
+        else:
+            print('Invalid input.')
+    next_airport -= 1
+    money -= airport_list[next_airport][3]
+    airport1 = get_airport_name(get_current_location(game_id))
+    airport2 = airport_list[next_airport][1]
+    ticket_price = airport_list[next_airport][3]
+    distance1 = airport_list[next_airport][2]
+    print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
+    update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport][1]))
+    wise_man = check_if_wise_man(location, game_id)
+    meet_wise_man_if_exists(wise_man)
+
+#laske maiden välisen lennon hinta etäisyyden perusteella
+def count_ticket_cost_between_countries(distance):
+    if distance < 200:
+        ticket_cost = 100 + 1.00 * distance
+    if 200 <= distance <= 500:
+        ticket_cost = 100 + 0.70 * distance
+    if 500 < distance < 800:
+        ticket_cost = 100 + 0.40 * distance
+    if distance > 800:
+        ticket_cost = 100 + 0.25 * distance
+    return ticket_cost
+
+#laske maan sisäisen lennon hinta etäisyyden perusteella
+def count_ticket_cost_inside_country(distance):
+    if distance < 200:
+        ticket_cost = 100 + 1.25 * distance
+    if 200 <= distance <= 500:
+        ticket_cost = 100 + 0.85 * distance
+    if 500 < distance < 800:
+        ticket_cost = 100 + 0.55 * distance
+    if distance > 800:
+        ticket_cost = 100 + 0.40 * distance
+    return ticket_cost
+
+# hae maan nimi lentokentän icao-koodin perusteella
+def get_country_name(airport_icao):
+    sql = (f'select country.name from country inner join airport on country.iso_country = airport.iso_country '
+           f'where ident = "{airport_icao}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(result)
+    return result[0]
+
+# määritä vihje: hae aarremaan ensimmäinen kirjain
+def get_clue(game_id):
+    sql = f'select airport_ident from game_airports where wise_man_question_id != "NULL" and game_id = {game_id} limit 1;'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    airport_icao = cursor.fetchone()[0]
+    country_name = get_country_name(airport_icao)
+    hint_letter = country_name[0]
+    clue = (f'Clue: the treasure is hidden in the country whose first letter is {hint_letter}.')
+    return clue
+
+# tarkista, onko lentokentällä tietäjä
+def check_if_wise_man(location, game_id):
+    location = get_current_location(game_id)
+    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
+           f'game_id = "{game_id}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    #print(location)
+    if result != None:
+        return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
+    else:
+        return None
+
+# hae tietäjän kysymys ja vastaus
+def get_wise_man_question_and_answer(location, game_id):
+    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
+           f'game_id = "{game_id}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    question_id = cursor.fetchone()
+    question_id = question_id[0]
+    sql = (f'select question, answer from wise_man_questions where id = "{question_id}";')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result[0]   #palauttaa monikkona kysymyksen ja vastauksen
+
+# hae tietäjän maksu ja palkinto
+def get_wise_man_cost_and_reward(difficulty_level):
+    sql = f'select wise_man_cost, wise_man_reward from difficulty where level = "{difficulty_level}";'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result
+
+def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
+    print(wise_man)     #kysymyksen id tulostuu
+    location = get_current_location(game_id)
+    if wise_man != None:
+        question = get_wise_man_question_and_answer(location, game_id)[0]
+        answer = get_wise_man_question_and_answer(location, game_id)[1]
+        user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
+              f'Input y (yes) or n (no): ')
+        user_input = user_input.lower()
+        while user_input not in ('y', 'yes', 'n', 'no'):
+            user_input = input('Invalid input. Input y (yes) or n (no): ')
+        if user_input in ('y', 'yes'):
+            #money -= wise_man_cost         ##tässä kohtaa on joku ongelma money-termin kanssa???!!!
+            ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
+            print(f'You have {money} €.')
+            print(f'Question: {question}')
+            user_answer = input('Input answer (a, b or c): ')
+            user_answer = user_answer.lower()
+            while user_answer not in ('a', 'b', 'c'):
+                user_answer = input('Invalid input. Input answer (a, b or c): ')
+                user_answer = user_answer.lower()
+            if user_answer == answer:
+                #money += wise_man_reward           #tässäkin sama rahaongelma
+                print(f'Correct! You won {wise_man_reward} €.\nYou have {money} €.')
+            else:
+                print(f'Wrong! Correct answer is {answer}.')
+        elif user_input in ('n', 'no'):
+            print('No question this time. Bye!')
+    else:
+        print('No wise man here.')
+
+# rahat loppuu tai ei riitä mihinkään lentolippuun
+def game_over():
+    print(f'Out of money! You can not afford a ticket. Game over!')
