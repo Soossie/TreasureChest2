@@ -245,7 +245,7 @@ def get_home_airport_icao(game_id):
 
 # hae lentokentän nimi
 def get_airport_name(airport_icao):
-    print(f'test icao {airport_icao}')
+    # print(f'test icao {airport_icao}')
     sql = f'select airport.name from airport where ident = "{airport_icao}";'
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -329,7 +329,8 @@ def travel_between_countries(game_id, game_countries, money):
             # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
             # country_list.append(country)
     print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
-    if can_travel == False:
+    travellable = any([True for i in country_list if i[4] == True])
+    if not travellable:
         game_over(game_id)
     next_country_number = False
     while not next_country_number:
@@ -372,6 +373,9 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
             # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
             # airport_list.append(airport)
     print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
+    travellable = any([True for i in airport_list if i[4] == True])
+    if not travellable:
+        game_over(game_id)
     next_airport_number = False
     while not next_airport_number:
         next_airport_number_input = input('Input airport number: ')
@@ -389,7 +393,7 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
     airport2 = airport_list[next_airport_number][1]
     ticket_price = airport_list[next_airport_number][3]
     distance1 = airport_list[next_airport_number][2]
-    print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
+    print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km.\n...')
     update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport_number][1]))
     wise_man = check_if_wise_man(location, game_id)
     meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
@@ -488,7 +492,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
-            money -= wise_man_cost         ##tässä kohtaa on joku ongelma money-termin kanssa???!!!
+            money -= wise_man_cost
             ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
             print(f'You have {money} €.')
             print(f'Question: {question}')
@@ -498,7 +502,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
                 user_answer = input('Invalid input. Input answer (a, b or c): ')
                 user_answer = user_answer.lower()
             if user_answer == answer:
-                #money += wise_man_reward           #tässäkin sama rahaongelma
+                money += wise_man_reward
                 print(f'Correct! You won {wise_man_reward} €.\nYou have {money} €.')
             else:
                 print(f'Wrong! Correct answer is {answer}.')
@@ -512,4 +516,9 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
 def game_over(game_id):
     print(f'Out of money! You can not afford a ticket. Game over!')
     # tähän että game_id pelaaja hävisi tietokantaan?
+    sys.exit()
+
+def game_won(game_id):
+    print(f'Congratulations! You won the game!')
+    # tähän että game_id pelaaja voitti tietokantaan?
     sys.exit()

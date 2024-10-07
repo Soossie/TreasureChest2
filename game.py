@@ -25,8 +25,6 @@ home_country = get_country_name(home_airport_icao)
 # hae aloitusraha
 money = get_player_money(game_id)
 
-money = 500
-
 # hae wise man hinta
 wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 
@@ -41,8 +39,8 @@ else:
     clue = ''
 
 # aloitustilanne
-print(treasure_land_country) # debug
-print(treasure_chest_airport) # debug
+# print(treasure_land_country) # debug
+# print(treasure_chest_airport) # debug
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €. '
       f'Where would you like to travel?\n{clue}\nOptions: ')
 next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
@@ -58,21 +56,22 @@ while country_list[next_country_number][1] != treasure_land_country:
     next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
 
 # muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
-print(f'You have landed at {get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))}. The treasure is in this country!')
+print(f'You have landed at {get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))}. You have {money} € left. The treasure is in this country!')
 location = get_current_location(game_id)
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
 print('Now you must find the treasure chest hidden in one of the airports. Where would you like to travel next?\nOptions: ')
-print(f'sijainti aarremaassa: {location}') # debug
+# print(f'sijainti aarremaassa: {location}') # debug
 next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
 
 # looppaa kunnes pelaaja saapuu aarrelentokentälle
 while airport_list[next_airport_number][1] != treasure_chest_airport:
     if money <= 0:
         game_over(game_id)
-    print(f'You have landed at {airport_list[next_airport_number][1]}. The treasure chest is not here.')
+    print(f'You have landed at {airport_list[next_airport_number][1]}. You have {money} € left. The treasure chest is not here.')
     print('Where would you like to travel next?\nOptions: ')
     next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
 
 # pelaaja voittaa
-print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!') # voittoviesti tähän
+print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!')
+game_won(game_id)
