@@ -57,7 +57,7 @@ while country_list[next_country_number][1] != treasure_land_country:
     next_country_number, country_list = travel_between_countries(game_id, game_countries, money)
 
 # muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
-print(f'You have landed at {get_country_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))}. The treasure is in this country!')
+print(f'You have landed at {get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))}. The treasure is in this country!')
 location = get_current_location(game_id)
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)

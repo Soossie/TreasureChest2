@@ -484,7 +484,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
-            #money -= wise_man_cost         ##tässä kohtaa on joku ongelma money-termin kanssa???!!!
+            money -= wise_man_cost         ##tässä kohtaa on joku ongelma money-termin kanssa???!!!
             ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
             print(f'You have {money} €.')
             print(f'Question: {question}')
