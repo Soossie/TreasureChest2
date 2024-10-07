@@ -70,7 +70,7 @@ def get_biggest_airport_size_for_country(country_name):
     return size
 
 
-def get_default_airport_for_country(country_name):
+def get_random_default_airport_for_country(country_name):
     # hae maan suurimman lentokentän koko
     biggest_airport_size = get_biggest_airport_size_for_country(country_name)
 
@@ -88,6 +88,28 @@ def get_default_airport_for_country(country_name):
     result = cursor.fetchone()
 
     # palauttaa tuloksen ensimmäisen arvon jos tulos on olemassa
+    return result[0] if result else False
+
+
+def get_default_airport_ident_for_country(game_id, country_name):
+    # vaihtoehtoiset tavat sql kyselylle riippuen minkälainen lainausmerkki nimessä on
+    if '"' in country_name:
+        sql = (f"SELECT game_airports.airport_ident, country.name FROM game_airports "
+               f"INNER JOIN game ON game_airports.game_id = game.id "
+               f"INNER JOIN airport ON game_airports.airport_ident = airport.ident "
+               f"INNER JOIN country ON airport.iso_country = country.iso_country "
+               f"WHERE game.id = {game_id} AND game_airports.is_default_airport = 1 AND country.name = '{country_name}';")
+    else:
+        sql = (f'SELECT game_airports.airport_ident, country.name FROM game_airports '
+               f'INNER JOIN game ON game_airports.game_id = game.id '
+               f'INNER JOIN airport ON game_airports.airport_ident = airport.ident '
+               f'INNER JOIN country ON airport.iso_country = country.iso_country '
+               f'WHERE game.id = {game_id} AND game_airports.is_default_airport = 1 AND country.name = "{country_name}";')
+
+    cursor = connection.cursor(buffered=True)
+    cursor.execute(sql)
+    result = cursor.fetchone()
+
     return result[0] if result else False
 
 

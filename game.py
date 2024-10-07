@@ -49,8 +49,8 @@ def travel_between_countries():
     for country in game_countries:
         location = get_current_location(game_id)
         airport_icao1 = location
-        default_airport = get_default_airport_for_country(country)
-        airport_icao2 = get_airport_ident_from_name(default_airport)
+        airport_icao2 = get_default_airport_ident_for_country(game_id, country)
+        #airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_between_countries(distance))
         if money < ticket_cost:
@@ -136,7 +136,7 @@ next_country_number -= 1
 
 # päivitä pelaajan rahamäärä (money - ticket_cost)
 def current_ticket_cost_between_countries():
-    next_default_airport = get_default_airport_for_country(next_country_number)
+    next_default_airport = get_default_airport_ident_for_country(game_id, country_list[next_country_number][1])
     current_ticket_cost = count_ticket_cost_between_countries(get_distance_between_airports(get_current_location(game_id), next_default_airport))
     return current_ticket_cost
 
@@ -149,13 +149,16 @@ ticket_price = country_list[next_country_number][3]
 distance1 = country_list[next_country_number][2]
 
 print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
-update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
+print(f'__seuraava maa: {country_list[next_country_number][1]}')
+print(f'----maan oletuslentokenttä: {get_default_airport_ident_for_country(game_id, country_list[next_country_number][1])}')
+update_current_location(game_id, get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
+#update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
 location = get_current_location(game_id)
 print(f'sijainti: {location}')
 
 #airport_nameen tarvitsee countryn nimen
 #airport_name = get_default_airport_for_country(country2)
-airport_name = get_default_airport_for_country(country_list[next_country_number][1])
+airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
 print(f'Lentokentän nimi: {airport_name}')  #tässä tulostuu väärä arvo
 
 country1 = get_country_name(get_current_location(game_id))
@@ -165,7 +168,7 @@ distance1 = country_list[next_country_number][2]
 
 #looppaa kunnes pelaaja saapuu aarremaahan               #country2-kohdassa tulostuu joskus sama arvo kuin country1 ???
 while country_list[next_country_number][1] != treasure_land_country:
-    airport_name = get_default_airport_for_country(country2)
+    airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, country2))
     print(f'You have landed at {airport_name}. The treasure is not in this country.')
     print(f'Where would you like to travel next?\n{clue}\nOptions: ')
     country_list.clear()
@@ -174,7 +177,7 @@ while country_list[next_country_number][1] != treasure_land_country:
     next_country_number -= 1
     money -= country_list[next_country_number][3]
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n...')
-    update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
+    update_current_location(game_id, get_default_airport_ident_for_country(game_id, country2))
     while next_country_number not in range(len(country_list)): # taitaa loopata ikuisesti atm
         next_country_number = int(input("Select one of the countries from the list: "))
         next_country_number -= 1
@@ -259,7 +262,7 @@ def meet_wise_man_if_exists(wise_man):
 
 # muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
 #update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
-print(f'You have landed at {get_default_airport_for_country(next_country_number)}. The treasure is in this country!')
+print(f'You have landed at {get_default_airport_ident_for_country(game_id, country_list[next_country_number][1])}. The treasure is in this country!')
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man)
 print('Now you must find the treasure chest hidden in one of the airports. Where would you like to travel next?\nOptions: ')
@@ -272,7 +275,7 @@ next_airport -= 1
 while next_airport not in range(len(airport_list)): # taitaa loopata ikuisesti atm
     next_airport = int(input('Select one of the airports from the list: '))
     next_airport -= 1
-update_current_location(game_id, get_airport_ident_from_name(get_default_airport_for_country(country_list[next_country_number][1])))
+update_current_location(game_id, get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
 
 # looppaa kunnes pelaaja saapuu aarrelentokentälle          #sijainti ei päivity?
 while airport_list[next_airport][1] != treasure_chest_airport:
