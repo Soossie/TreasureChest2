@@ -108,7 +108,13 @@ values('What is the capital of France? a) London b) Paris c) San Marino', 'b'),
 ('What is the correct answer to [2 * 3 * 0 * 1 + 4]? a) 4 b) 10 c) 30', 'b'),
 ('What is the correct answer to [1 + 2 * 3 - 6]? a) 3 b) -5 c) 1', 'c'),
 ('What is the correct answer to [1 + 2 + 3]? a) 6 b) 5 c) 7', 'a'),
-('What is the correct answer to [2 * 2 * 2 * 2]? a) 8 b) 16 c) 32', 'b');
+('What is the correct answer to [2 * 2 * 2 * 2]? a) 8 b) 16 c) 32', 'b'),
+('Why is recycling important? a) It increases pollution b) It has no impact c) It helps reduce waste', 'c'),
+('What is a renewable energy source? a) Coal b) Wind power c) Oil', 'b'),
+('How can you save energy at home? a) Use more water b) Turn off lights when not in use c) Leave television on all day', 'b'),
+('What is a benefit of planting trees? a) They clean the air b) They waste space c) You get firewood', 'a'),
+('How can you save water? a) Take three showers a day b) Let water run while brushing teeth c) Take shorter showers', 'c'),
+('How can you help reduce air pollution? a) Use public transportation b) Burn more coal c) Drive everywhere', 'a');
 
 -- lisää pääkaupungit country-tauluun
 update country
