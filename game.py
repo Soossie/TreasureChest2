@@ -45,6 +45,7 @@ else:
     clue = ''
 
 
+
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €.')
 time.sleep(2)
 print(f'Where would you like to travel?')

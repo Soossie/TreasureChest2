@@ -427,6 +427,7 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
         print(".", end="")
         time.sleep(sleep_time)
     print("")
+    location = get_current_location(game_id)
     wise_man = check_if_wise_man(location, game_id)
     meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
     return next_airport_number, airport_list, money
@@ -482,7 +483,8 @@ def check_if_wise_man(location, game_id):
            f'game_id = {game_id};')
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
-    result = cursor.fetchone()
+    result = cursor.fetchall()
+    print(result[0])
     if result != None:
         return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa 0
     else:
@@ -490,8 +492,7 @@ def check_if_wise_man(location, game_id):
 
 # hae tietäjän kysymys ja vastaus
 def get_wise_man_question_and_answer(location, game_id):
-    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
-           f'game_id = {game_id};')
+    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and game_id = {game_id};')
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     question_id = cursor.fetchone()
