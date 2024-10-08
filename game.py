@@ -41,6 +41,9 @@ print(treasure_chest_airport) # debug
 # hae vihje jos pelaaja haluaa
 if want_clue == True:
     clue = get_clue(game_id)
+else:
+    clue = ''
+
 
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €.')
 time.sleep(2)
@@ -92,6 +95,7 @@ while airport_list[next_airport_number][1] != treasure_chest_airport:
 
 # pelaaja voittaa
 print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\n')
+time.sleep(2)
 print('However, you must answer the the Chest\'s riddle to claim the treasure or else the treasure will be lost forever!\n')
 question = input('Final question: ')
 if question == True:

@@ -579,8 +579,19 @@ def game_over(game_id):
 
 def game_won(game_id, difficulty_level):
     time.sleep(0.5)
-    print(f"You open the treasure chest and find...\n a {get_random_reward(difficulty_level)}!")
-    time.sleep(0.5)
-    print(f'Congratulations! You won the game!')
+    message = '\nYou open the treasure chest and find...'
+    message2 = f'\na {get_random_reward(difficulty_level)}!'
+    message3 = f'\nCongratulations! You won the game!'
+    for char in message:
+        print(char, end='', flush=True)
+        time.sleep(0.05)
+    time.sleep(3)
+    for char in message2:
+        print(char, end='', flush=True)
+        time.sleep(0.25)
+    time.sleep(0.1)
+    for char in message3:
+        print(char, end='', flush=True)
+        time.sleep(0.05)
     # tähän että game_id pelaaja voitti tietokantaan?
     sys.exit()
