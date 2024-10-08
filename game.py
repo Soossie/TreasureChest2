@@ -95,8 +95,12 @@ while airport_list[next_airport_number][1] != treasure_chest_airport:
     next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
 
 # pelaaja voittaa
-print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\n')
+print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\n You have {money} € left.')
 time.sleep(2)
+game_won(game_id, difficulty_level)
+
+# ei ehtinyt tehdä viimeistä kysymystä
+"""
 print('However, you must answer the the Chest\'s riddle to claim the treasure or else the treasure will be lost forever!\n')
 time.sleep(1)
 question = input('Final question: x or y?')
@@ -113,3 +117,4 @@ else:
         time.sleep(0.5)
         print(f"{money}€")
     game_over(game_id)
+"""
