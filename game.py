@@ -97,13 +97,18 @@ while airport_list[next_airport_number][1] != treasure_chest_airport:
 print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\n')
 time.sleep(2)
 print('However, you must answer the the Chest\'s riddle to claim the treasure or else the treasure will be lost forever!\n')
-question = input('Final question: ')
-if question == True:
+time.sleep(1)
+question = input('Final question: x or y?')
+if question == 'x':
+    print('Correct! The treasure is yours!')
+    time.sleep(1)
+    print('')
     game_won(game_id, difficulty_level)
 else:
     tenthofmoney = money / 10
     print("Oh no! You answered wrong and the Treasure is draining you of your money!")
-    for i in range(10):
+    for i in range(10) and money > 0:
         money = int(money - tenthofmoney)
         time.sleep(0.5)
         print(f"{money}€")
+    game_over(game_id)

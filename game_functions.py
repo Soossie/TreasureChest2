@@ -15,7 +15,12 @@ connection = mysql.connector.connect(
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
+# luo lista käydyistä lentokentistä maiden välillä ja maan sisällä
+visited_country_list = []
+visited_airport_list = []
 
+def add_home_country_to_visited_country_list(home_country):
+    visited_country_list.append(home_country)
 
 def get_game_countries(difficulty_level):
     sql = (f'select country_count, airports_in_treasure_land from difficulty '
@@ -320,16 +325,17 @@ def travel_between_countries(game_id, game_countries, money):
         airport_icao2 = get_airport_ident_from_name(default_airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_between_countries(distance))
+        visited = "Yes" if any([True for i in visited_country_list if i == country]) else "No"
         if money < ticket_cost:
             can_travel = False
         else:
             can_travel = True
         if airport_icao1 != airport_icao2:
             i += 1
-            country_list.append([i, country, distance, ticket_cost, can_travel])
+            country_list.append([i, country, distance, ticket_cost, can_travel, visited])
             # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
             # country_list.append(country)
-    print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
+    print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable', 'Visited'], tablefmt='pretty'))
     travellable = any([True for i in country_list if i[4] == True])
     if not travellable:
         game_over(game_id)
@@ -348,6 +354,7 @@ def travel_between_countries(game_id, game_countries, money):
     money -= country_list[next_country_number][3]
     country1 = get_country_name(get_current_location(game_id))
     country2 = country_list[next_country_number][1]
+    visited_country_list.append(country2)
     ticket_price = country_list[next_country_number][3]
     distance1 = country_list[next_country_number][2]
     next_airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
@@ -376,16 +383,17 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
         airport_icao2 = get_airport_ident_from_name(airport)
         distance = get_distance_between_airports(airport_icao1, airport_icao2)
         ticket_cost = int(count_ticket_cost_inside_country(distance))
+        visited = "Yes" if any([True for i in visited_airport_list if i == airport]) else "No"
         if money < ticket_cost:
             can_travel = False
         else:
             can_travel = True
         if airport_icao1 != airport_icao2:
             i += 1
-            airport_list.append([i, airport, distance, ticket_cost, can_travel])
+            airport_list.append([i, airport, distance, ticket_cost, can_travel, visited])
             # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
             # airport_list.append(airport)
-    print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable'], tablefmt='pretty'))
+    print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable', 'Visited'], tablefmt='pretty'))
     travellable = any([True for i in airport_list if i[4] == True])
     if not travellable:
         game_over(game_id)
@@ -404,6 +412,7 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
     money -= airport_list[next_airport_number][3]
     airport1 = get_airport_name(get_current_location(game_id))
     airport2 = airport_list[next_airport_number][1]
+    visited_airport_list.append(airport2)
     ticket_price = airport_list[next_airport_number][3]
     distance1 = airport_list[next_airport_number][2]
     print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km.\n')
@@ -589,7 +598,7 @@ def game_won(game_id, difficulty_level):
     for char in message2:
         print(char, end='', flush=True)
         time.sleep(0.25)
-    time.sleep(0.1)
+    time.sleep(1)
     for char in message3:
         print(char, end='', flush=True)
         time.sleep(0.05)

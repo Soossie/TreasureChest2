@@ -74,6 +74,9 @@ def start_game():
     home_country, home_airport = random.choice(list(countries_and_default_airports.items()))
     # print(f'{home_country}, {home_airport}')
 
+    # lisää aloitusmaa pelaajan käytyjen maiden listaan
+    add_home_country_to_visited_country_list(home_country)
+
     #print(f'\nscreen_name: {player}\nmoney: {money}\nhome_country: {home_country}\nhome_airport: {home_airport}\n'
     #      f'location: {home_airport}\ndifficulty_level: {difficulty_level}\n')
 
