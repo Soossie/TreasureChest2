@@ -11,7 +11,7 @@ import time
 
 # tallenna muuttujat ja tallenna data tietokantaan
 (game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
- difficulty_level, treasure_land_country, treasure_chest_airport) = start_game()
+ difficulty_level, treasure_land_country, treasure_chest_airport, want_clue) = start_game()
 
 #print(game_countries)
 #print(game_id)
@@ -34,22 +34,19 @@ wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 # hae tietäjän palkinto
 wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
 
-# hae vihje
-want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
-if want_clue in ['y', 'yes']:
-    clue = get_clue(game_id)
-else:
-    clue = ''
-
 # aloitustilanne
-# print(treasure_land_country) # debug
-# print(treasure_chest_airport) # debug
+print(treasure_land_country) # debug
+print(treasure_chest_airport) # debug
+
+# hae vihje jos pelaaja haluaa
+if want_clue == True:
+    clue = get_clue(game_id)
+
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €.')
-time.sleep(0.5)
+time.sleep(2)
 print(f'Where would you like to travel?')
-time.sleep(0.5)
 print(clue)
-time.sleep(0.5)
+time.sleep(2)
 print(f'Options: ')
 time.sleep(0.5)
 next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
@@ -75,7 +72,7 @@ location = get_current_location(game_id)
 wise_man = check_if_wise_man(location, game_id)
 meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
 print('Now you must find the treasure chest hidden in one of the airports. Where would you like to travel next?')
-time.sleep(0.5)
+time.sleep(2)
 print('Options: ')
 time.sleep(0.5)
 # print(f'sijainti aarremaassa: {location}') # debug

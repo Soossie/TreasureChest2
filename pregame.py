@@ -47,7 +47,12 @@ def start_game():
         else:
             print('Invalid input.')
 
-    # print(difficulty_level)
+    # hae vihje
+    want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
+    if want_clue in ['y', 'yes']:
+        want_clue = True
+    else:
+        want_clue = False
 
     # määritä pelaajan aloitusrahan määrä vaikeustason mukaan
     money = get_default_money(difficulty_level)
@@ -161,5 +166,5 @@ def start_game():
         save_airport_to_game_airports(game_id, airport_ident, question_id, answered, has_treasure, is_default_airport)
 
     return (game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
-            difficulty_level, treasure_land_country, treasure_chest_airport)
+            difficulty_level, treasure_land_country, treasure_chest_airport, want_clue)
 
