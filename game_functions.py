@@ -113,11 +113,19 @@ def get_default_airport_ident_for_country(game_id, country_name):
                f'INNER JOIN country ON airport.iso_country = country.iso_country '
                f'WHERE game.id = {game_id} AND game_airports.is_default_airport = 1 AND country.name = "{country_name}";')
 
-    cursor = connection.cursor(buffered=True)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    # errorin takia tarvitaan
+    # pyörittää kunnes saa arvon
+    selected_airport_ident = False
+    while not selected_airport_ident:
+        cursor = connection.cursor(buffered=True)
+        cursor.execute(sql)
+        result = cursor.fetchone()
 
-    return result[0] if result else False
+        #print(f'>{game_id}, {country_name}, {result[0] if result else False}')
+        if result:
+            selected_airport_ident = result[0]
+
+    return selected_airport_ident
 
 
 def get_default_money(difficulty_level):
