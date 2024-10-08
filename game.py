@@ -3,18 +3,9 @@ from pregame import *
 from game_functions import *
 import time
 
-###
-# to do:
-# korjaa kysymyksissä portugalin pääkaupunki
-# tietäjä antaa kysymyksen vaikka pelaajalla ei ole riittävästi rahaa (pelaajan raha menee miinukselle)
-###
-
 # tallenna muuttujat ja tallenna data tietokantaan
 (game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
  difficulty_level, treasure_land_country, treasure_chest_airport, want_clue) = start_game()
-
-#print(game_countries)
-#print(game_id)
 
 # hae kotilentokentän icao-koodi
 home_airport_icao = get_home_airport_icao(game_id)
@@ -34,9 +25,8 @@ wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
 # hae tietäjän palkinto
 wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
 
-# aloitustilanne
-print(treasure_land_country) # debug
-print(treasure_chest_airport) # debug
+# print(treasure_land_country) # debug
+# print(treasure_chest_airport) # debug
 
 # hae vihje jos pelaaja haluaa
 if want_clue == True:
@@ -44,8 +34,7 @@ if want_clue == True:
 else:
     clue = ''
 
-
-
+# aloitustilanne
 print(f'\nYou are in {home_country} at {home_airport}. You have {money} €.')
 time.sleep(2)
 print(f'Where would you like to travel?')
@@ -55,7 +44,7 @@ print(f'Options: ')
 time.sleep(0.5)
 next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
 
-#looppaa kunnes pelaaja saapuu aarremaahan
+# toista kunnes pelaaja saapuu aarremaahan
 while country_list[next_country_number][1] != treasure_land_country:
     if money <= 0:
         game_over(game_id)
@@ -79,10 +68,9 @@ print('Now you must find the treasure chest hidden in one of the airports. Where
 time.sleep(2)
 print('Options: ')
 time.sleep(0.5)
-# print(f'sijainti aarremaassa: {location}') # debug
 next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
 
-# looppaa kunnes pelaaja saapuu aarrelentokentälle
+# toista kunnes pelaaja saapuu aarrelentokentälle
 while airport_list[next_airport_number][1] != treasure_chest_airport:
     if money <= 0:
         game_over(game_id)
@@ -95,11 +83,11 @@ while airport_list[next_airport_number][1] != treasure_chest_airport:
     next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
 
 # pelaaja voittaa
-print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\n You have {money} € left.')
+print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\nYou have {money} € left.')
 time.sleep(2)
 game_won(game_id, difficulty_level)
 
-# ei ehtinyt tehdä viimeistä kysymystä
+# kehitysehdotus - kysymys aarrearkun luona
 """
 print('However, you must answer the the Chest\'s riddle to claim the treasure or else the treasure will be lost forever!\n')
 time.sleep(1)

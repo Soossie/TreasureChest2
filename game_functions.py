@@ -1,5 +1,3 @@
-import random
-#from geopy import distance
 import geopy.distance
 import mysql.connector
 from tabulate import tabulate
@@ -15,6 +13,7 @@ connection = mysql.connector.connect(
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
+
 # luo lista käydyistä lentokentistä maiden välillä ja maan sisällä
 visited_country_list = []
 visited_airport_list = []
@@ -28,13 +27,8 @@ def get_game_countries(difficulty_level):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    # print(result)
     countries_for_difficulty_level = result[0]
     min_airports_in_treasure_land = int(int(result[1]) / 2)
-    # print(f'{countries_for_difficulty_level}, {min_countries_in_treasure_land}')
-
-    #sql = (f'SELECT name FROM country where continent = "EU" '
-    #       f'order by rand() limit {countries_for_difficulty_level};')
 
     sql = (f'select country.name, count(*) from country '
            f'left join airport on airport.iso_country = country.iso_country '
@@ -47,12 +41,10 @@ def get_game_countries(difficulty_level):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
-
     results = []
     for item in result:
         results.append(item[0])
     return results
-
 
 def get_biggest_airport_size_for_country(country_name):
     sql = (f'select airport.type from airport '
@@ -62,20 +54,17 @@ def get_biggest_airport_size_for_country(country_name):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
-
     size = False
 
     # muuttaa listan monikoita listaksi
     result = [item[0] for item in result]
 
-    # määrittää maan suurimman lentokentän koon.
+    # määrittää maan suurimman lentokentän koon
     # lentokenttien koot monikossa suuruusjärjestyksessä suurimmasta pienimpään
     for airport_size in ('large_airport', 'medium_airport', 'small_airport', 'heliport'):
         if airport_size in result and not size:
             size = airport_size
-
     return size
-
 
 def get_random_default_airport_for_country(country_name):
     # hae maan suurimman lentokentän koko
@@ -120,13 +109,10 @@ def get_default_airport_ident_for_country(game_id, country_name):
         cursor = connection.cursor(buffered=True)
         cursor.execute(sql)
         result = cursor.fetchone()
-
-        #print(f'>{game_id}, {country_name}, {result[0] if result else False}')
         if result:
             selected_airport_ident = result[0]
 
     return selected_airport_ident
-
 
 def get_default_money(difficulty_level):
     sql = f'select starting_money from difficulty where level = "{difficulty_level}";'
@@ -134,7 +120,6 @@ def get_default_money(difficulty_level):
     cursor.execute(sql)
     result = cursor.fetchone()
     return result[0]
-
 
 def get_treasure_land_airports(difficulty_level, country_name, treausure_land_default_airport_ident):
     sql = f'select airports_in_treasure_land from difficulty where level = "{difficulty_level}";'
@@ -147,19 +132,16 @@ def get_treasure_land_airports(difficulty_level, country_name, treausure_land_de
            f'where country.name = "{country_name}" and airport.type != "closed" and airport.ident != "{treausure_land_default_airport_ident}" '
            f'order by rand() limit {airport_count};')
 
-    # original
-    #sql = (f'SELECT airport.name FROM airport inner join country on airport.iso_country = country.iso_country '
-    #       f'where country.name = "{country_name}" order by rand() limit {airport_count};')
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
-
     results = []
+
     for item in result:
         results.append(item[0])
     return results
 
-
+# hae wise man arvot
 def get_wise_man_count(difficulty_level):
     sql = (f'select wise_man_count from difficulty '
            f'where level = "{difficulty_level}";')
@@ -168,7 +150,7 @@ def get_wise_man_count(difficulty_level):
     wise_man_count = cursor.fetchone()[0]
     return wise_man_count
 
-
+# lisää pelaajan tiedot
 def input_player_info(screen_name, money, home_airport, location, difficulty_level):
     sql = (f'insert into game(screen_name, money, home_airport, location, difficulty_level) '
            f'values("{screen_name}", "{money}", "{home_airport}", "{location}", "{difficulty_level}");')
@@ -177,7 +159,6 @@ def input_player_info(screen_name, money, home_airport, location, difficulty_lev
 
 # hakee lentokentän ICAO-koodin
 def get_airport_ident_from_name(airport_name):
-    #print(airport_name)
 
     # vaihtoehtoiset tavat sql kyselylle riippuen minkälainen lainausmerkki nimessä on
     if '"' in airport_name:
@@ -189,8 +170,6 @@ def get_airport_ident_from_name(airport_name):
     cursor.execute(sql)
     ident = cursor.fetchone()[0]
     return ident
-
-
 
 def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport):
     # parannusehdotus: yhdistä kyselyt yhdeksi. ongelma on sijoittaa NULL arvo tietokantaan, mutta se on myös jo oletusarvo
@@ -207,13 +186,11 @@ def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, 
     cursor = connection.cursor()
     cursor.execute(sql)
 
-
 def get_screen_name_game_id(screen_name):
     sql = f'select id from game where screen_name = "{screen_name}";'
     cursor = connection.cursor()
     cursor.execute(sql)
     return cursor.fetchone()[0]
-
 
 def screen_name_exists(screen_name):
     # tarkista löytyykö pelaajan nimi tietokannasta
@@ -228,19 +205,15 @@ def screen_name_exists(screen_name):
     # palauttaa True jos samanniminen pelaaja on olemassa, muuten palauttaa False
     return screen_name in results
 
-
 def get_random_unused_question_id(game_id):
-
     sql = (f'select id from wise_man_questions '
-           f'where id not in (select wise_man_question_id from game_airports where game_id = 56 and '
+           f'where id not in (select wise_man_question_id from game_airports where game_id = {game_id} and '
            f'wise_man_question_id != NULL) '
            f'order by rand();')
 
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
-    #print(cursor.fetchone())
     return cursor.fetchone()[0]
-
 
 def get_random_question_id():
     sql = f'select id from wise_man_questions order by rand();'
@@ -254,17 +227,14 @@ def get_home_airport_icao(game_id):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    #print(result)
     return result[0]
 
 # hae lentokentän nimi
 def get_airport_name(airport_icao):
-    # print(f'test icao {airport_icao}')
     sql = f'select airport.name from airport where ident = "{airport_icao}";'
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    #print(result)
     return result[0]
 
 # hae maan nimi
@@ -274,7 +244,6 @@ def get_country_name(airport_icao):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    #print(result)
     return result[0]
 
 # hae käytössä oleva raha
@@ -283,7 +252,6 @@ def get_player_money(game_id):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    #print(result)
     return result[0]
 
 # hae lentokentän koordinaatit
@@ -341,8 +309,6 @@ def travel_between_countries(game_id, game_countries, money):
         if airport_icao1 != airport_icao2:
             i += 1
             country_list.append([i, country, distance, ticket_cost, can_travel, visited])
-            # print(f'{i}. {country}, {distance} km, ticket costs {ticket_cost} €.\n')
-            # country_list.append(country)
     print(tabulate(country_list, headers=['Number', 'Country', 'Distance (km)', 'Ticket cost (€)', 'Travellable', 'Visited'], tablefmt='pretty'))
     travellable = any([True for i in country_list if i[4] == True])
     if not travellable:
@@ -399,8 +365,6 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
         if airport_icao1 != airport_icao2:
             i += 1
             airport_list.append([i, airport, distance, ticket_cost, can_travel, visited])
-            # print(f'{i}. {airport}, {distance} km, ticket costs {ticket_cost} €.\n')
-            # airport_list.append(airport)
     print(tabulate(airport_list, headers=['Number', 'Airport', 'Distance (km)', 'Ticket cost (€)', 'Travellable', 'Visited'], tablefmt='pretty'))
     travellable = any([True for i in airport_list if i[4] == True])
     if not travellable:
@@ -437,7 +401,6 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
     print("")
     location = get_current_location(game_id)
     wise_man = check_if_wise_man(location, game_id)
-    # print(f"wise_man value = {wise_man}")
     meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
     return next_airport_number, airport_list, money
 
@@ -472,7 +435,6 @@ def get_country_name(airport_icao):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    #print(result)
     return result[0]
 
 # määritä vihje: hae aarremaan ensimmäinen kirjain
@@ -504,9 +466,7 @@ def get_wise_man_question_and_answer(location, game_id):
     cursor = connection.cursor()
     cursor.execute(sql)
     question_id = cursor.fetchone()
-    # print(f'question_id: {question_id}')
     question_id = question_id[0]
-    # print(f'question_id: {question_id}')
     sql = (f'select question, answer from wise_man_questions where id = {question_id};')
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
@@ -524,12 +484,8 @@ def get_wise_man_cost_and_reward(difficulty_level):
 def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
     location = get_current_location(game_id)
     if wise_man is not None:
-        # print(f"Location: {location}")
-        # print("Game_id: ", game_id)
         question = get_wise_man_question_and_answer(location, game_id)[0]
-        # print(f"Question: {question}")
         answer = get_wise_man_question_and_answer(location, game_id)[1]
-        # print(f"Answer: {answer}")
         time.sleep(0.5)
         user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
               f'Input y (yes) or n (no): ')
@@ -541,13 +497,12 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
-            answered_value = get_answered_value(game_id, wise_man)[0]  #
-            # print(f'wise_man arvo: {answered_value}')     #testi
+            answered_value = get_answered_value(game_id, wise_man)[0]
             if answered_value == 1:
                 print("You have answered the question already.")
             else:
                 money -= wise_man_cost
-                update_column_answered(game_id, wise_man)   #tämä funktio on valmis, pitää testata
+                update_column_answered(game_id, wise_man)
                 time.sleep(0.5)
                 print(f'You have {money} €.')
                 time.sleep(0.5)
@@ -576,31 +531,25 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
 
 # päivitä game_airports-taulun sarake answered
 def update_column_answered(game_id, wise_man):
-    # print(game_id)
-    # print(wise_man)
     sql = (f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man};')
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
 
 # hae answered-sarakkeen arvo
 def get_answered_value(game_id, wise_man):
-    # print(f"game_id: {game_id}, wise_man: {wise_man}")
     sql = f'select answered from game_airports where game_id = {game_id} and wise_man_question_id = {wise_man};'
     cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
-    # print(f"Result: {result}")
     return result
 
 # pelaaja häviää - rahat loppuu tai ei riitä mihinkään lentolippuun
 def game_over(game_id):
-    # tähän että game_id pelaaja hävisi tietokantaan?
     message = "Out of money! You cannot afford a ticket. Game over!"
     for char in message:
         print(char, end='', flush=True)
         time.sleep(0.1)
     print()
-    # tähän että game_id pelaaja hävisi tietokantaan?
     sys.exit()
 
 def game_won(game_id, difficulty_level):
@@ -619,5 +568,4 @@ def game_won(game_id, difficulty_level):
     for char in message3:
         print(char, end='', flush=True)
         time.sleep(0.05)
-    # tähän että game_id pelaaja voitti tietokantaan?
     sys.exit()

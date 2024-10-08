@@ -16,6 +16,9 @@ alter table airport add foreign key(iso_country) references country(iso_country)
 -- lisätään country-tauluun capital-sarake
 alter table country add capital varchar(40);
 
+-- poista lentokenttä, josta tulee virheitä (useita sijainteja eri maanosissa)
+delete from airport where ident = 'LPFR';
+
 -- luodaan tietokannan taulut
 
 CREATE table wise_man_questions(
