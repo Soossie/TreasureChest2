@@ -351,6 +351,7 @@ def travel_between_countries(game_id, game_countries, money):
     ticket_price = country_list[next_country_number][3]
     distance1 = country_list[next_country_number][2]
     next_airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
+    time.sleep(0.5)
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n')
     time.sleep(0.5)
     update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
@@ -474,7 +475,6 @@ def check_if_wise_man(location, game_id):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()
-    #print(location)
     if result != None:
         return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
     else:
@@ -503,7 +503,7 @@ def get_wise_man_cost_and_reward(difficulty_level):
     return result
 
 def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
-    print(wise_man)     # kysymyksen id tulostuu
+    print(wise_man)     # kysymyksen id tulostuu, tämän voi poistaa
     location = get_current_location(game_id)
     if wise_man != None:
         question = get_wise_man_question_and_answer(location, game_id)[0]
@@ -519,8 +519,11 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
+            # tähän funktio joka tarkistaa onko kysymykseen vastattu
+            # jos kysymys vastattu niin print("You have answered the question already") ja break?
             money -= wise_man_cost
-            ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
+            update_column_answered(game_id, wise_man)   #tämä funktio on ehkä valmis, pitää testata?
+            time.sleep(0.5)
             print(f'You have {money} €.')
             time.sleep(0.5)
             print(f'Question: {question}')
@@ -545,6 +548,16 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         print('No wise man here.')
         time.sleep(0.5)
     return money
+
+def update_column_answered(game_id, wise_man):
+    sql = (f'insert into game_airports(answered) '
+           f'values(1)'
+           f'where game_id = {game_id} and wise_man_question_id = {wise_man};')
+    cursor = connection.cursor()
+    cursor.execute(sql)
+
+#tähän funktio joka testaa onko kysymykseen vastattu
+
 
 # rahat loppuu tai ei riitä mihinkään lentolippuun
 def game_over(game_id):
