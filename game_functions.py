@@ -503,7 +503,6 @@ def get_wise_man_cost_and_reward(difficulty_level):
     return result
 
 def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
-    print(wise_man)     # kysymyksen id tulostuu, tämän voi poistaa
     location = get_current_location(game_id)
     if wise_man != None:
         question = get_wise_man_question_and_answer(location, game_id)[0]
@@ -519,28 +518,30 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
-            # tähän funktio joka tarkistaa onko kysymykseen vastattu
-            # jos kysymys vastattu niin print("You have answered the question already") ja break?
-            money -= wise_man_cost
-            update_column_answered(game_id, wise_man)   #tämä funktio on ehkä valmis, pitää testata?
-            time.sleep(0.5)
-            print(f'You have {money} €.')
-            time.sleep(0.5)
-            print(f'Question: {question}')
-            user_answer = input('Input answer (a, b or c): ')
-            user_answer = user_answer.lower()
-            while user_answer not in ('a', 'b', 'c'):
-                user_answer = input('Invalid input. Input answer (a, b or c): ')
+            answered_value = get_answered_value(game_id, wise_man)  #tämä on uusi funktio, testaa?
+            if answered_value == 1:
+                print("You have answered the question already.")
+            elif answered_value == 0:
+                money -= wise_man_cost
+                update_column_answered(game_id, wise_man)   #tämä funktio on valmis, pitää testata
+                time.sleep(0.5)
+                print(f'You have {money} €.')
+                time.sleep(0.5)
+                print(f'Question: {question}')
+                user_answer = input('Input answer (a, b or c): ')
                 user_answer = user_answer.lower()
-            if user_answer == answer:
-                money += wise_man_reward
-                print(f'Correct! You won {wise_man_reward} €.')
-                time.sleep(0.5)
-                print('You have {money} €.')
-                time.sleep(0.5)
-            else:
-                print(f'Wrong! Correct answer is {answer}.')
-                time.sleep(0.5)
+                while user_answer not in ('a', 'b', 'c'):
+                    user_answer = input('Invalid input. Input answer (a, b or c): ')
+                    user_answer = user_answer.lower()
+                if user_answer == answer:
+                    money += wise_man_reward
+                    print(f'Correct! You won {wise_man_reward} €.')
+                    time.sleep(0.5)
+                    print('You have {money} €.')
+                    time.sleep(0.5)
+                else:
+                    print(f'Wrong! Correct answer is {answer}.')
+                    time.sleep(0.5)
         elif user_input in ('n', 'no'):
             print('No question this time. Bye!\n')
             time.sleep(0.5)
@@ -549,6 +550,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         time.sleep(0.5)
     return money
 
+# päivitä game_airports-taulun sarake answered
 def update_column_answered(game_id, wise_man):
     sql = (f'insert into game_airports(answered) '
            f'values(1)'
@@ -556,8 +558,13 @@ def update_column_answered(game_id, wise_man):
     cursor = connection.cursor()
     cursor.execute(sql)
 
-#tähän funktio joka testaa onko kysymykseen vastattu
-
+# hae answered-sarakkeen arvo
+def get_answered_value(game_id, wise_man):
+    sql = f'select answered from game_airports where game_id = {game_id} and wise_man_question_id = {wise_man};'
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result
 
 # rahat loppuu tai ei riitä mihinkään lentolippuun
 def game_over(game_id):
