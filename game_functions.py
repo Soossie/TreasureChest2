@@ -478,27 +478,26 @@ def get_clue(game_id):
 
 # tarkista, onko lentokentällä tietäjä
 def check_if_wise_man(location, game_id):
-    location = get_current_location(game_id)
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
-           f'game_id = "{game_id}";')
-    cursor = connection.cursor()
+           f'game_id = {game_id};')
+    cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
     if result != None:
-        return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa None
+        return result[0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa 0
     else:
-        return None
+        return 0
 
 # hae tietäjän kysymys ja vastaus
 def get_wise_man_question_and_answer(location, game_id):
     sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
-           f'game_id = "{game_id}";')
-    cursor = connection.cursor()
+           f'game_id = {game_id};')
+    cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     question_id = cursor.fetchone()
     question_id = question_id[0]
-    sql = (f'select question, answer from wise_man_questions where id = "{question_id}";')
-    cursor = connection.cursor()
+    sql = (f'select question, answer from wise_man_questions where id = {question_id};')
+    cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchall()
     return result[0]   # palauttaa monikkona kysymyksen ja vastauksen
@@ -506,14 +505,14 @@ def get_wise_man_question_and_answer(location, game_id):
 # hae tietäjän maksu ja palkinto
 def get_wise_man_cost_and_reward(difficulty_level):
     sql = f'select wise_man_cost, wise_man_reward from difficulty where level = "{difficulty_level}";'
-    cursor = connection.cursor()
+    cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
     return result
 
 def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
     location = get_current_location(game_id)
-    if wise_man != None:
+    if wise_man != 0:
         question = get_wise_man_question_and_answer(location, game_id)[0]
         answer = get_wise_man_question_and_answer(location, game_id)[1]
         time.sleep(0.5)
@@ -527,10 +526,11 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
-            answered_value = get_answered_value(game_id, wise_man)  #tämä on uusi funktio, testaa?
+            answered_value = get_answered_value(game_id, wise_man)[0]  #
+            print(f'wise_man arvo: {answered_value}')     #testi
             if answered_value == 1:
                 print("You have answered the question already.")
-            elif answered_value == 0:
+            else:
                 money -= wise_man_cost
                 update_column_answered(game_id, wise_man)   #tämä funktio on valmis, pitää testata
                 time.sleep(0.5)
@@ -546,7 +546,7 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
                     money += wise_man_reward
                     print(f'Correct! You won {wise_man_reward} €.')
                     time.sleep(0.5)
-                    print('You have {money} €.')
+                    print(f'You have {money} €.')
                     time.sleep(0.5)
                 else:
                     print(f'Wrong! Correct answer is {answer}.')
@@ -561,16 +561,16 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
 
 # päivitä game_airports-taulun sarake answered
 def update_column_answered(game_id, wise_man):
-    sql = (f'insert into game_airports(answered) '
-           f'values(1)'
-           f'where game_id = {game_id} and wise_man_question_id = {wise_man};')
-    cursor = connection.cursor()
+    print(game_id)
+    print(wise_man)
+    sql = (f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man};')
+    cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
 
 # hae answered-sarakkeen arvo
 def get_answered_value(game_id, wise_man):
     sql = f'select answered from game_airports where game_id = {game_id} and wise_man_question_id = {wise_man};'
-    cursor = connection.cursor()
+    cursor = connection.cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
     return result
