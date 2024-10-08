@@ -351,7 +351,6 @@ def travel_between_countries(game_id, game_countries, money):
     ticket_price = country_list[next_country_number][3]
     distance1 = country_list[next_country_number][2]
     next_airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))
-    time.sleep(0.5)
     print(f'The ticket from {country1} to {country2} costs {ticket_price} € and the distance there is {distance1} km. You have {money} € left.\n')
     time.sleep(0.5)
     update_current_location(game_id, get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
@@ -406,7 +405,6 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
     airport2 = airport_list[next_airport_number][1]
     ticket_price = airport_list[next_airport_number][3]
     distance1 = airport_list[next_airport_number][2]
-    time.sleep(0.5)
     print(f'The ticket from {airport1} to {airport2} costs {ticket_price} € and the distance there is {distance1} km.\n')
     time.sleep(0.5)
     update_current_location(game_id, get_airport_ident_from_name(airport_list[next_airport_number][1]))
@@ -513,14 +511,16 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         time.sleep(0.5)
         user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
               f'Input y (yes) or n (no): ')
-        time.sleep(0.5)
+        if money < wise_man_cost:
+            user_input = 'n'
+            print('You do not have enough money to buy a question.')
+            time.sleep(2)
         user_input = user_input.lower()
         while user_input not in ('y', 'yes', 'n', 'no'):
             user_input = input('Invalid input. Input y (yes) or n (no): ')
         if user_input in ('y', 'yes'):
             money -= wise_man_cost
             ##tässä kohtaa pitää päivittää sql-tauluun answered-kohta
-            time.sleep(0.5)
             print(f'You have {money} €.')
             time.sleep(0.5)
             print(f'Question: {question}')
@@ -531,11 +531,15 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
                 user_answer = user_answer.lower()
             if user_answer == answer:
                 money += wise_man_reward
-                print(f'Correct! You won {wise_man_reward} €.\nYou have {money} €.')
+                print(f'Correct! You won {wise_man_reward} €.')
+                time.sleep(0.5)
+                print('You have {money} €.')
+                time.sleep(0.5)
             else:
                 print(f'Wrong! Correct answer is {answer}.')
+                time.sleep(0.5)
         elif user_input in ('n', 'no'):
-            print('No question this time. Bye!')
+            print('No question this time. Bye!\n')
             time.sleep(0.5)
     else:
         print('No wise man here.')
@@ -544,7 +548,12 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
 
 # rahat loppuu tai ei riitä mihinkään lentolippuun
 def game_over(game_id):
-    print(f'Out of money! You can not afford a ticket. Game over!')
+    # tähän että game_id pelaaja hävisi tietokantaan?
+    message = "Out of money! You cannot afford a ticket. Game over!"
+    for char in message:
+        print(char, end='', flush=True)
+        time.sleep(0.1)
+    print()
     # tähän että game_id pelaaja hävisi tietokantaan?
     sys.exit()
 
