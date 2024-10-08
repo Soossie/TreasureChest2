@@ -566,7 +566,7 @@ def get_answered_value(game_id, wise_man):
     result = cursor.fetchone()
     return result
 
-# rahat loppuu tai ei riitä mihinkään lentolippuun
+# pelaaja häviää - rahat loppuu tai ei riitä mihinkään lentolippuun
 def game_over(game_id):
     # tähän että game_id pelaaja hävisi tietokantaan?
     message = "Out of money! You cannot afford a ticket. Game over!"
