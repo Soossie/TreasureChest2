@@ -408,11 +408,11 @@ def travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost,
 def count_ticket_cost_between_countries(distance):
     if distance < 200:
         ticket_cost = 100 + 1.00 * distance
-    if 200 <= distance <= 500:
+    if 200 <= distance < 500:
         ticket_cost = 100 + 0.70 * distance
-    if 500 < distance < 800:
+    if 500 <= distance < 800:
         ticket_cost = 100 + 0.40 * distance
-    if distance > 800:
+    if distance >= 800:
         ticket_cost = 100 + 0.25 * distance
     return ticket_cost
 
@@ -420,11 +420,11 @@ def count_ticket_cost_between_countries(distance):
 def count_ticket_cost_inside_country(distance):
     if distance < 200:
         ticket_cost = 100 + 1.25 * distance
-    if 200 <= distance <= 500:
+    if 200 <= distance < 500:
         ticket_cost = 100 + 0.85 * distance
-    if 500 < distance < 800:
+    if 500 <= distance < 800:
         ticket_cost = 100 + 0.55 * distance
-    if distance > 800:
+    if distance >= 800:
         ticket_cost = 100 + 0.40 * distance
     return ticket_cost
 
