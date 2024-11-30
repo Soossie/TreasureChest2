@@ -1,5 +1,5 @@
 import itertools
-from game_functions import *
+from game.game_functions import *
 import random
 
 

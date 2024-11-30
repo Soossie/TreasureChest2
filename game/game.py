@@ -1,6 +1,6 @@
 from geopy.units import kilometers
-from pregame import *
-from game_functions import *
+from game.pregame import *
+from game.game_functions import *
 import time
 
 # tallenna muuttujat ja tallenna data tietokantaan
