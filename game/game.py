@@ -1,108 +1,158 @@
+import itertools
+
+from flask import render_template
 from geopy.units import kilometers
-from game.pregame import *
-from game.game_functions import *
-import time
+from game_functions import *
+import random
 
-# tallenna muuttujat ja tallenna data tietokantaan
-(game_id, countries_and_default_airports, game_countries, default_airport, treasure_land_airports,
- difficulty_level, treasure_land_country, treasure_chest_airport, want_clue) = start_game()
 
-# hae kotilentokentän icao-koodi
-home_airport_icao = get_home_airport_icao(game_id)
+class Game:
+    # to-do:
+    # selvitä miten json-datan saa javascriptistä pythoniin
 
-# hae kotilentokentän nimi
-home_airport = get_airport_name(home_airport_icao)
+    # luokan luominen json-datasta
+    @classmethod
+    def from_json(cls, json_data):
+        data = json.loads(json.dumps(json_data))
+        obj = cls()
+        for key, value in data.items():
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+        return obj
 
-# hae kotimaan nimi
-home_country = get_country_name(home_airport_icao)
+    def __init__(self):
+        # tietokannassa
+        self.game_id = None
+        self.player = None
+        self.difficulty_level = None
+        self.money = None
+        self.home_airport = None
+        self.location = None
+        self.co2_consumed = 0  # tallenna tietokantaan
 
-# hae aloitusraha
-money = get_player_money(game_id)
+        # nämä eivät ole tietokannassa, mieti tarvitseeko ne olla ja saako niitä
+        self.treasure_land_clue = None  # riippuu haluaako pelaaja vihjeen vai ei
+        self.visited_country_list = []
+        self.visited_airport_list = []
 
-# hae tietäjän hinta
-wise_man_cost = get_wise_man_cost_and_reward(difficulty_level)[0]
+        # ei tietokantaan
+        self.wise_man_cost = None  #get_wise_man_cost_and_reward(self.difficulty_level)[0]
 
-# hae tietäjän palkinto
-wise_man_reward = get_wise_man_cost_and_reward(difficulty_level)[1]
+    # def start_game(self, player, difficulty_level, want_clue):  # argumentit haetaan javascriptin puolelta
+    def start_game(self):
+        # kysyy pelaajan nimen
+        self.player = input('Input player name: ')
 
-# print(treasure_land_country) # debug
-# print(treasure_chest_airport) # debug
+        # esittelee vaikeustasot
+        print('\nDifficulty levels: easy, normal, hard.\n'
+              'Difficulty level determines how many countries and airports the game generates.')
 
-# hae vihje jos pelaaja haluaa
-if want_clue == True:
-    clue = get_clue(game_id)
-else:
-    clue = ''
+        self.difficulty_level = False
+        while not self.difficulty_level:
+            # kysyy käyttäjältä vaikeustason ja muuttaa syöteen pieniksi kirjaimiksi
+            difficulty_level_input = input('Choose difficulty level. Input e (easy), n (normal), h (hard): ').lower()
 
-# aloitustilanne
-print(f'\nYou are in {home_country} at {home_airport}. You have {money} €.')
-time.sleep(2)
-print(f'Where would you like to travel?')
-print(clue)
-time.sleep(2)
-print(f'Options: ')
-time.sleep(0.5)
-next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
+            # valitsee vaikeustason käyttäjän antaman syötteen perusteella
+            if difficulty_level_input in ('e', 'easy'):
+                self.difficulty_level = 'easy'
+            elif difficulty_level_input in ('n', 'normal'):
+                self.difficulty_level = 'normal'
+            elif difficulty_level_input in ('h', 'hard'):
+                self.difficulty_level = 'hard'
+            else:
+                print('Invalid input.')
 
-# toista kunnes pelaaja saapuu aarremaahan
-while country_list[next_country_number][1] != treasure_land_country:
-    if money <= 0:
-        game_over(game_id)
-    airport_name = get_airport_name(get_default_airport_ident_for_country(game_id, (country_list[next_country_number][1])))
-    print(f'\nYou have landed at {airport_name}. The treasure is not in this country.')
-    time.sleep(0.5)
-    print(f'Where would you like to travel next?')
-    time.sleep(0.5)
-    print(clue)
-    time.sleep(0.5)
-    print(f'Options: ')
-    next_country_number, country_list, money = travel_between_countries(game_id, game_countries, money)
+        # hae vihje
+        want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
+        if want_clue in ('y', 'yes'):
+            want_clue = True
+        else:
+            want_clue = False
 
-# muutos maiden välillä liikkumisesta maiden sisällä liikkumiseen, kun oikeassa maassa
-print(f'\nYou have landed at {get_airport_name(get_default_airport_ident_for_country(game_id, country_list[next_country_number][1]))}. You have {money} € left. The treasure is in this country!')
-time.sleep(0.5)
-location = get_current_location(game_id)
-wise_man = check_if_wise_man(location, game_id)
-meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money)
-print('Now you must find the treasure chest hidden in one of the airports. Where would you like to travel next?')
-time.sleep(2)
-print('Options: ')
-time.sleep(0.5)
-next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
+        # määritä pelaajan aloitusrahan määrä vaikeustason mukaan
+        self.money = get_default_money(self.difficulty_level)
 
-# toista kunnes pelaaja saapuu aarrelentokentälle
-while airport_list[next_airport_number][1] != treasure_chest_airport:
-    if money <= 0:
-        game_over(game_id)
-    time.sleep(0.5)
-    print(f'You have landed at {airport_list[next_airport_number][1]}. You have {money} € left. The treasure chest is not here.')
-    time.sleep(0.5)
-    print('Where would you like to travel next?')
-    time.sleep(0.5)
-    print('Options: ')
-    next_airport_number, airport_list, money = travel_inside_country(game_id, treasure_land_airports, money, wise_man_cost, wise_man_reward)
+        # arvo maat ja maille oletuslentokentät
+        countries_and_default_airport_icaos = {}
+        for country_name in get_game_countries(self.difficulty_level):
+            default_airport_icao = get_random_default_airport_icao_for_country(country_name)
+            countries_and_default_airport_icaos.update({country_name: default_airport_icao})
 
-# pelaaja voittaa
-print(f'You have found the treasure chest at {get_airport_name(get_current_location(game_id))}! Congratulations!\nYou have {money} € left.')
-time.sleep(2)
-game_won(game_id, difficulty_level)
+        # valitse yksi maista aloitusmaaksi ja maan oletuslentokenttä aloituslentokentäksi
+        home_country, self.home_airport = random.choice(list(countries_and_default_airport_icaos.items()))
+        self.location = self.home_airport
 
-# kehitysehdotus - kysymys aarrearkun luona
-"""
-print('However, you must answer the the Chest\'s riddle to claim the treasure or else the treasure will be lost forever!\n')
-time.sleep(1)
-question = input('Final question: x or y?')
-if question == 'x':
-    print('Correct! The treasure is yours!')
-    time.sleep(1)
-    print('')
-    game_won(game_id, difficulty_level)
-else:
-    tenthofmoney = money / 10
-    print("Oh no! You answered wrong and the Treasure is draining you of your money!")
-    for i in range(10) and money > 0:
-        money = int(money - tenthofmoney)
-        time.sleep(0.5)
-        print(f"{money}€")
-    game_over(game_id)
-"""
+        # lisää aloitusmaa pelaajan käytyjen maiden listaan
+        self.visited_country_list.append(home_country)
+
+        # arvo aarremaa
+        treasure_land_country, treausure_land_default_airport_icao = False, False
+        while not treasure_land_country:
+            country = random.choice(list(countries_and_default_airport_icaos.keys()))
+
+            # aarremaa ei saa olla pelaajan aloitusmaa
+            if country != home_country:
+                treasure_land_country = country
+
+        # arvo aarremaalle lentokentät
+        treasure_land_airport_icaos = get_treasure_land_airport_icaos(self.difficulty_level, treasure_land_country,
+                                                                      treausure_land_default_airport_icao)
+
+        # arvo maan sisältä aarrearkun lentokenttä
+        treasure_land_default_airport_icao = countries_and_default_airport_icaos[treasure_land_country]
+        treasure_chest_airport_icao = random.choice(treasure_land_airport_icaos)
+
+        # testaa että aarrearkun lentokenttä ei ole sama kuin maan oletuslentokenttä
+        while treasure_land_default_airport_icao == treasure_chest_airport_icao:
+            treasure_chest_airport_icao = random.choice(treasure_land_airport_icaos)
+
+        # selvitä kuinka monta tietäjää pelissä on
+        wise_man_count = get_wise_man_count(self.difficulty_level)
+
+        # arvo tietäjien lentokentät
+        wise_man_airports = [treasure_land_default_airport_icao]
+        wise_man_airports.extend(random.sample(list(treasure_land_airport_icaos), k=wise_man_count - 1))
+
+        # listalla ei saa olla aarrearkun lentokenttää, mutta listalla pitää olla maan oletuslentokenttä
+        # poista aarrearkun lentokenttä tietäjien lentokentistä jos se on listassa
+        while treasure_chest_airport_icao in wise_man_airports:
+            wise_man_airports.remove(treasure_chest_airport_icao)
+
+            # arvo uusi lentokenttä, testaa että kenttä ei ole jo listassa
+            new_airport = random.choice(list(treasure_land_airport_icaos))
+            while new_airport in wise_man_airports:
+                new_airport = random.choice(list(treasure_land_airport_icaos))
+
+            # lisää arvottu uusi lentokenttä listaan
+            wise_man_airports.append(new_airport)
+
+        # tallenna pelaajan tiedot game tauluun
+        input_player_info(self.player, self.money, self.home_airport, self.location, self.difficulty_level)
+
+        # hae juuri tehdyn pelin id (viimeinen id)
+        self.game_id = get_last_game_id()
+
+        # tallenna oletuslentokenttien tiedot tietokantaan
+        for airport_icao in itertools.chain(countries_and_default_airport_icaos.values(), treasure_land_airport_icaos):
+
+            question_id = False
+            if airport_icao in wise_man_airports:
+                if airport_icao == treasure_land_default_airport_icao:
+                    question_id = get_random_question_id()
+                else:
+                    question_id = get_random_unused_question_id(self.game_id)
+
+            answered = 0
+            has_treasure = 1 if bool(airport_icao == treasure_chest_airport_icao) else 0
+            is_default_airport = 1 if bool(airport_icao in countries_and_default_airport_icaos.values()) else 0
+
+            save_airport_to_game_airports(self.game_id, airport_icao, question_id, answered, has_treasure,
+                                          is_default_airport)
+
+        # sijoita vihje muuttujaan
+        if want_clue:
+            self.treasure_land_clue = get_clue(self.game_id)
+
+    # palauttaa luokan tiedot json-muodossa
+    def get_game_info(self):
+        return self.__dict__

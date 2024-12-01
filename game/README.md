@@ -20,3 +20,16 @@ To play, you must have MariaDB and mysql installed.
     SOURCE creation_script.sql;
     ```
     The game can be run in a code editor, such as PyCharm or VS Code
+
+
+Ennen pelin suoritusta on muodostettava yhteys tietokantaan. 
+Luo **.env** niminen tiedosto game-kansioon ja kopioi siihen seuraavat tiedot:
+
+```python
+HOST=localhost
+DB_NAME=treasure_chest
+DB_USER=treasure
+DB_PASS=chest
+```
+
+Voit muokata tietoja mikäli tietokantasi on erilainen.
