@@ -33,3 +33,4 @@ DB_PASS=chest
 ```
 
 Voit muokata tietoja mikäli tietokantasi on erilainen.
+Lataa myös paketti python-dotenv.
