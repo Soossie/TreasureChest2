@@ -132,7 +132,7 @@ class Game:
         # hae juuri tehdyn pelin id (viimeinen id)
         self.game_id = get_last_game_id()
 
-        # tallenna oletuslentokenttien tiedot tietokantaan
+        # tallenna oletuslentokenttien tiedot tietokantaan      ## onko myös aarremaan lentokentät tässä??
         for airport_icao in itertools.chain(countries_and_default_airport_icaos.values(), treasure_land_airport_icaos):
 
             question_id = False
@@ -144,7 +144,7 @@ class Game:
 
             answered = 0
             visited = 0
-            has_advice_guy = 0
+            has_advice_guy = 0  # tähän pitää muokata 1 if bool(jos on tietäjä) else 0
             has_treasure = 1 if bool(airport_icao == treasure_chest_airport_icao) else 0
             is_default_airport = 1 if bool(airport_icao in countries_and_default_airport_icaos.values()) else 0
 

@@ -553,3 +553,8 @@ def get_visited_value(game_id, airport_icao):
     cursor.execute(sql)
     result = cursor.fetchone()
     return result
+
+# hae neuvo
+def get_advice():
+    # tähän api, joka hakee randomilla neuvon
+    pass
