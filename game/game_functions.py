@@ -106,9 +106,9 @@ def get_wise_man_count(difficulty_level):
     return wise_man_count
 
 # lisää pelaajan tiedot
-def input_player_info(screen_name, money, home_airport, location, difficulty_level):
-    sql = (f'insert into game(screen_name, money, home_airport, location, difficulty_level) '
-           f'values("{screen_name}", "{money}", "{home_airport}", "{location}", "{difficulty_level}");')
+def input_player_info(screen_name, money, home_airport, location, difficulty_level, co2_consumed):
+    sql = (f'insert into game(screen_name, money, home_airport, location, difficulty_level, co2_consumed) '
+           f'values("{screen_name}", "{money}", "{home_airport}", "{location}", "{difficulty_level}", "{co2_consumed}");')
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
 
@@ -198,6 +198,7 @@ def get_current_location(game_id):
     result = cursor.fetchone()
     return result[0]
 
+# hae palkinto, arvo vaikeustason mukaan
 def get_random_reward(difficulty_level):
     sql = f'select name, id from rewards where difficulty_level = "{difficulty_level}" order by rand() limit 1;'
     cursor = db.get_conn().cursor()
@@ -205,6 +206,7 @@ def get_random_reward(difficulty_level):
     result = cursor.fetchone()
     return result[0]
 
+# päivitä sijainti
 def update_current_location(game_id, new_location_icao):
     sql = f'update game set location = "{new_location_icao}" where id = "{game_id}";'
     cursor = db.get_conn().cursor()
@@ -508,3 +510,46 @@ def get_game_info(game_id):
 def get_co2_consumption(start_icao, end_icao):
     distance = get_distance_between_airports(start_icao, end_icao)
     return math.floor(0.140 * distance)
+
+# hae advice guy rahasumma
+def get_advice_guy_reward(difficulty_level):
+    sql = (f'select advice_guy_reward from difficulty '
+           f'where level = "{difficulty_level}";')
+    cursor = db.get_conn().cursor()
+    cursor.execute(sql)
+    advice_guy_reward = cursor.fetchone()[0]
+    return advice_guy_reward
+
+# hae advice guy määrät
+def get_advice_guy_count(difficulty_level):
+    sql = (f'select advice_guys_in_countries, advice_guys_in_airports from difficulty '
+           f'where level = "{difficulty_level}";')
+    cursor = db.get_conn().cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    advice_guys_in_countries = result[0][0]
+    advice_guys_in_airports = result[0][1]
+    return advice_guys_in_countries, advice_guys_in_airports
+
+# tarkista onko advice guy lentokentällä
+def check_if_advice_guy(location, game_id):
+    sql = (f'select has_advice_guy from game_airports where airport_ident = "{location}" and '
+           f'game_id = {game_id};')
+    cursor = db.get_conn().cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result   # jos on advice guy, palautuu 1, muuten 0
+
+# päivitä game_airports-taulun sarake visited
+def update_column_visited(game_id, location):
+    sql = (f'update game_airports set visited = 1 where game_id = {game_id} and airport_ident = {location};')
+    cursor = db.get_conn().cursor(buffered=True)
+    cursor.execute(sql)
+
+# hae visited-sarakkeen arvo
+def get_visited_value(game_id, airport_icao):
+    sql = f'select visited from game_airports where game_id = {game_id} and airport_ident = {airport_icao};'
+    cursor = db.get_conn().cursor(buffered=True)
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result

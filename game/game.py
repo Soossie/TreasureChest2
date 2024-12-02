@@ -28,7 +28,7 @@ class Game:
         self.money = None
         self.home_airport = None
         self.location = None
-        self.co2_consumed = 0  # tallenna tietokantaan
+        self.co2_consumed = 0  # tallenna tietokantaan OK
 
         # nämä eivät ole tietokannassa, mieti tarvitseeko ne olla ja saako niitä
         self.treasure_land_clue = None  # riippuu haluaako pelaaja vihjeen vai ei
@@ -126,8 +126,8 @@ class Game:
             # lisää arvottu uusi lentokenttä listaan
             wise_man_airports.append(new_airport)
 
-        # tallenna pelaajan tiedot game tauluun
-        input_player_info(self.player, self.money, self.home_airport, self.location, self.difficulty_level)
+        # tallenna pelaajan tiedot game-tauluun
+        input_player_info(self.player, self.money, self.home_airport, self.location, self.difficulty_level, self.co2_consumed)
 
         # hae juuri tehdyn pelin id (viimeinen id)
         self.game_id = get_last_game_id()
@@ -143,6 +143,8 @@ class Game:
                     question_id = get_random_unused_question_id(self.game_id)
 
             answered = 0
+            visited = 0
+            has_advice_guy = 0
             has_treasure = 1 if bool(airport_icao == treasure_chest_airport_icao) else 0
             is_default_airport = 1 if bool(airport_icao in countries_and_default_airport_icaos.values()) else 0
 
