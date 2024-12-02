@@ -8,7 +8,7 @@ import random
 
 class Game:
     # to-do:
-    # selvitä miten json-datan saa javascriptistä pythoniin
+    # selvitä miten json-datan saa javascriptistä pythoniin (tarvitseeko?)
 
     # luokan luominen json-datasta
     @classmethod
@@ -20,34 +20,48 @@ class Game:
                 setattr(obj, key, value)
         return obj
 
+    @classmethod
+    def from_game_id(cls, game_id):
+        data = get_game_info_from_database(game_id)
+        obj = cls()
+        for key, value in data.items():
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+
+        obj.wise_man_cost, obj.wise_man_reward = get_wise_man_cost_and_reward(obj.difficulty_level)
+        # obj.advice_guy_reward = ?
+        return obj
+
     def __init__(self):
         # tietokannassa
-        self.game_id = None
-        self.player = None
+        self.id = None
+        self.screen_name = None
         self.difficulty_level = None
         self.money = None
         self.home_airport = None
         self.location = None
-        self.co2_consumed = 0  # tallenna tietokantaan OK
+        self.co2_consumed = 0
 
         # nämä eivät ole tietokannassa, mieti tarvitseeko ne olla ja saako niitä
-        self.treasure_land_clue = None  # riippuu haluaako pelaaja vihjeen vai ei
-        self.visited_country_list = []
-        self.visited_airport_list = []
+        # treasure land clue lokaalisti javascriptissä
+        #self.treasure_land_clue = None  # riippuu haluaako pelaaja vihjeen vai ei
+        #self.visited_country_list = []  # hae visited sarakkeesta game_airports taulusta icao koodin perusteella maa
+        self.visited_airport_list = []  # 1 tai 0, visited sarake game_airports taulusta
 
         # ei tietokantaan
-        self.wise_man_cost = None  #get_wise_man_cost_and_reward(self.difficulty_level)[0]
+        self.wise_man_cost = None
+        self.wise_man_reward = None
+        self.advice_guy_reward = None
 
     # def start_game(self, player, difficulty_level, want_clue):  # argumentit haetaan javascriptin puolelta
     def start_game(self):
         # kysyy pelaajan nimen
-        self.player = input('Input player name: ')
+        self.screen_name = input('Input player name: ')
 
         # esittelee vaikeustasot
         print('\nDifficulty levels: easy, normal, hard.\n'
               'Difficulty level determines how many countries and airports the game generates.')
 
-        self.difficulty_level = False
         while not self.difficulty_level:
             # kysyy käyttäjältä vaikeustason ja muuttaa syöteen pieniksi kirjaimiksi
             difficulty_level_input = input('Choose difficulty level. Input e (easy), n (normal), h (hard): ').lower()
@@ -62,12 +76,15 @@ class Game:
             else:
                 print('Invalid input.')
 
+        self.wise_man_cost, self.wise_man_reward = get_wise_man_cost_and_reward(self.difficulty_level)
+        self.advice_guy_reward = get_advice_guy_cost_and_reward(self.difficulty_level)
+
         # hae vihje
-        want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
-        if want_clue in ('y', 'yes'):
-            want_clue = True
-        else:
-            want_clue = False
+        #want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
+        #if want_clue in ('y', 'yes'):
+        #    want_clue = True
+        #else:
+        #    want_clue = False
 
         # määritä pelaajan aloitusrahan määrä vaikeustason mukaan
         self.money = get_default_money(self.difficulty_level)
@@ -126,13 +143,34 @@ class Game:
             # lisää arvottu uusi lentokenttä listaan
             wise_man_airports.append(new_airport)
 
-        # tallenna pelaajan tiedot game-tauluun
-        input_player_info(self.player, self.money, self.home_airport, self.location, self.difficulty_level, self.co2_consumed)
+        # hae arvice guyn määrä ja arvo lentokentät
+        advice_guys_in_countries_count, advice_guys_in_treasure_land_count = get_advice_guy_count(self.difficulty_level)
+
+        # oletuslentokentillä
+        advice_guy_airports_in_countries = []
+        while len(advice_guy_airports_in_countries) < advice_guys_in_countries_count:
+            new_airport = random.choice(list(countries_and_default_airport_icaos.values()))
+            # lentokentällä ei saa olla tietäjä, aarre tai pelaajan kotikenttä
+            if new_airport in advice_guy_airports_in_countries or new_airport in wise_man_airports:
+                continue
+            advice_guy_airports_in_countries.append(new_airport)
+
+        # aarremaan sisällä
+        advice_guy_airports_in_treasure_land = []
+        while len(advice_guy_airports_in_treasure_land) < advice_guys_in_treasure_land_count:
+            new_airport = random.choice(list(treasure_land_airport_icaos))
+            # lentokentällä ei saa olla tietäjä, aarre tai pelaajan kotikenttä
+            if new_airport in advice_guy_airports_in_treasure_land or new_airport in wise_man_airports or new_airport in advice_guy_airports_in_countries:
+                continue
+            advice_guy_airports_in_treasure_land.append(new_airport)
+
+        # tallenna pelaajan tiedot game tauluun
+        input_player_info(self.screen_name, self.money, self.home_airport, self.location, self.difficulty_level, self.co2_consumed)
 
         # hae juuri tehdyn pelin id (viimeinen id)
-        self.game_id = get_last_game_id()
+        self.id = get_last_game_id()
 
-        # tallenna oletuslentokenttien tiedot tietokantaan      ## onko myös aarremaan lentokentät tässä??
+        # tallenna oletuslentokenttien tiedot tietokantaan
         for airport_icao in itertools.chain(countries_and_default_airport_icaos.values(), treasure_land_airport_icaos):
 
             question_id = False
@@ -140,20 +178,19 @@ class Game:
                 if airport_icao == treasure_land_default_airport_icao:
                     question_id = get_random_question_id()
                 else:
-                    question_id = get_random_unused_question_id(self.game_id)
+                    question_id = get_random_unused_question_id(self.id)
 
             answered = 0
-            visited = 0
-            has_advice_guy = 0  # tähän pitää muokata 1 if bool(jos on tietäjä) else 0
             has_treasure = 1 if bool(airport_icao == treasure_chest_airport_icao) else 0
             is_default_airport = 1 if bool(airport_icao in countries_and_default_airport_icaos.values()) else 0
-
-            save_airport_to_game_airports(self.game_id, airport_icao, question_id, answered, has_treasure,
-                                          is_default_airport)
+            has_advice_guy = 1 if bool(airport_icao in advice_guy_airports_in_countries or airport_icao in advice_guy_airports_in_treasure_land) else 0
+            visited = 0
+            save_airport_to_game_airports(self.id, airport_icao, question_id, answered, has_treasure,
+                                          is_default_airport, has_advice_guy, visited)
 
         # sijoita vihje muuttujaan
-        if want_clue:
-            self.treasure_land_clue = get_clue(self.game_id)
+        #if want_clue:
+        #    self.treasure_land_clue = get_clue(self.id)
 
     # palauttaa luokan tiedot json-muodossa
     def get_game_info(self):

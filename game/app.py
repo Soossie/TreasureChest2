@@ -9,6 +9,60 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+# to-do:
+# päivitä visited_airport_list
+# lisää co2 päästöjä tietokantaan jokaisen lennon jälkeen
+
+
+# poista rahaa
+@app.route('/money/remove/<game_id>/<amount>')
+def money_remove(game_id, amount):
+    try:
+        status_code = 200
+
+        original_money = get_player_money(game_id)
+        add_or_remove_money(game_id, int(amount), remove=True)
+        new_money = get_player_money(game_id)
+
+        response = {
+            'game_id': game_id,
+            'original_money': original_money,
+            'new_money': new_money,
+        }
+    except ValueError:
+        status_code = 400
+        response = {
+            'status': status_code,
+            'description': 'This is error message',
+        }
+    json_response = json.dumps(response)
+    return Response(response=json_response, status=status_code, mimetype='application/json')
+
+
+# lisää rahaa
+@app.route('/money/add/<game_id>/<amount>')
+def money_add(game_id, amount):
+    try:
+        status_code = 200
+
+        original_money = get_player_money(game_id)
+        add_or_remove_money(game_id, int(amount), add=True)
+        new_money = get_player_money(game_id)
+
+        response = {
+            'game_id': game_id,
+            'original_money': original_money,
+            'new_money': new_money,
+        }
+    except ValueError:
+        status_code = 400
+        response = {
+            'status': status_code,
+            'description': 'This is error message',
+        }
+    json_response = json.dumps(response)
+    return Response(response=json_response, status=status_code, mimetype='application/json')
+
 
 # lentää pelaajan uudelle lentokentälle
 @app.route('/fly-to/<game_id>/<destination_icao>')
@@ -63,8 +117,9 @@ def game_info(game_id):
     try:
         status_code = 200
         # tapa millä tiedot haetaan ja mitä haetaan on vielä työn alla, ei lopullinen versio!
+        game = Game.from_game_id(game_id)
         response = {
-            'game_info': get_game_info(game_id),
+            'game_info': game.get_game_info(),
         }
     except ValueError:
         status_code = 400

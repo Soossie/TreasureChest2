@@ -112,17 +112,17 @@ def input_player_info(screen_name, money, home_airport, location, difficulty_lev
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
 
-def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport):
+def save_airport_to_game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport, has_advice_guy, visited):
     # parannusehdotus: yhdistä kyselyt yhdeksi. ongelma on sijoittaa NULL arvo tietokantaan, mutta se on myös jo oletusarvo
 
     if not wise_man_question_id:
         # ei tietäjän kysymystä
-        sql = (f'insert into game_airports(game_id, airport_ident, answered, has_treasure, is_default_airport) '
-               f'values("{game_id}", "{airport_ident}", "{answered}", "{has_treasure}", "{is_default_airport}");')
+        sql = (f'insert into game_airports(game_id, airport_ident, answered, has_treasure, is_default_airport, has_advice_guy, visited) '
+               f'values("{game_id}", "{airport_ident}", "{answered}", "{has_treasure}", "{is_default_airport}", "{has_advice_guy}", "{visited}");')
 
     else:
-        sql = (f'insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport) '
-               f'values("{game_id}", "{airport_ident}", "{wise_man_question_id}", "{answered}", "{has_treasure}", "{is_default_airport}");')
+        sql = (f'insert into game_airports(game_id, airport_ident, wise_man_question_id, answered, has_treasure, is_default_airport, has_advice_guy, visited) '
+               f'values("{game_id}", "{airport_ident}", "{wise_man_question_id}", "{answered}", "{has_treasure}", "{is_default_airport}", "{has_advice_guy}", "{visited}");')
 
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
@@ -353,6 +353,7 @@ def count_ticket_cost(current_location_icao, destination_icao):
     for max_distance, multiplier in price:
         if distance < max_distance:
             return 100 + multiplier * distance
+    return 100  # failsafe
 
 # määritä vihje: hae aarremaan ensimmäinen kirjain
 def get_clue(game_id):
@@ -374,10 +375,6 @@ def check_if_wise_man(location, game_id):
     result = cursor.fetchall()
     # jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa 0
     return result[0][0] if result is not None else result
-    #if result is not None:
-    #    return result[0][0]    #jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa 0
-    #else:
-    #    return result
 
 # hae tietäjän kysymys ja vastaus
 def get_wise_man_question_and_answer(location, game_id):
@@ -400,6 +397,15 @@ def get_wise_man_cost_and_reward(difficulty_level):
     result = cursor.fetchone()
     return result
 
+# hae tietotyypin palkinto
+def get_advice_guy_cost_and_reward(difficulty_level):
+    sql = f'select advice_guy_reward from difficulty where level = "{difficulty_level}";'
+    cursor = db.get_conn().cursor(buffered=True)
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result
+
+"""
 def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
     location = get_current_location(game_id)
     if wise_man is not None:
@@ -447,10 +453,11 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
         print('No wise man here.')
         time.sleep(0.5)
     return money
+"""
 
 # päivitä game_airports-taulun sarake answered
 def update_column_answered(game_id, wise_man):
-    sql = (f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man};')
+    sql = f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man};'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
 
@@ -493,7 +500,7 @@ def game_won(game_id, difficulty_level):
 
 # hakee tietokannasta game-taulusta tietyn pelin tiedot
 # (id, screen_name, money, home_airport, location, difficulty_level)
-def get_game_info(game_id):
+def get_game_info_from_database(game_id):
     sql = f'select * from game where id = "{game_id}";'
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
@@ -510,6 +517,16 @@ def get_game_info(game_id):
 def get_co2_consumption(start_icao, end_icao):
     distance = get_distance_between_airports(start_icao, end_icao)
     return math.floor(0.140 * distance)
+
+def add_or_remove_money(game_id, amount, add=False, remove=False):
+    if not add and not remove:
+        return
+    money = get_player_money(game_id)
+    new_money = money + amount if add else money - amount
+
+    sql = f'update game set money = "{new_money}" where id = "{game_id}";'
+    cursor = db.get_conn().cursor()
+    cursor.execute(sql)
 
 # hae advice guy rahasumma
 def get_advice_guy_reward(difficulty_level):
@@ -542,7 +559,7 @@ def check_if_advice_guy(location, game_id):
 
 # päivitä game_airports-taulun sarake visited
 def update_column_visited(game_id, location):
-    sql = (f'update game_airports set visited = 1 where game_id = {game_id} and airport_ident = {location};')
+    sql = f'update game_airports set visited = 1 where game_id = {game_id} and airport_ident = {location};'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
 
