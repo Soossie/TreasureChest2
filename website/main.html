@@ -7,6 +7,7 @@
     <title>Treasure Chest 2</title>
     <link rel="stylesheet" href="website.css">
     <script src="website.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- tähän script leaflet-->
 </head>
 
@@ -18,12 +19,11 @@
                 Treasure Chest 2.0 <ion-icon name="airplane-outline"></ion-icon>
                 </h1>
                     <ul class="flex-wrap">
-                        <!-- popup -->
                         <li>
-                            <a class="button" href="about.html">About</a>
+                            <a class="button" href="#" onclick="alert('Lorem ipsum')">About</a>
                         </li>
                         <li>
-                            <a class="button" href="rules.html">Rules</a>
+                            <a class="button" href="#" onclick="alert('Lorem ipsum')">Rules</a>
                         </li>
                     </ul>
             </nav>
@@ -40,32 +40,32 @@
                     </header>
                     <table id="status">
                         <tr>
-                            <td></td>       <!-- tähän tulee symboli-->
-                            <td>Player: </td>
-                            <td>nimimerkki1</td>                           </td>
+                            <td><i class="fas fa-user"></i></td>
+                            <td></i> Player: </td>
+                            <td>nimimerkki1</td>                           
                         </tr>
 
                         <tr>
-                            <td></td>
-                            <td>Money: </td>
+                            <td><i class="fas fa-euro-sign"></i></td>
+                            <td></i> Money: </td>
                             <td>1500 €</td>
                         </tr>
 
                         <tr>
-                            <td></td>
-                            <td>Location: </td>
+                            <td><i class="fas fa-location-pin"></i></td>
+                            <td></i> Location: </td>
                             <td>Helsinki-Vantaa Airport</td>
                         </tr>
 
                         <tr>
-                            <td></td>
-                            <td>Co2 consumed: </td>
+                            <td><i class="fas fa-circle"></i></td>
+                            <td></i> Co2 consumed: </td>
                             <td>430 kg</td>
                         </tr>
 
                         <tr>
-                            <td></td>
-                            <td>Clue: </td>
+                            <td><i class="fas fa-question"></i></td>
+                            <td></i>Clue: </td>
                             <td>The treasure is hidden in the country whose first letter is F.</td>
                         </tr>
                     </table>
@@ -77,27 +77,27 @@
                         <h2>Map symbols</h2>
                         <table id="symbols">
                         <tr>
-                            <td></td>   <!-- symboli tähän -->
+                            <td><i class="fas fa-location-dot current-location"></i></td>
                             <td>Current location</td>
                         </tr>
 
                         <tr>
-                            <td></td>   <!-- symboli tähän -->
+                            <td><i class="fas fa-circle travellable"></i></td>
                             <td>Travellable</td>
                         </tr>
 
                         <tr>
-                            <td></td>   <!-- symboli tähän -->
+                            <td><i class="fas fa-circle travellable-visited"></i></td>
                             <td>Travellable (visited)</td>
                         </tr>
 
                         <tr>
-                            <td></td>   <!-- symboli tähän -->
+                            <td><i class="fas fa-circle untravellable"></i></td>
                             <td>Untravellable</td>
                         </tr>
 
                         <tr>
-                            <td></td>   <!-- symboli tähän -->
+                            <td><i class="fas fa-circle untravellable-visited"></i></td>
                             <td>Untravellable (visited)</td>
                         </tr>
                     </table>

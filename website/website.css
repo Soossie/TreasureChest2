@@ -7,3 +7,102 @@
   transition: all 300ms;
 }
 
+nav ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-evenly;
+  color: white;
+  margin-left: auto;
+}
+
+nav ul li {
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 300ms;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: black;
+}
+
+nav ul li:nth-child(2) {
+  margin-right: 0;
+}
+
+nav ul li:hover {
+  background-color:black;
+}
+
+nav ul li a:hover {
+  color: white;
+}
+
+nav {
+  display: flex;
+  margin-left: auto;
+}
+
+body {
+  margin: 1rem;
+  display: flex;
+  margin-top: 0;
+}
+
+.boxes {
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  max-width: 300px;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 300ms;
+}
+
+.flex-wrap {
+  display: flex;
+}
+
+main img {
+  width: 100%;
+}
+
+main>div {
+  flex: auto;
+  height: 100%;
+  margin: 1rem;
+  width: 200%;
+}
+
+.current-location {
+  color: lightblue;
+}
+
+.travellable {
+  color: green;
+}
+
+.travellable-visited {
+  color: darkgreen;
+}
+
+.untravellable {
+  color: red;
+}
+
+.untravellable-visited {
+  color: darkred;
+}
