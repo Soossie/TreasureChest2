@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from game_functions import *
 from game import Game
+from airport import GameAirports, Airport
 
 
 app = Flask(__name__)
@@ -12,7 +13,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 # to-do:
 # päivitä visited_airport_list
 # lisää co2 päästöjä tietokantaan jokaisen lennon jälkeen
-
+# matkustaessa tarkista onko lentokentällä tietäjä, advice guy, onke se aarremaan oletuslentokenttä, onko siellä aarre
 
 # poista rahaa
 @app.route('/money/remove/<game_id>/<amount>')
@@ -140,6 +141,8 @@ def new_game():
         game.start_game()
         response = {
             'game_info': game.get_game_info(),
+            'current_location_info': GameAirports(game.id).get_current_airport_info_json(),
+            'game_airports_info': GameAirports(game.id).get_all_game_airports_info_json()
             #'testvalue.visited_country_list': game.visited_country_list,  # testiarvo. esimerkki miten olion muuttujia voi tulostaa
         }
     except ValueError:

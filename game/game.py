@@ -29,11 +29,11 @@ class Game:
                 setattr(obj, key, value)
 
         obj.wise_man_cost, obj.wise_man_reward = get_wise_man_cost_and_reward(obj.difficulty_level)
-        # obj.advice_guy_reward = ?
+        obj.advice_guy_reward = get_advice_guy_reward(obj.difficulty_level)
         return obj
 
     def __init__(self):
-        # tietokannassa
+        # tietokannassa, nimet täytyy olla samat kuin tietokannassa
         self.id = None
         self.screen_name = None
         self.difficulty_level = None
@@ -46,7 +46,7 @@ class Game:
         # treasure land clue lokaalisti javascriptissä
         #self.treasure_land_clue = None  # riippuu haluaako pelaaja vihjeen vai ei
         #self.visited_country_list = []  # hae visited sarakkeesta game_airports taulusta icao koodin perusteella maa
-        self.visited_airport_list = []  # 1 tai 0, visited sarake game_airports taulusta
+        self.visited_airports_list = []  # 1 tai 0, visited sarake game_airports taulusta
 
         # ei tietokantaan
         self.wise_man_cost = None
@@ -77,7 +77,7 @@ class Game:
                 print('Invalid input.')
 
         self.wise_man_cost, self.wise_man_reward = get_wise_man_cost_and_reward(self.difficulty_level)
-        self.advice_guy_reward = get_advice_guy_cost_and_reward(self.difficulty_level)
+        self.advice_guy_reward = get_advice_guy_reward(self.difficulty_level)
 
         # hae vihje
         #want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
@@ -98,9 +98,6 @@ class Game:
         # valitse yksi maista aloitusmaaksi ja maan oletuslentokenttä aloituslentokentäksi
         home_country, self.home_airport = random.choice(list(countries_and_default_airport_icaos.items()))
         self.location = self.home_airport
-
-        # lisää aloitusmaa pelaajan käytyjen maiden listaan
-        #self.visited_country_list.append(home_country)
 
         # arvo aarremaa
         treasure_land_country, treausure_land_default_airport_icao = False, False
@@ -143,31 +140,33 @@ class Game:
             # lisää arvottu uusi lentokenttä listaan
             wise_man_airports.append(new_airport)
 
-        # hae arvice guyn määrä ja arvo lentokentät
+        # hae advice guyn määrä ja arvo lentokentät
         advice_guys_in_countries_count, advice_guys_in_treasure_land_count = get_advice_guy_count(self.difficulty_level)
 
-        # oletuslentokentillä
+        # advice guy oletuslentokentillä
         advice_guy_airports_in_countries = []
         while len(advice_guy_airports_in_countries) < advice_guys_in_countries_count:
             new_airport = random.choice(list(countries_and_default_airport_icaos.values()))
             # lentokentällä ei saa olla tietäjä, aarre tai pelaajan kotikenttä
-            if new_airport in advice_guy_airports_in_countries or new_airport in wise_man_airports:
+            if (new_airport in advice_guy_airports_in_countries or new_airport in wise_man_airports
+                    or new_airport == self.home_airport):
                 continue
             advice_guy_airports_in_countries.append(new_airport)
 
-        # aarremaan sisällä
+        # advice guy aarremaan sisällä
         advice_guy_airports_in_treasure_land = []
         while len(advice_guy_airports_in_treasure_land) < advice_guys_in_treasure_land_count:
             new_airport = random.choice(list(treasure_land_airport_icaos))
             # lentokentällä ei saa olla tietäjä, aarre tai pelaajan kotikenttä
-            if new_airport in advice_guy_airports_in_treasure_land or new_airport in wise_man_airports or new_airport in advice_guy_airports_in_countries:
+            if (new_airport in advice_guy_airports_in_treasure_land or new_airport in wise_man_airports
+                    or new_airport in advice_guy_airports_in_countries or new_airport == self.home_airport):
                 continue
             advice_guy_airports_in_treasure_land.append(new_airport)
 
         # tallenna pelaajan tiedot game tauluun
         input_player_info(self.screen_name, self.money, self.home_airport, self.location, self.difficulty_level, self.co2_consumed)
 
-        # hae juuri tehdyn pelin id (viimeinen id)
+        # hae juuri tehdyn pelin id (viimeinen id tietokannassa)
         self.id = get_last_game_id()
 
         # tallenna oletuslentokenttien tiedot tietokantaan
@@ -191,6 +190,9 @@ class Game:
         # sijoita vihje muuttujaan
         #if want_clue:
         #    self.treasure_land_clue = get_clue(self.id)
+
+        # lisää pelaadan kotilentokenttä käytyjen kenttien listaan
+        update_column_visited(self.id, self.home_airport)
 
     # palauttaa luokan tiedot json-muodossa
     def get_game_info(self):

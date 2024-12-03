@@ -151,23 +151,6 @@ def get_random_question_id():
     cursor.execute(sql)
     return cursor.fetchone()[0]
 
-# hae lentokentän nimi
-def get_airport_name(airport_icao):
-    sql = f'select airport.name from airport where ident = "{airport_icao}";'
-    cursor = db.get_conn().cursor()
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    return result[0]
-
-# hae maan nimi
-def get_country_name(airport_icao):
-    sql = (f'select country.name from country inner join airport on country.iso_country = airport.iso_country '
-           f'where ident = "{airport_icao}";')
-    cursor = db.get_conn().cursor()
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    return result[0]
-
 # hae käytössä oleva raha
 def get_player_money(game_id):
     sql = f'select money from game where id = "{game_id}";'
@@ -176,16 +159,9 @@ def get_player_money(game_id):
     result = cursor.fetchone()
     return result[0]
 
-# hae lentokentän koordinaatit
-def get_airport_coordinates(airport_icao):
-    sql = f'select latitude_deg, longitude_deg from airport where ident = "{airport_icao}";'
-    cursor = db.get_conn().cursor()
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    return result
-
 # laske lentokenttien välinen etäisyys
 def get_distance_between_airports(airport_icao1, airport_icao2):
+    # hae koordinaatit Airport-luokasta
     coordinates1 = get_airport_coordinates(airport_icao1)
     coordinates2 = get_airport_coordinates(airport_icao2)
     distance = geopy.distance.distance(coordinates1, coordinates2).km
@@ -363,45 +339,28 @@ def get_clue(game_id):
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
     airport_icao = cursor.fetchone()[0]
-    country_name = get_country_name(airport_icao)
-    hint_letter = country_name[0]
-    clue = f'Clue: the treasure is hidden in the country whose first letter is {hint_letter}.'
-    return clue
+
+    # hae maan nimi Airport luokasta
+
+    #country_name = get_country_name(airport_icao)
+    #hint_letter = country_name[0]
+    #clue = f'Clue: the treasure is hidden in the country whose first letter is {hint_letter}.'
+    #return clue
+    return
 
 # tarkista, onko lentokentällä tietäjä
-def check_if_wise_man(location, game_id):
-    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
-           f'game_id = {game_id};')
-    cursor = db.get_conn().cursor()
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    # jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa 0
-    return result[0][0] if result is not None else result
-
-# hae tietäjän kysymys ja vastaus
-def get_wise_man_question_and_answer(location, game_id):
-    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and game_id = {game_id};')
-    cursor = db.get_conn().cursor()
-    cursor.execute(sql)
-    question_id = cursor.fetchone()
-    question_id = question_id[0]
-    sql = (f'select question, answer from wise_man_questions where id = {question_id};')
-    cursor = db.get_conn().cursor(buffered=True)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    return result[0]   # palauttaa monikkona kysymyksen ja vastauksen
+#def check_if_wise_man(location, game_id):
+#    sql = (f'select wise_man_question_id from game_airports where airport_ident = "{location}" and '
+#           f'game_id = {game_id};')
+#    cursor = db.get_conn().cursor()
+#    cursor.execute(sql)
+#    result = cursor.fetchall()
+#    # jos on tietäjä, palauttaa kysymyksen id:n, jos ei niin palauttaa 0
+#    return result[0][0] if result is not None else result
 
 # hae tietäjän maksu ja palkinto
 def get_wise_man_cost_and_reward(difficulty_level):
     sql = f'select wise_man_cost, wise_man_reward from difficulty where level = "{difficulty_level}";'
-    cursor = db.get_conn().cursor(buffered=True)
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    return result
-
-# hae tietotyypin palkinto
-def get_advice_guy_cost_and_reward(difficulty_level):
-    sql = f'select advice_guy_reward from difficulty where level = "{difficulty_level}";'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
@@ -550,24 +509,15 @@ def get_advice_guy_count(difficulty_level):
     advice_guys_in_airports = result[0][1]
     return advice_guys_in_countries, advice_guys_in_airports
 
-# tarkista onko advice guy lentokentällä
-def check_if_advice_guy(location, game_id):
-    sql = (f'select has_advice_guy from game_airports where airport_ident = "{location}" and '
-           f'game_id = {game_id};')
-    cursor = db.get_conn().cursor()
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    return result   # jos on advice guy, palautuu 1, muuten 0
-
 # päivitä game_airports-taulun sarake visited
 def update_column_visited(game_id, location):
-    sql = f'update game_airports set visited = 1 where game_id = {game_id} and airport_ident = {location};'
+    sql = f'update game_airports set visited = 1 where game_id = {game_id} and airport_ident = "{location}";'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
 
 # hae visited-sarakkeen arvo
 def get_visited_value(game_id, airport_icao):
-    sql = f'select visited from game_airports where game_id = {game_id} and airport_ident = {airport_icao};'
+    sql = f'select visited from game_airports where game_id = {game_id} and airport_ident = "{airport_icao}";'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
