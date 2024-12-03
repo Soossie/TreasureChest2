@@ -140,7 +140,7 @@ def new_game():
         game.start_game()
         response = {
             'game_info': game.get_game_info(),
-            'testvalue.visited_country_list': game.visited_country_list,  # testiarvo. esimerkki miten olion muuttujia voi tulostaa
+            #'testvalue.visited_country_list': game.visited_country_list,  # testiarvo. esimerkki miten olion muuttujia voi tulostaa
         }
     except ValueError:
         status_code = 400

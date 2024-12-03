@@ -100,7 +100,7 @@ class Game:
         self.location = self.home_airport
 
         # lisää aloitusmaa pelaajan käytyjen maiden listaan
-        self.visited_country_list.append(home_country)
+        #self.visited_country_list.append(home_country)
 
         # arvo aarremaa
         treasure_land_country, treausure_land_default_airport_icao = False, False
