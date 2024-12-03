@@ -1,37 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treasure Chest 2</title>
     <link rel="stylesheet" href="website.css">
+    <script src="website.js" defer></script>
+    <!-- tähän script leaflet-->
 </head>
+
 <body>
-    <header>
-        <nav>
-            <id class="logo">Treasure Chest 2.0</id>
-            <id class="menu">
-                <ul>
-                    <!-- popup -->
-                    <li><a href="about.html">About</a></li> 
-                    <li><a href="rules.html">Rules</a></li>
-                </ul>
-            </id>
-        </nav>
-    </header>
-    <main>
-            <section1>
-                <!-- kartta tähän -->
-            </section1>
-            <section2>
-                <!-- tähän wise man sekä pelaajan stats (raha nimi yms)-->
-            </section2>
-            <section3>
-                <!-- ohjeet mikä väri on mikä -->
-            </section3>
-    </main>
-    <footer>
-        <!-- jos jää aikaa niin lentokentän säätietoja yms-->
-    </footer>
+    <div class="container">
+        <header>
+            <nav>
+                <h1 class="logo">
+                Treasure Chest 2.0 <ion-icon name="airplane-outline"></ion-icon>
+                </h1>
+                    <ul class="flex-wrap">
+                        <!-- popup -->
+                        <li>
+                            <a class="button" href="about.html">About</a>
+                        </li>
+                        <li>
+                            <a class="button" href="rules.html">Rules</a>
+                        </li>
+                    </ul>
+            </nav>
+        </header>
+
+        <main class="flex-wrap">
+            <div id ="map">
+                <img src="finland.svg" alt="map of finland">
+            </div>
+            <div class="boxes">
+                <section class="box">
+                    <header>
+                        <h2>Game Status</h2>
+                    </header>
+                    <table id="status">
+                        <tr>
+                            <td></td>       <!-- tähän tulee symboli-->
+                            <td>Player: </td>
+                            <td>nimimerkki1</td>                           </td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td>Money: </td>
+                            <td>1500 €</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td>Location: </td>
+                            <td>Helsinki-Vantaa Airport</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td>Co2 consumed: </td>
+                            <td>430 kg</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td>Clue: </td>
+                            <td>The treasure is hidden in the country whose first letter is F.</td>
+                        </tr>
+                    </table>
+
+                </section>
+
+                <section class="box">
+                    <header>
+                        <h2>Map symbols</h2>
+                        <table id="symbols">
+                        <tr>
+                            <td></td>   <!-- symboli tähän -->
+                            <td>Current location</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>   <!-- symboli tähän -->
+                            <td>Travellable</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>   <!-- symboli tähän -->
+                            <td>Travellable (visited)</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>   <!-- symboli tähän -->
+                            <td>Untravellable</td>
+                        </tr>
+
+                        <tr>
+                            <td></td>   <!-- symboli tähän -->
+                            <td>Untravellable (visited)</td>
+                        </tr>
+                    </table>
+                    </header>
+
+                </section>
+
+            </div>
+
+        </main>
+
+        <footer>
+            <!-- jos jää aikaa niin lentokentän säätietoja yms-->
+        </footer>
+    </div>
+<!--
+    <div id="player-modal">
+        <form id="player-form">
+            <input id="player-input" type="text" placeholder="Player name" required>
+            <input type="submit" value="Start game">
+        </form>
+    </div>
+-->
+    <div id="wise-man-modal">
+
+    </div>
+
+    <div id="advice-guy-modal">
+        <!-- tähän advice-guy jutut -->
+    </div>
+
 </body>
 </html>
