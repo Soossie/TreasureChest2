@@ -1,10 +1,24 @@
-.button {
-  display: block;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  border-radius: 4px;
-  text-align: center;
-  transition: all 300ms;
+body {
+  margin: 1rem;
+  margin-top: 0;
+  padding: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;     /* vaihda fontit */
+  scroll-behavior: smooth;
+  display: flex;
+  background-color: white;
+}
+
+.header {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+nav {
+  /*background-color: ;*/
+  display: flex;
+  margin-left: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 nav ul {
@@ -21,6 +35,7 @@ nav ul li {
   transition: all 300ms;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 nav ul li a {
@@ -40,15 +55,13 @@ nav ul li a:hover {
   color: white;
 }
 
-nav {
-  display: flex;
-  margin-left: auto;
-}
-
-body {
-  margin: 1rem;
-  display: flex;
-  margin-top: 0;
+.button {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  text-align: center;
+  transition: all 300ms;
 }
 
 .boxes {
@@ -64,12 +77,16 @@ body {
   display: flex;
   flex-direction: column;
   align-items: left;
-  margin-left: 1rem;
-  margin-bottom: 1rem;
+  margin: 0 1rem 1rem 1rem;
   padding: 1rem;
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: all 300ms;
+  font-size: 0.98rem;
+}
+
+h3 {
+  margin-top: 0;
 }
 
 .flex-wrap {
@@ -88,21 +105,52 @@ main>div {
 }
 
 .current-location {
-  color: lightblue;
+  color: #2d7cfb;
 }
 
 .travellable {
-  color: green;
+  color: #31d842;
 }
 
 .travellable-visited {
-  color: darkgreen;
+  color: #14591c;
 }
 
 .untravellable {
-  color: red;
+  color: #ff3042;
 }
 
 .untravellable-visited {
-  color: darkred;
+  color: #980011;
+}
+
+/* Leaflet icons */
+.blue-icon {
+  background-color: #2d7cfb;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
+.green-icon {
+  background-color: #31d842;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
+.darkgreen-icon {
+  background-color: #14591c;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
+.red-icon {
+  background-color: #ff3042;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
+.darkred-icon {
+  background-color: #980011;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
 }
