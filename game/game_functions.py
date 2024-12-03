@@ -573,5 +573,17 @@ def get_visited_value(game_id, airport_icao):
 
 # hae neuvo
 def get_advice():
-    # tähän api, joka hakee randomilla neuvon
-    pass
+    url = "https://api.adviceslip.com/advice"
+
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException:
+        print("Error. Can't get the advice.")
+        return
+
+    if response.status_code != 200:
+        print(f"Error {response.status_code}.")
+        return
+
+    response_body = response.json()             # muutetaan data pythonin tietorakenteeksi
+    return response_body["slip"]["advice"]
