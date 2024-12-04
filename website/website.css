@@ -30,6 +30,11 @@ nav {
     padding-right: 1rem;
 }
 
+/* jos ei tule logoa naviin, tämän voi poistaa */
+nav img {
+    width: auto;
+}
+
 nav ul {
     list-style-type: none;
     display: flex;
