@@ -57,10 +57,7 @@ nav ul li {
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: all 300ms;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin: 0.5rem;
 }
 
 nav ul li a {
@@ -68,7 +65,7 @@ nav ul li a {
     color: black;
 }
 
-nav ul li:nth-child(2) {
+.rules {
     margin-right: 0;
 }
 
@@ -90,7 +87,11 @@ nav ul li a:hover {
     transition: all 300ms;
     background-color: rgb(253, 252, 252);
 }
-
+/*
+.about {
+    margin-left: 0;
+}
+*/
 .boxes {
     display: flex;
     flex-direction: column;
@@ -134,12 +135,6 @@ h2 {
 
 main {
     padding: 0 1rem 1rem 1rem;
-}
-
-#map {
-    width: 100%;
-    height: 40vh;
-    overflow: hidden;
 }
 
 #map,
@@ -192,6 +187,31 @@ main > div {
 
 .untravellable-visited {
     color: #980011;
+}
+
+#player-modal {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    top: 0;
+}
+
+/* tätä ja #player-modal pitää muokata, ei mene kartan päälle */
+#player-form {
+    display: flex;
+    width: 50%;
+    margin: 4rem auto;
+    /*flex-direction: column;*/
+}
+
+#player-form input {
+    padding: 0.5rem;
+}
+
+/* tätä käytetään player-modal piilottamiseen, myös wise-man- ja advice-guy, js:llä poistetaan hide-luokka */
+.hide {
+    display: none;
 }
 
 /* Leaflet icons */
