@@ -17,7 +17,7 @@
         <header class="header">
             <nav>
                 <h1 class="logo">
-                Treasure Chest 2.0 <ion-icon name="airplane"></ion-icon>
+                Treasure Chest 2.0&nbsp;<ion-icon name="airplane"></ion-icon>
                 </h1>
                     <ul class="flex-wrap space-evenly">
                         <li>
@@ -43,31 +43,31 @@
                         <tr>
                             <td><i class="fas fa-user"></i></td>
                             <td></i> Player: </td>
-                            <td>nimimerkki1</td>                           
+                            <td><span id="player">nimimerkki1</span></td>
                         </tr>
 
                         <tr>
                             <td><i class="fas fa-euro-sign"></i></td>
                             <td></i> Money: </td>
-                            <td>1500 €</td>
+                            <td><span id="money">1500</span> €</td>
                         </tr>
 
                         <tr>
                             <td><i class="fas fa-location-pin"></i></td>
                             <td></i> Location: </td>
-                            <td>Helsinki-Vantaa Airport</td>
+                            <td><span id="location">Helsinki-Vantaa Airport</span></td>
                         </tr>
 
                         <tr>
                             <td><i class="fas fa-circle"></i></td>
                             <td></i> CO2 consumed: </td>
-                            <td>430 kg</td>
+                            <td><span id="co2">0</span> kg</td>
                         </tr>
 
                         <tr>
                             <td><i class="fas fa-question"></i></td>
                             <td></i>Clue: </td>
-                            <td>The treasure is hidden in the country whose first letter is F.</td>
+                            <td><span id="clue">The treasure is hidden in the country whose first letter is F</span>.</td>
                         </tr>
                     </table>
 
@@ -128,6 +128,7 @@
 
     <div id="advice-guy-modal">
         <!-- tähän advice-guy jutut -->
+
     </div>
 
 </body>
