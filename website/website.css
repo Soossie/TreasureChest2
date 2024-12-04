@@ -99,8 +99,48 @@ h2 {
   display: flex;
 }
 
-main img {
+main {
+    padding: 1rem 2rem;
+}
+
+#map {
   width: 100%;
+  height: 40vh;
+  overflow: hidden;
+}
+
+.boxes {
+  width: 100%;
+
+}
+
+.box {
+  padding: 1rem;
+ font-size: x-small;
+
+}
+#map,
+.box {
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.3) 3px 3px 10px;
+  margin-bottom: 1rem;
+}
+
+@media screen and (min-width: 769px) {
+  .box {
+    font-size: initial;
+  }
+
+  #map {
+    width: 100%;
+    height: initial;
+  }
+
+  .boxes {
+    width: 60%;
+    padding-left: 1rem;
+    box-sizing: border-box;
+  }
 }
 
 main>div {
