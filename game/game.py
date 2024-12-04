@@ -4,25 +4,14 @@ from flask import render_template
 from geopy.units import kilometers
 from game_functions import *
 import random
+from airport import Airport
 
 
 class Game:
-    # to-do:
-    # selvitä miten json-datan saa javascriptistä pythoniin (tarvitseeko?)
-
-    # luokan luominen json-datasta
-    @classmethod
-    def from_json(cls, json_data):
-        data = json.loads(json.dumps(json_data))
-        obj = cls()
-        for key, value in data.items():
-            if hasattr(obj, key):
-                setattr(obj, key, value)
-        return obj
 
     @classmethod
     def from_game_id(cls, game_id):
-        data = get_game_info_from_database(game_id)
+        data = cls.get_game_info_from_database(game_id)
         obj = cls()
         for key, value in data.items():
             if hasattr(obj, key):
@@ -30,6 +19,8 @@ class Game:
 
         obj.wise_man_cost, obj.wise_man_reward = get_wise_man_cost_and_reward(obj.difficulty_level)
         obj.advice_guy_reward = get_advice_guy_reward(obj.difficulty_level)
+        obj.clue = obj.get_clue()
+        obj.in_treasure_land = bool(Airport(obj.location).country_name == get_treasure_land_country_name(obj.id))
         return obj
 
     def __init__(self):
@@ -42,16 +33,12 @@ class Game:
         self.location = None
         self.co2_consumed = 0
 
-        # nämä eivät ole tietokannassa, mieti tarvitseeko ne olla ja saako niitä
-        # treasure land clue lokaalisti javascriptissä
-        #self.treasure_land_clue = None  # riippuu haluaako pelaaja vihjeen vai ei
-        #self.visited_country_list = []  # hae visited sarakkeesta game_airports taulusta icao koodin perusteella maa
-        self.visited_airports_list = []  # 1 tai 0, visited sarake game_airports taulusta
-
         # ei tietokantaan
         self.wise_man_cost = None
         self.wise_man_reward = None
         self.advice_guy_reward = None
+        self.clue = None
+        self.in_treasure_land = None
 
     # def start_game(self, player, difficulty_level, want_clue):  # argumentit haetaan javascriptin puolelta
     def start_game(self):
@@ -187,12 +174,33 @@ class Game:
             save_airport_to_game_airports(self.id, airport_icao, question_id, answered, has_treasure,
                                           is_default_airport, has_advice_guy, visited)
 
-        # sijoita vihje muuttujaan
-        #if want_clue:
-        #    self.treasure_land_clue = get_clue(self.id)
+        # vihje on aarremaan nimen ensimmäinen kirjain
+        self.clue = self.get_clue()
+        self.in_treasure_land = bool(Airport(self.location).country_name == get_treasure_land_country_name(self.id))
 
         # lisää pelaadan kotilentokenttä käytyjen kenttien listaan
         update_column_visited(self.id, self.home_airport)
+
+    # hakee tietokannasta game-taulusta tietyn pelin tiedot
+    # (id, screen_name, money, home_airport, location, difficulty_level)
+    @classmethod
+    def get_game_info_from_database(cls, game_id):
+        sql = f'select * from game where id = "{game_id}";'
+        cursor = db.get_conn().cursor()
+        cursor.execute(sql)
+
+        rows = cursor.fetchall()[0]
+        columns = [item[0] for item in cursor.description]
+
+        # muuta data dict (json) muotoon
+        data = dict()
+        for column, row in zip(columns, rows):
+            data.update({column: row})
+        return data
+
+    def get_clue(self):
+        treasure_land_country_name = get_treasure_land_country_name(self.id)
+        return f'The treasure is hidden in a country that begins with the letter {treasure_land_country_name[0]}.'
 
     # palauttaa luokan tiedot json-muodossa
     def get_game_info(self):

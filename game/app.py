@@ -3,7 +3,7 @@ from flask_cors import CORS
 
 from game_functions import *
 from game import Game
-from airport import GameAirports, Airport, AvailableAirports
+from airport import GameAirports, AvailableAirports, FlightInfo
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -14,12 +14,13 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 # lisää co2 päästöjä tietokantaan jokaisen lennon jälkeen
 # matkustaessa tarkista onko lentokentällä tietäjä, advice guy, onke se aarremaan oletuslentokenttä, onko siellä aarre
 
-# poista rahaa
-@app.route('/money/remove/<game_id>/<amount>')
-def money_remove(game_id, amount):
+"""
+# wise man
+@app.route('/wise-man/<game_id>')
+def wise_man(game_id, amount):
     try:
         status_code = 200
-
+        
         original_money = get_player_money(game_id)
         add_or_remove_money(game_id, int(amount), remove=True)
         new_money = get_player_money(game_id)
@@ -37,70 +38,38 @@ def money_remove(game_id, amount):
         }
     json_response = json.dumps(response)
     return Response(response=json_response, status=status_code, mimetype='application/json')
-
-
-# lisää rahaa
-@app.route('/money/add/<game_id>/<amount>')
-def money_add(game_id, amount):
-    try:
-        status_code = 200
-
-        original_money = get_player_money(game_id)
-        add_or_remove_money(game_id, int(amount), add=True)
-        new_money = get_player_money(game_id)
-
-        response = {
-            'game_id': game_id,
-            'original_money': original_money,
-            'new_money': new_money,
-        }
-    except ValueError:
-        status_code = 400
-        response = {
-            'status': status_code,
-            'description': 'This is error message',
-        }
-    json_response = json.dumps(response)
-    return Response(response=json_response, status=status_code, mimetype='application/json')
+"""
 
 
 # lentää pelaajan uudelle lentokentälle
 @app.route('/fly-to/<game_id>/<destination_icao>')
 def fly_to(game_id, destination_icao):
     try:
-        status_code = 200
+        #status_code = 200
 
+        # testaa saako kentälle lentää (onko se saatavilla olevien kenttien listalla) ja että kenttä ei ole nykyinen kenttä
+        # jos ei saa lentää, älä tee mitään ja palauta pelin tiedot
+        if any([destination_icao not in GameAirports(game_id).game_airports,
+                destination_icao == GameAirports(game_id).get_current_airport_info_json()['icao'],
+                ]):
+            return game_info(game_id)
+
+        flight_info = FlightInfo(game_id, destination_icao)
+        # poista rahaa ja lisää co2 kulutus
+        add_or_remove_money(game_id, flight_info.ticket_cost, remove=True)
+        update_co2_consumed(game_id, flight_info.co2_consumption)
+
+        # päivitä tietokantaan sijainti
         update_current_location(game_id, destination_icao)
-        response = {
-            'game_id': game_id,
-            'new_location_icao': get_current_location(game_id),
-        }
-    except ValueError:
-        status_code = 400
-        response = {
-            'status': status_code,
-            'description': 'This is error message',
-        }
-    json_response = json.dumps(response)
-    return Response(response=json_response, status=status_code, mimetype='application/json')
+        update_column_visited(game_id, destination_icao)
 
+        # advice guy antaa automaattisesti rahaa jos kentällä
+        current_location_info = GameAirports(game_id).get_current_airport_info_json()
+        if 'advice_guy' in current_location_info:
+            add_or_remove_money(game_id, Game.from_game_id(game_id).advice_guy_reward, add=True)
 
-# hakee kaikki tiettyyn lentoon tarvittavat tiedot
-@app.route('/flight-info/<game_id>/<destination_icao>')
-def flight_info(game_id, destination_icao):
-    try:
-        status_code = 200
+        return game_info(game_id)
 
-        current_location_icao = get_current_location(game_id)
-        response = {
-            'game_id': game_id,
-            'current_location_icao': current_location_icao,
-            'destination_icao': destination_icao,
-            'distance': get_distance_between_airports(current_location_icao, destination_icao),
-            'ticket_cost': count_ticket_cost(current_location_icao, destination_icao),
-            'co2_consumption': get_co2_consumption(current_location_icao, destination_icao),
-        }
-        print(response)
     except ValueError:
         status_code = 400
         response = {
@@ -116,7 +85,7 @@ def flight_info(game_id, destination_icao):
 def game_info(game_id):
     try:
         status_code = 200
-        # tapa millä tiedot haetaan ja mitä haetaan on vielä työn alla, ei lopullinen versio!
+
         game = Game.from_game_id(game_id)
         response = {
             'game_info': game.get_game_info(),
