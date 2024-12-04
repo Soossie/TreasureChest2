@@ -1,7 +1,8 @@
 from flask import Flask, Response
 from flask_cors import CORS
+import json
 
-from game_functions import *
+from game_functions import add_or_remove_money, update_co2_consumed, update_current_location, update_column_visited
 from game import Game
 from airport import GameAirports, AvailableAirports, FlightInfo
 
@@ -9,27 +10,30 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# to-do:
-# päivitä visited_airport_list
-# lisää co2 päästöjä tietokantaan jokaisen lennon jälkeen
-# matkustaessa tarkista onko lentokentällä tietäjä, advice guy, onke se aarremaan oletuslentokenttä, onko siellä aarre
 
-"""
 # wise man
-@app.route('/wise-man/<game_id>')
-def wise_man(game_id, amount):
+@app.route('/wise-man/<game_id>/<is_correct_answer>')
+def wise_man(game_id, is_correct_answer):
     try:
-        status_code = 200
-        
-        original_money = get_player_money(game_id)
-        add_or_remove_money(game_id, int(amount), remove=True)
-        new_money = get_player_money(game_id)
+        # is_correct_answer täytyy olla luku, error jos ei ole
+        # jos luku ei ole 0 tai 1, funktion ei lisää eikä poista rahaa
+        is_correct_answer = int(is_correct_answer)
 
-        response = {
-            'game_id': game_id,
-            'original_money': original_money,
-            'new_money': new_money,
-        }
+        game = Game.from_game_id(game_id)
+
+        # poista ja/tai lisää rahaa riippuen oliko vastaus oikein
+        if int(is_correct_answer) == 1:
+            # poista ja lisää rahaa
+            amount = game.wise_man_reward - game.wise_man_cost
+            add_or_remove_money(game_id, amount, add=True)
+
+        elif int(is_correct_answer) == 0:
+            # poista rahaa
+            amount = game.wise_man_cost
+            add_or_remove_money(game_id, amount, remove=True)
+
+        return game_info(game_id)
+
     except ValueError:
         status_code = 400
         response = {
@@ -38,20 +42,17 @@ def wise_man(game_id, amount):
         }
     json_response = json.dumps(response)
     return Response(response=json_response, status=status_code, mimetype='application/json')
-"""
 
 
 # lentää pelaajan uudelle lentokentälle
 @app.route('/fly-to/<game_id>/<destination_icao>')
 def fly_to(game_id, destination_icao):
     try:
-        #status_code = 200
-
         # testaa saako kentälle lentää (onko se saatavilla olevien kenttien listalla) ja että kenttä ei ole nykyinen kenttä
         # jos ei saa lentää, älä tee mitään ja palauta pelin tiedot
         if any([destination_icao not in GameAirports(game_id).game_airports,
                 destination_icao == GameAirports(game_id).get_current_airport_info_json()['icao'],
-                ]):
+                not FlightInfo(game_id, destination_icao).can_fly_to]):
             return game_info(game_id)
 
         flight_info = FlightInfo(game_id, destination_icao)
@@ -61,12 +62,14 @@ def fly_to(game_id, destination_icao):
 
         # päivitä tietokantaan sijainti
         update_current_location(game_id, destination_icao)
-        update_column_visited(game_id, destination_icao)
 
         # advice guy antaa automaattisesti rahaa jos kentällä
         current_location_info = GameAirports(game_id).get_current_airport_info_json()
-        if 'advice_guy' in current_location_info:
+        if 'advice_guy' in current_location_info and not current_location_info['visited']:
             add_or_remove_money(game_id, Game.from_game_id(game_id).advice_guy_reward, add=True)
+
+        # päivitä vierailu
+        update_column_visited(game_id, destination_icao)
 
         return game_info(game_id)
 
@@ -106,16 +109,10 @@ def game_info(game_id):
 @app.route('/new-game')
 def new_game():
     try:
-        status_code = 200
         game = Game()
         game.start_game()
-        response = {
-            'game_info': game.get_game_info(),
-            'current_location_info': GameAirports(game.id).get_current_airport_info_json(),
-            #'game_airports_info': GameAirports(game.id).get_all_game_airports_info_json(),
-            'available_airports_info': AvailableAirports(game.id).available_airports,
-            #'testvalue.visited_country_list': game.visited_country_list,  # testiarvo. esimerkki miten olion muuttujia voi tulostaa
-        }
+        return game_info(game.id)
+
     except ValueError:
         status_code = 400
         response = {

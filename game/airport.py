@@ -1,7 +1,8 @@
 import geopy.distance
 
 from database import Database
-from game_functions import get_current_location, get_advice, get_treasure_land_country_name
+from game_functions import get_current_location, get_advice, get_treasure_land_country_name, get_player_co2_consumed, \
+    get_player_money
 
 db = Database()
 
@@ -164,12 +165,13 @@ class GameAirports:
 
 class FlightInfo:
     def __init__(self, game_id, destination_icao):
+        self.game_id = game_id
         self.current_location = get_current_location(game_id)
         self.destination_icao = destination_icao
         self.distance = self.get_distance_between_airports()
         self.ticket_cost = self.count_ticket_cost()
         self.co2_consumption = self.get_co2_consumption()
-        self.can_fly_to = None
+        self.can_fly_to = self.has_enough_money_for_flight()
 
     # laske lentokenttien välinen etäisyys
     def get_distance_between_airports(self):
@@ -209,11 +211,22 @@ class FlightInfo:
         return result[0][0] != result[1][0] if len(result) == 2 else True
 
     def get_co2_consumption(self):
-        return int(0.140 * self.distance)
+        over_co2_budget = get_player_co2_consumed(self.game_id)
+        math_formula = int(0.140 * self.distance)
+        # lippu on 20% kalliimpi mikäli pelaaja on ylittänyt co2 budjetin
+        return int(math_formula * 1.20) if over_co2_budget else math_formula
+
+    def has_enough_money_for_flight(self):
+        return self.ticket_cost <= get_player_money(self.game_id)
 
     # palauttaa luokan tiedot json-muodossa
     def get_flight_info(self):
-        return {'distance': self.distance, 'ticket_cost': self.ticket_cost, 'co2_consumption': self.co2_consumption}
+        return {
+            'distance': self.distance,
+            'ticket_cost': self.ticket_cost,
+            'co2_consumption': self.co2_consumption,
+            'can_fly_to': self.can_fly_to,
+        }
 
 #print(FlightInfo(50, 'LSZH').get_flight_info())
 
