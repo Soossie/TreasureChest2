@@ -16,7 +16,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def wise_man(game_id, is_correct_answer):
     try:
         # is_correct_answer täytyy olla luku, error jos ei ole
-        # jos luku ei ole 0 tai 1, funktion ei lisää eikä poista rahaa
+        # jos luku ei ole 0 tai 1, funktio ei lisää eikä poista rahaa
         is_correct_answer = int(is_correct_answer)
 
         game = Game.from_game_id(game_id)
@@ -106,11 +106,11 @@ def game_info(game_id):
 
 
 # aloittaa uuden pelin
-@app.route('/new-game')
-def new_game():
+@app.route('/new-game/<player_name>/<difficulty_level>')
+def new_game(player_name, difficulty_level):
     try:
         game = Game()
-        game.start_game()
+        game.start_game(player_name, difficulty_level)
         return game_info(game.id)
 
     except ValueError:

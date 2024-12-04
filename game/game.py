@@ -39,27 +39,26 @@ class Game:
         self.in_treasure_land = None
 
     # def start_game(self, player, difficulty_level, want_clue):  # argumentit haetaan javascriptin puolelta
-    def start_game(self):
-        # kysyy pelaajan nimen
-        self.screen_name = input('Input player name: ')
+    def start_game(self, player_name, difficulty_level_input):
+        self.screen_name = player_name
 
         # esittelee vaikeustasot
-        print('\nDifficulty levels: easy, normal, hard.\n'
-              'Difficulty level determines how many countries and airports the game generates.')
+        #print('\nDifficulty levels: easy, normal, hard.\n'
+        #      'Difficulty level determines how many countries and airports the game generates.')
 
-        while not self.difficulty_level:
-            # kysyy käyttäjältä vaikeustason ja muuttaa syöteen pieniksi kirjaimiksi
-            difficulty_level_input = input('Choose difficulty level. Input e (easy), n (normal), h (hard): ').lower()
+        #while not self.difficulty_level:
+        #    # kysyy käyttäjältä vaikeustason ja muuttaa syöteen pieniksi kirjaimiksi
+        #    difficulty_level_input = input('Choose difficulty level. Input e (easy), n (normal), h (hard): ').lower()
 
-            # valitsee vaikeustason käyttäjän antaman syötteen perusteella
-            if difficulty_level_input in ('e', 'easy'):
-                self.difficulty_level = 'easy'
-            elif difficulty_level_input in ('n', 'normal'):
-                self.difficulty_level = 'normal'
-            elif difficulty_level_input in ('h', 'hard'):
-                self.difficulty_level = 'hard'
-            else:
-                print('Invalid input.')
+        # valitsee vaikeustason käyttäjän antaman syötteen perusteella
+        if difficulty_level_input in ('e', 'easy'):
+            self.difficulty_level = 'easy'
+        elif difficulty_level_input in ('n', 'normal'):
+            self.difficulty_level = 'normal'
+        elif difficulty_level_input in ('h', 'hard'):
+            self.difficulty_level = 'hard'
+        else:
+            return print('Invalid difficulty level. Please input one of the following: e, n, h')
 
         self.wise_man_cost, self.wise_man_reward = get_wise_man_cost_and_reward(self.difficulty_level)
         self.advice_guy_reward = get_advice_guy_reward(self.difficulty_level)
