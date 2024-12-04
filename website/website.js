@@ -6,6 +6,7 @@ L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
 }).addTo(map);
 map.setView([60, 24], 7);
+
 let marker = L.marker([60.3172, 24.963]).addTo(map); // esimerkki marker
 
 /*
