@@ -1,203 +1,211 @@
 body {
-  margin: 1rem;
-  margin-top: 0;
-  padding: 0;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;     /* vaihda fontit */
-  scroll-behavior: smooth;
-  display: flex;
-  background-color: white;
+    margin: 1rem;
+    margin-top: 0;
+    padding: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif; /* vaihda fontit */
+    scroll-behavior: smooth;
+    display: flex;
+    background-color: white;
 }
 
 .container {
-  width: 95%;
-  margin: auto;
+    width: 95%;
+    margin: auto;
+    background-image: url("https://images.freeimages.com/images/large-previews/6aa/abstract-1188378.jpg?fmt=webp&h=350");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 .header {
-  margin-right: 1rem;
-  margin-left: 1rem;
+    margin: 0;
 }
 
 nav {
-  /*background-color: ;*/
-  display: flex;
-  margin-left: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+    background-color: rgba(83, 154, 94, 0.55);
+    display: flex;
+    margin-left: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 nav ul {
-  list-style-type: none;
-  display: flex;
-  justify-content: space-evenly;
-  color: white;
-  margin-left: auto;
+    list-style-type: none;
+    display: flex;
+    justify-content: space-evenly;
+    color: white;
+    margin-left: auto;
+    padding-right: 1rem;
 }
 
 nav ul li {
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: all 300ms;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  margin-top: 0.5rem;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 300ms;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 nav ul li a {
-  text-decoration: none;
-  color: black;
+    text-decoration: none;
+    color: black;
 }
 
 nav ul li:nth-child(2) {
-  margin-right: 0;
+    margin-right: 0;
 }
 
 nav ul li:hover {
-  background-color:black;
+    background-color: black;
 }
 
 nav ul li a:hover {
-  color: white;
+    color: white;
 }
 
 .button {
-  display: block;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  border-radius: 4px;
-  text-align: center;
-  transition: all 300ms;
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    transition: all 300ms;
+    background-color: rgb(253, 252, 252);
 }
 
 .boxes {
-  display: flex;
-  flex-direction: column;
-  flex: auto;
-  max-width: 300px;
-  margin-right: 0;
-  margin-left: 0;
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+    max-width: 300px;
+    margin-right: 0;
+    margin-left: 0;
 }
 
 .box {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  margin: 0 1rem 1rem 1rem;
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: all 300ms;
-  font-size: 0.98rem;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin: 0 1rem 1rem 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 300ms;
+    font-size: 0.98rem;
+    background-color: rgb(253, 252, 252);
 }
 
 h2 {
-  margin-top: 0;
-  font-size: large;
+    margin-top: 0;
+    font-size: large;
 }
 
 .flex-wrap {
-  display: flex;
+    display: flex;
 }
 
 main {
-    padding: 1rem 2rem;
+    padding: 1rem;
 }
 
 
 #map {
-  width: 100%;
-  height: 40vh;
-  overflow: hidden;
+    width: 100%;
+    height: 40vh;
+    overflow: hidden;
 }
 
 .boxes {
-  width: 100%;
+    width: 100%;
 
 }
 
 .box {
-  padding: 1rem;
- font-size: x-small;
+    padding: 1rem;
+    font-size: x-small;
 
 }
+
 #map,
 .box {
-  border-radius: 6px;
-  box-shadow: rgba(0, 0, 0, 0.3) 3px 3px 10px;
-  margin-bottom: 1rem;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.3) 3px 3px 10px;
+    margin-bottom: 1rem;
 }
 
 @media screen and (min-width: 769px) {
-  .box {
-    font-size: initial;
-  }
+    .box {
+        font-size: initial;
+    }
 
-  #map {
-    width: 100%;
-    height: initial;
-  }
+    #map {
+        width: 100%;
+        height: initial;
+    }
 
-  .boxes {
-    width: 60%;
-    padding-left: 1rem;
-    box-sizing: border-box;
-  }
+    .boxes {
+        width: 60%;
+        padding-left: 1rem;
+        box-sizing: border-box;
+    }
 }
 
-main>div {
-  flex: auto;
-  height: 100%;
-  margin: 1rem;
-  width: 200%;
+main > div {
+    flex: auto;
+    height: 100%;
+    margin: 1rem;
+    width: 200%;
 }
 
 .current-location {
-  color: #2d7cfb;
+    color: #2d7cfb;
 }
 
 .travellable {
-  color: #31d842;
+    color: #31d842;
 }
 
 .travellable-visited {
-  color: #14591c;
+    color: #14591c;
 }
 
 .untravellable {
-  color: #ff3042;
+    color: #ff3042;
 }
 
 .untravellable-visited {
-  color: #980011;
+    color: #980011;
 }
 
 /* Leaflet icons */
 .blue-icon {
-  background-color: #2d7cfb;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.5);
+    background-color: #2d7cfb;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.5);
 }
 
 .green-icon {
-  background-color: #31d842;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.5);
+    background-color: #31d842;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.5);
 }
 
 .darkgreen-icon {
-  background-color: #14591c;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.5);
+    background-color: #14591c;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.5);
 }
 
 .red-icon {
-  background-color: #ff3042;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.5);
+    background-color: #ff3042;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.5);
 }
 
 .darkred-icon {
-  background-color: #980011;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.5);
+    background-color: #980011;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.5);
 }
