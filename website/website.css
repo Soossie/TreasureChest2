@@ -35,6 +35,11 @@ nav img {
     width: auto;
 }
 
+ion-icon {
+    vertical-align: middle;
+    font-size: 2rem;
+}
+
 nav ul {
     list-style-type: none;
     display: flex;
