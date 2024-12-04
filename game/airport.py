@@ -96,12 +96,20 @@ class GameAirports:
             return
         return {'advice': get_advice()}
 
-    def get_visited_value(self, airport_icao):
-        sql = f'select visited from game_airports where game_id = {self.game_id} and airport_ident = "{airport_icao}";'
+    def get_game_airports_table_info_for_airport(self, airport_icao):
+        sql = (f'select has_treasure, is_default_airport, visited from game_airports '
+               f'where game_id = {self.game_id} and airport_ident = "{airport_icao}";')
         cursor = db.get_conn().cursor(buffered=True)
         cursor.execute(sql)
-        result = cursor.fetchone()
-        return result[0]
+
+        rows = cursor.fetchall()[0]
+        columns = [item[0] for item in cursor.description]
+
+        # muuta data dict (json) muotoon
+        data = dict()
+        for column, row in zip(columns, rows):
+            data.update({column: row})
+        return data
 
     def get_airport_info(self, airport_icao):
         airport = Airport(airport_icao)
@@ -109,10 +117,16 @@ class GameAirports:
         # lentokentän perustiedot (alkuperäinen airport-taulu)
         airport_info = airport.get_airport_info()
 
-        # onko pelaaja käynyt kentällä
-        airport_info.update({'visited': self.get_visited_value(airport_icao)})
+        # hae has_treasure, is_default_airport, visited tietokannasta
+        info = self.get_game_airports_table_info_for_airport(airport_icao)
 
-        # näytä wise man, advice guy, aarteen tiedot vain join pelaaja kentällä
+        # poista aarteen tieto jos pelaaja ei ole kentällä
+        if airport_icao != get_current_location(self.game_id):
+            info.pop('has_treasure')
+
+        airport_info.update(info)
+
+        # näytä wise man, advice guy vain jos pelaaja kentällä
         if airport_icao == get_current_location(self.game_id):
 
             wise_man_result = self.get_wise_man_info_for_airport(airport_icao)
@@ -122,9 +136,6 @@ class GameAirports:
             advice_guy_result = self.get_advice_guy_info_for_airport(airport_icao)
             if advice_guy_result:
                 airport_info.update({'advice_guy': advice_guy_result})
-
-            # to-do: onko aarre
-
 
         return airport_info
 
@@ -146,12 +157,41 @@ class GameAirports:
         return airport_info
 
 
-print(GameAirports(23).get_all_game_airports_info_json())
+#print(GameAirports(23).get_all_game_airports_info_json())
 
 
-class AvailableAirports:
-    def __init__(self):
-        self.airports = {}
-        pass
+class AvailableAirports(GameAirports):
+    def __init__(self, game_id):
+        super().__init__(game_id)
+        self.available_airports = self.get_available_airports_json()
 
+    # hae lentokentät mitkä näytetään pelaajalle kartalla
+    def get_available_airports_json(self):
+        all_game_airports_info = self.get_all_game_airports_info_json()
+        treasure_land_country_name = self.get_treasure_land_country_name()
+
+        available_airports = []
+        current_location_info = self.get_current_airport_info_json()
+
+        # jos pelaaja on aarremaassa, hae kaikki aarremaan lentokentät
+        if current_location_info['country_name'] == treasure_land_country_name:
+            for airport_info in all_game_airports_info:
+                if airport_info['country_name'] == treasure_land_country_name:
+                    available_airports.append(airport_info)
+        else:
+            # jos pelaaja ei ole aarremaassa, hae oletuslentokenttien tiedot
+            for airport_info in all_game_airports_info:
+                if airport_info['is_default_airport']:
+                    available_airports.append(airport_info)
+
+        return available_airports
+
+    def get_treasure_land_country_name(self):
+        sql = f'select airport_ident from game_airports where game_id={self.game_id} and has_treasure=1;'
+        cursor = db.get_conn().cursor(buffered=True)
+        cursor.execute(sql)
+        treasure_airport_icao = cursor.fetchone()[0]
+        return Airport(treasure_airport_icao).get_airport_country_name()
+
+#print(AvailableAirports(55))
 

@@ -3,8 +3,7 @@ from flask_cors import CORS
 
 from game_functions import *
 from game import Game
-from airport import GameAirports, Airport
-
+from airport import GameAirports, Airport, AvailableAirports
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -121,6 +120,8 @@ def game_info(game_id):
         game = Game.from_game_id(game_id)
         response = {
             'game_info': game.get_game_info(),
+            'current_location_info': GameAirports(game.id).get_current_airport_info_json(),
+            'available_airports_info': AvailableAirports(game.id).available_airports,
         }
     except ValueError:
         status_code = 400
@@ -142,7 +143,8 @@ def new_game():
         response = {
             'game_info': game.get_game_info(),
             'current_location_info': GameAirports(game.id).get_current_airport_info_json(),
-            'game_airports_info': GameAirports(game.id).get_all_game_airports_info_json()
+            #'game_airports_info': GameAirports(game.id).get_all_game_airports_info_json(),
+            'available_airports_info': AvailableAirports(game.id).available_airports,
             #'testvalue.visited_country_list': game.visited_country_list,  # testiarvo. esimerkki miten olion muuttujia voi tulostaa
         }
     except ValueError:
