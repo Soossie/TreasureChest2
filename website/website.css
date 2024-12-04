@@ -43,11 +43,6 @@ ion-icon {
     font-size: 2rem;
 }
 
-ion-icon:hover {
-    font-size: 1.5rem;
-    color: #2d7cfb;
-}
-
 nav ul {
     list-style-type: none;
     display: flex;
@@ -243,3 +238,38 @@ main > div {
     border-radius: 50%;
     border: 5px solid rgba(255, 255, 255, 0.5);
 }
+
+/* hover */
+ion-icon:hover {
+    font-size: 1.5rem;
+    color: #2d7cfb;
+}
+
+.bold:hover {
+    font-weight: 550;
+}
+
+.hover:hover {
+    color: #86c353;
+}
+
+.blue:hover {
+    color: #2d7cfb;
+}
+
+.green:hover {
+    color: #31d842;
+}
+
+.darkgreen:hover {
+    color: #14591c;
+}
+
+.red:hover {
+    color: #ff3042;
+}
+
+.darkred:hover {
+        color: #980011;
+}
+
