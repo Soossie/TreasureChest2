@@ -1,5 +1,7 @@
+import geopy.distance
+
 from database import Database
-from game_functions import get_current_location, get_advice
+from game_functions import get_current_location, get_advice, get_treasure_land_country_name
 
 db = Database()
 
@@ -160,6 +162,62 @@ class GameAirports:
 #print(GameAirports(23).get_all_game_airports_info_json())
 
 
+class FlightInfo:
+    def __init__(self, game_id, destination_icao):
+        self.current_location = get_current_location(game_id)
+        self.destination_icao = destination_icao
+        self.distance = self.get_distance_between_airports()
+        self.ticket_cost = self.count_ticket_cost()
+        self.co2_consumption = self.get_co2_consumption()
+        self.can_fly_to = None
+
+    # laske lentokenttien välinen etäisyys
+    def get_distance_between_airports(self):
+        # hae koordinaatit Airport-luokasta
+        airport1 = Airport(self.current_location)
+        airport2 = Airport(self.destination_icao)
+
+        coordinates1 = (airport1.latitude, airport1.longitude)  #get_airport_coordinates(airport_icao1)
+        coordinates2 = (airport2.latitude, airport2.longitude)  #get_airport_coordinates(airport_icao2)
+
+        distance = geopy.distance.distance(coordinates1, coordinates2).km
+        distance = int(distance)
+        return distance
+
+    # laske lentolipun hinta etäisyyden ja kansainvälisyyden perusteella
+    def count_ticket_cost(self):
+        #distance = get_distance_between_airports(current_location_icao, destination_icao)
+        international_flight = self.is_international_flight()
+
+        price = {
+            'international': [(200, 1.00), (500, 0.70), (800, 0.40), (40000, 0.25)],
+            'domestic': [(200, 1.25), (500, 0.85), (800, 0.55), (40000, 0.4)],
+        }
+        price = price['international'] if international_flight else price['domestic']
+
+        for max_distance, multiplier in price:
+            if self.distance < max_distance:
+                return int(100 + multiplier * self.distance)
+        return 100  # failsafe
+
+    def is_international_flight(self):
+        sql = (f'select iso_country from airport '
+               f'where ident = "{self.current_location}" or ident = "{self.destination_icao}";')
+        cursor = db.get_conn().cursor()
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result[0][0] != result[1][0] if len(result) == 2 else True
+
+    def get_co2_consumption(self):
+        return int(0.140 * self.distance)
+
+    # palauttaa luokan tiedot json-muodossa
+    def get_flight_info(self):
+        return {'distance': self.distance, 'ticket_cost': self.ticket_cost, 'co2_consumption': self.co2_consumption}
+
+#print(FlightInfo(50, 'LSZH').get_flight_info())
+
+
 class AvailableAirports(GameAirports):
     def __init__(self, game_id):
         super().__init__(game_id)
@@ -168,7 +226,7 @@ class AvailableAirports(GameAirports):
     # hae lentokentät mitkä näytetään pelaajalle kartalla
     def get_available_airports_json(self):
         all_game_airports_info = self.get_all_game_airports_info_json()
-        treasure_land_country_name = self.get_treasure_land_country_name()
+        treasure_land_country_name = get_treasure_land_country_name(self.game_id)
 
         available_airports = []
         current_location_info = self.get_current_airport_info_json()
@@ -176,22 +234,18 @@ class AvailableAirports(GameAirports):
         # jos pelaaja on aarremaassa, hae kaikki aarremaan lentokentät
         if current_location_info['country_name'] == treasure_land_country_name:
             for airport_info in all_game_airports_info:
+
                 if airport_info['country_name'] == treasure_land_country_name:
+                    airport_info.update({'flight_info': FlightInfo(self.game_id, airport_info['icao']).get_flight_info()})
                     available_airports.append(airport_info)
         else:
             # jos pelaaja ei ole aarremaassa, hae oletuslentokenttien tiedot
             for airport_info in all_game_airports_info:
+
                 if airport_info['is_default_airport']:
+                    airport_info.update({'flight_info': FlightInfo(self.game_id, airport_info['icao']).get_flight_info()})
                     available_airports.append(airport_info)
 
         return available_airports
 
-    def get_treasure_land_country_name(self):
-        sql = f'select airport_ident from game_airports where game_id={self.game_id} and has_treasure=1;'
-        cursor = db.get_conn().cursor(buffered=True)
-        cursor.execute(sql)
-        treasure_airport_icao = cursor.fetchone()[0]
-        return Airport(treasure_airport_icao).get_airport_country_name()
-
-#print(AvailableAirports(55))
-
+#print(AvailableAirports(50).available_airports)
