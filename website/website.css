@@ -60,6 +60,7 @@ nav ul li {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 nav ul li a {
@@ -77,6 +78,7 @@ nav ul li:hover {
 
 nav ul li a:hover {
     color: white;
+    background-color: black;
 }
 
 .button {
@@ -98,6 +100,11 @@ nav ul li a:hover {
     margin-left: 0;
 }
 
+.boxes {
+    width: 100%;
+    margin-top: 0;
+}
+
 .box {
     display: flex;
     flex-direction: column;
@@ -109,6 +116,11 @@ nav ul li a:hover {
     transition: all 300ms;
     font-size: 0.98rem;
     background-color: rgb(253, 252, 252);
+}
+
+.box {
+    padding: 1rem;
+    font-size: x-small;
 }
 
 h2 {
@@ -130,16 +142,6 @@ main {
     overflow: hidden;
 }
 
-.boxes {
-    width: 100%;
-    margin-top: 0.5rem;
-}
-
-.box {
-    padding: 1rem;
-    font-size: x-small;
-}
-
 #map,
 .box {
     border-radius: 6px;
@@ -155,7 +157,7 @@ main {
     #map {
         width: 100%;
         height: initial;
-        margin-top: 0.5rem;
+        margin-top: 0;
     }
 
     .boxes {
