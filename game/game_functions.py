@@ -1,12 +1,4 @@
-import math
-import geopy.distance
-from tabulate import tabulate
-import sys
-import time
 from database import Database
-import json
-from flask import Flask
-from flask_cors import CORS
 import requests
 import requests.exceptions
 

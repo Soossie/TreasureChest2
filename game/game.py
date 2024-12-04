@@ -1,7 +1,5 @@
 import itertools
 
-from flask import render_template
-from geopy.units import kilometers
 from game_functions import *
 import random
 from airport import Airport
@@ -146,7 +144,8 @@ class Game:
             new_airport = random.choice(list(treasure_land_airport_icaos))
             # lentokentällä ei saa olla tietäjä, aarre tai pelaajan kotikenttä
             if (new_airport in advice_guy_airports_in_treasure_land or new_airport in wise_man_airports
-                    or new_airport in advice_guy_airports_in_countries or new_airport == self.home_airport):
+                    or new_airport in advice_guy_airports_in_countries or new_airport == self.home_airport
+                    or new_airport == treasure_chest_airport_icao):
                 continue
             advice_guy_airports_in_treasure_land.append(new_airport)
 
