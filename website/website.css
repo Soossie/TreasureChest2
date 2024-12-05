@@ -267,6 +267,8 @@ ion-icon:hover {
     color: #980011;
 }
 
+/* Flight info markers */
+
 .flight-info-marker p {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;
@@ -275,6 +277,19 @@ ion-icon:hover {
 .flight-info-marker div {
     display: flex;
     justify-content: center;
+}
+
+.flight-info-marker div button {
+    width: 3.5rem;
+    height: 2rem;
+    font-weight: bold;
+    align-content: center;
+}
+
+.flight-info-marker div button:hover {
+    background-color: lightblue;
+    color: #143278;
+    font-weight: bold;
 }
 
 /* Rules & about */

@@ -42,27 +42,22 @@ async function startNewGame() {
   gameSetup(gameData);
 }
 
-async function gameSetup(gameData){
+// jatka olemassa olevaa peliä
+async function continueExistingGame() {
+  const gameId = prompt('Input game id: ')
+  
+  const response = await fetch(gameInfoUrl + `/${gameId}`);
+  if (!response.ok) throw new Error('Invalid server input!');
+  const gameData = await response.json();
+  gameSetup(gameData);
+}
+
+function gameSetup(gameData){
   //const gameData = await startNewGame();
   console.log(gameData);
   gameId = gameData.game_info.id;
 
   updateStatus(gameData);
-}
-
-async function getGameInfo() {
-  const gameId = prompt('Input game id: ')
-  
-  const response = await fetch(gameInfoUrl + `/${gameId}`);
-  if (!response.ok) throw new Error('Invalid server input!');
-  return await response.json();
-}
-
-async function guiSetup(){
-  const gameData = await getGameInfo();
-  console.log(gameData);
-  updateStatus(gameData);
-  gameId = gameData.game_info.id;
 }
 
 // päivittää pelin tiedot käyttöliittymään
@@ -115,9 +110,9 @@ function addFlightInfoToMarker(airportInfo, marker) {
   // lentonappi
   const flyButton = document.createElement('button');
   flyButton.classList.add('button');
-  flyButton.innerHTML = 'Fly here';
-  //flightInfoMarkerPopup.append(flyButton);
-
+  flyButton.innerHTML = 'Fly';
+  
+  // mahdollistaa napin keskittämisen
   const flyButtonContainer = document.createElement('div');
   flyButtonContainer.append(flyButton)
   flightInfoMarkerPopup.append(flyButtonContainer);
@@ -138,11 +133,8 @@ function addFlightInfoToMarker(airportInfo, marker) {
 
 // valitse näistä yksi:
 
-// tekee uuden pelin
-//gameSetup(apiUrl);
-
-// voit käyttä testaukseen guiSetup, ei tee uutta peliä
-guiSetup();
+// voit käyttä testaukseen, ei tee uutta peliä
+continueExistingGame();
 
 
 // Peliloop (kutsuu muita funktioita)
