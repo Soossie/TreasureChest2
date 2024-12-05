@@ -91,7 +91,9 @@ guiSetup();
 // aloita peli
 document.querySelector("#start").addEventListener('click', startNewGame);
 
+/*
 while (stillPlaying) {
 
 
 }
+*/
