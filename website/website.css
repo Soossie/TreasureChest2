@@ -270,9 +270,18 @@ ion-icon:hover {
 }
 
 .darkred:hover {
-        color: #980011;
+    color: #980011;
 }
 
+.flight-info-marker p {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.flight-info-marker div {
+    display: flex;
+    justify-content: center;
+}
 /* Rules & about */
 
 .list {
