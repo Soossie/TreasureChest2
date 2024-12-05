@@ -273,3 +273,11 @@ ion-icon:hover {
         color: #980011;
 }
 
+/* Rules & about */
+
+.list {
+    list-style-type: none;
+    padding: 0;
+}
+
+
