@@ -25,12 +25,13 @@ const newGameUrl = apiUrl + '/new-game'
 const gameInfoUrl = apiUrl + '/game-info'
 
 let gameId;
+let stillPlaying = true;
 
 // aloita uusi peli
 async function startNewGame() {
   // muuta prompt formiksi
-  const playerName = prompt('Input name: ')
-  const difficultyLevel = prompt('Input difficulty level (e / n / h): ')
+  const playerName = prompt('Input name: ');
+  const difficultyLevel = prompt('Input difficulty level (e / n / h): ');
   
   const response = await fetch(newGameUrl + `/${playerName}` + `/${difficultyLevel}`);
   if (!response.ok) throw new Error('Invalid server input!');
@@ -85,3 +86,12 @@ function updateStatus(data) {
 guiSetup();
 
 
+// Peliloop (kutsuu muita funktioita)
+
+// aloita peli
+document.querySelector("#start").addEventListener('click', startNewGame);
+
+while (stillPlaying) {
+
+
+}
