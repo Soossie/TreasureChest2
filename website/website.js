@@ -46,7 +46,7 @@ async function gameSetup(gameData){
   //const gameData = await startNewGame();
   console.log(gameData);
   gameId = gameData.game_info.id;
-  
+
   updateStatus(gameData);
 }
 
@@ -76,54 +76,54 @@ function updateStatus(data) {
   
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
-  
+
   // karttamerkit
   let marker = L.marker([data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
   map.setView([data.current_location_info.latitude, data.current_location_info.longitude], 4);
-  
+
   // lisää kaikille lentokentille seuraavat kolme riviä:
   const airport_info = data.available_airports_info[0];  // testiarvo: valitsee aina ensimmäisen kentän
   airportMarkers.addLayer(marker);
   addFlightInfoToMarker(airport_info, marker);
-  
+
   // lisää kaikki lentokentät tähän. löytyy datasta kohdasta available_airports_info. muuta eri värisiksi
   
 }
 
 // lentoinfo markerille ja lentonappi
 function addFlightInfoToMarker(airportInfo, marker) {
-  const flighInfoMarkerPopup = document.createElement('div');
-  flighInfoMarkerPopup.classList.add('flight-info-marker')
-  
+  const flightInfoMarkerPopup = document.createElement('div');
+  flightInfoMarkerPopup.classList.add('flight-info-marker')
+
   // lentoinfo
   const h4 = document.createElement('h4');
   h4.innerHTML = airportInfo.name;
-  flighInfoMarkerPopup.append(h4);
-  
+  flightInfoMarkerPopup.append(h4);
+
   let distanceElem = document.createElement('p');
   distanceElem.innerHTML = `Distance ${airportInfo.flight_info.distance} km`;
-  flighInfoMarkerPopup.append(distanceElem);
-  
+  flightInfoMarkerPopup.append(distanceElem);
+
   let ticketCostElem = document.createElement('p');
   ticketCostElem.innerHTML = `Ticket cost ${airportInfo.flight_info.ticket_cost} €`;
-  flighInfoMarkerPopup.append(ticketCostElem);
-  
+  flightInfoMarkerPopup.append(ticketCostElem);
+
   let co2Elem = document.createElement('p');
-  co2Elem.innerHTML = `Co2 consumption ${airportInfo.flight_info.co2_consumption} kg`;
-  flighInfoMarkerPopup.append(co2Elem);
-  
+  co2Elem.innerHTML = `CO2 consumption ${airportInfo.flight_info.co2_consumption} kg`;
+  flightInfoMarkerPopup.append(co2Elem);
+
   // lentonappi
   const flyButton = document.createElement('button');
   flyButton.classList.add('button');
   flyButton.innerHTML = 'Fly here';
-  //flighInfoMarkerPopup.append(flyButton);
-  
+  //flightInfoMarkerPopup.append(flyButton);
+
   const flyButtonContainer = document.createElement('div');
   flyButtonContainer.append(flyButton)
-  flighInfoMarkerPopup.append(flyButtonContainer);
-  
-  marker.bindPopup(flighInfoMarkerPopup);
-  
+  flightInfoMarkerPopup.append(flyButtonContainer);
+
+  marker.bindPopup(flightInfoMarkerPopup);
+
   // event napille
   flyButton.addEventListener('click', async function () {
     const response = await fetch(flyToUrl + `/${gameId}/${airportInfo.icao}`);
