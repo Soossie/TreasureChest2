@@ -22,16 +22,10 @@ body {
 }
 
 nav {
-    /*background-color: rgba(83, 154, 94, 0.55);*/
     display: flex;
     margin-left: auto;
     padding-left: 1rem;
     padding-right: 1rem;
-}
-
-/* jos ei tule logoa naviin, tämän voi poistaa */
-nav img {
-    width: auto;
 }
 
 .logo {
@@ -203,7 +197,7 @@ main > div {
     padding: 0.5rem;
 }
 
-/* tätä käytetään player-modal piilottamiseen, myös wise-man- ja advice-guy, js:llä poistetaan hide-luokka */
+/* tätä käytetään player-modal piilottamiseen, myös wise-man- ja advice-guy, js:llä poistetaan hide-luokka? */
 .hide {
     display: none;
 }
@@ -282,6 +276,7 @@ ion-icon:hover {
     display: flex;
     justify-content: center;
 }
+
 /* Rules & about */
 
 .list {
@@ -289,4 +284,7 @@ ion-icon:hover {
     padding: 0;
 }
 
-
+.this-page {
+    background-color: #000000;
+    color: white;
+}
