@@ -303,3 +303,49 @@ ion-icon:hover {
     background-color: #000000;
     color: white;
 }
+
+.box h1 {
+    margin: 0.5rem 0;
+}
+
+.header2 {
+    margin: 1rem 0 0.5rem 0;
+}
+
+.box p {
+    margin: 0.5rem 0 0.75rem 0;
+    line-height: 1.3;
+}
+
+.box a {
+    color: black;
+}
+
+.box a:hover {
+    font-weight: 550;
+    color: #2d7cfb;
+}
+
+.box li {
+    line-height: 1.3;
+}
+
+ol {
+    padding-left: 2rem;
+}
+
+.more-padding {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+b {
+    font-weight: normal;
+    /*color: #112f73;
+    font-size: 1.05rem;*/
+}
+
+.no-margin-top {
+    margin-top: 0;
+}
