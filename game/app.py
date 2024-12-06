@@ -2,7 +2,8 @@ from flask import Flask, Response
 from flask_cors import CORS
 import json
 
-from game_functions import add_or_remove_money, update_co2_consumed, update_current_location, update_column_visited
+from game_functions import add_or_remove_money, update_co2_consumed, update_current_location, update_column_visited, \
+    update_wise_man_question_answered
 from game import Game
 from airport import GameAirports, AvailableAirports, FlightInfo
 
@@ -18,6 +19,15 @@ def wise_man(game_id, is_correct_answer):
         # is_correct_answer täytyy olla luku, error jos ei ole
         # jos luku ei ole 0 tai 1, funktio ei lisää eikä poista rahaa
         is_correct_answer = int(is_correct_answer)
+
+        # tarkista onko pelaaja jo vastannut nykyisen sijainnin kysymykseen
+        current_location_info = GameAirports(game_id).get_current_airport_info_json()
+        if current_location_info['wise_man']['answered']:
+            return game_info(game_id)
+
+        # tallenna tieto kysymykseen vastattu
+        wise_man_question_id = current_location_info['wise_man']['wise_man_question_id']
+        update_wise_man_question_answered(game_id, wise_man_question_id)
 
         game = Game.from_game_id(game_id)
 
@@ -111,6 +121,15 @@ def new_game(player_name, difficulty_level):
     try:
         game = Game()
         game.start_game(player_name, difficulty_level)
+
+        # testaukseen: tulosta aarrelentokentän icao
+        game_airports = GameAirports(game.id)
+        for airport_icao in game_airports.game_airports:
+            airport_info = game_airports.get_game_airports_table_info_for_airport(airport_icao)
+
+            if airport_info['has_treasure']:
+                print(f'Treasure airport: {airport_icao}')
+
         return game_info(game.id)
 
     except ValueError:
