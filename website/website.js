@@ -34,7 +34,14 @@ let stillPlaying = true;
 async function startNewGame() {
   // muuta prompt formiksi
   const playerName = prompt('Input name: ');
-  const difficultyLevel = prompt('Input difficulty level (e / n / h): ');
+  let difficultyLevel = prompt('Input difficulty level (e / n / h): ');
+  console.log(difficultyLevel)
+  // kysy vaikeustasoa kunnes pelaaja antaa oikean kirjaimen
+  while (!['e', 'n', 'h'].includes(difficultyLevel)) {
+    difficultyLevel = prompt('Input difficulty level (e / n / h): ');
+    console.log(difficultyLevel)
+  }
+  // tästä ylöspäin kaikki formiin
   
   const response = await fetch(newGameUrl + `/${playerName}` + `/${difficultyLevel}`);
   if (!response.ok) throw new Error('Invalid server input!');
@@ -44,7 +51,11 @@ async function startNewGame() {
 
 // jatka olemassa olevaa peliä
 async function continueExistingGame() {
-  const gameId = prompt('Input game id: ')
+  const gameId = parseInt(prompt('Input game id: '));
+  console.log(gameId);
+  if (isNaN(gameId)) {
+    return console.log('Invalid game id input');
+  }
   
   const response = await fetch(gameInfoUrl + `/${gameId}`);
   if (!response.ok) throw new Error('Invalid server input!');
@@ -146,5 +157,7 @@ document.querySelector("#start").addEventListener('click', startNewGame);
 while (stillPlaying) {
 
 
+} else {
+  lopeta peli
 }
 */
