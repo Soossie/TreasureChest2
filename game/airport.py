@@ -17,7 +17,7 @@ class Airport:
 
     # hae lentokentän nimi
     def get_airport_name(self):
-        sql = f'select airport.name from airport where ident = "{self.icao}";'
+        sql = f'select name from airport where ident = "{self.icao}";'
         cursor = db.get_conn().cursor()
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -86,7 +86,7 @@ class GameAirports:
         cursor.execute(sql)
         answered_result = cursor.fetchone()[0]
 
-        return {'wise_man_question': question, 'answer': answer, 'answered': answered_result}
+        return {'wise_man_question_id': question_id, 'wise_man_question': question, 'answer': answer, 'answered': answered_result}
 
     def get_advice_guy_info_for_airport(self, airport_icao):
         sql = (f'select has_advice_guy from game_airports '
@@ -160,21 +160,18 @@ class GameAirports:
         return airport_info
 
 
-#print(GameAirports(23).get_all_game_airports_info_json())
-
-
 class FlightInfo:
     def __init__(self, game_id, destination_icao):
         self.game_id = game_id
         self.current_location = get_current_location(game_id)
         self.destination_icao = destination_icao
-        self.distance = self.get_distance_between_airports()
+        self.distance = self.get_distance_to_airport()
         self.ticket_cost = self.count_ticket_cost()
         self.co2_consumption = self.get_co2_consumption()
         self.can_fly_to = self.has_enough_money_for_flight()
 
     # laske lentokenttien välinen etäisyys
-    def get_distance_between_airports(self):
+    def get_distance_to_airport(self):
         # hae koordinaatit Airport-luokasta
         airport1 = Airport(self.current_location)
         airport2 = Airport(self.destination_icao)
@@ -228,8 +225,6 @@ class FlightInfo:
             'can_fly_to': self.can_fly_to,
         }
 
-#print(FlightInfo(50, 'LSZH').get_flight_info())
-
 
 class AvailableAirports(GameAirports):
     def __init__(self, game_id):
@@ -260,5 +255,3 @@ class AvailableAirports(GameAirports):
                     available_airports.append(airport_info)
 
         return available_airports
-
-#print(AvailableAirports(50).available_airports)

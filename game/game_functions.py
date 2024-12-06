@@ -82,7 +82,7 @@ def get_treasure_land_airport_icaos(difficulty_level, country_name, treausure_la
     # hae satunnaiset aarremaan lentokentät. testaa että ei ole aarremaan oletuslentokenttä
     sql = (f'SELECT airport.ident FROM airport inner join country on airport.iso_country = country.iso_country '
            f'where country.name = "{country_name}" and airport.type != "closed" and airport.ident != "{treausure_land_default_airport_icao}" '
-           f'order by rand() limit {airport_count};')
+           f'order by rand() limit {airport_count - 1};')
 
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
@@ -232,14 +232,14 @@ def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, m
 """
 
 # päivitä game_airports-taulun sarake answered
-def update_column_answered(game_id, wise_man):
-    sql = f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man};'
+def update_wise_man_question_answered(game_id, wise_man_question_id):
+    sql = f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man_question_id};'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
 
 # hae answered-sarakkeen arvo
-def get_answered_value(game_id, wise_man):
-    sql = f'select answered from game_airports where game_id = {game_id} and wise_man_question_id = {wise_man};'
+def get_wise_man_question_answered_value(game_id, wise_man_question_id):
+    sql = f'select answered from game_airports where game_id = {game_id} and wise_man_question_id = {wise_man_question_id};'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
     result = cursor.fetchone()
