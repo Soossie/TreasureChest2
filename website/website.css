@@ -5,16 +5,28 @@ body {
     scroll-behavior: smooth;
     display: flex;
     background-color: white;
+    height: 100%;
+}
+
+html {
+    height: 100%;
+}
+
+main {
+    flex: 1;
 }
 
 .container {
     width: 96%;
+    height: 100%;
     margin: auto;
     background-image: url("https://images.freeimages.com/images/large-previews/6aa/abstract-1188378.jpg?fmt=webp&h=350");
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
     background-size: cover;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
@@ -348,4 +360,83 @@ b {
 
 .no-margin-top {
     margin-top: 0;
+}
+
+/* Popup container */
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Popup content */
+.popup-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50% auto; /* Could be more or less, depending on screen size */
+    max-width: 50%;
+    min-width: 20%;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.3) 3px 3px 10px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-body {
+    display: flex;
+    align-items: center;
+}
+
+.popup-content img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.3) 3px 3px 10px;
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    flex: 1;
+}
+
+
+.popup-text {
+    flex: 1;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.popup-buttons button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+}
+
+/* Close button */
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 2.5px;
+    right: 8px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
 }

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Treasure Chest 2 - An exciting treasure hunt game">
     <title>Treasure Chest 2</title>
     <link rel="stylesheet" href="website.css">
     <script src="website.js" defer></script>
@@ -131,14 +132,37 @@
         </form>
     </div>
 
-    <div id="wise-man-modal" class="hide">
-
+<button id="open-advice-guy-modal-popup">Open popup</button>
+    <div id="advice-guy-modal" class="popup hide">
+        <div class="popup-content">
+            <span class="close" data-popup="advice-guy-modal">&times;</span>
+            <div class="popup-body">
+                <img src="https://via.placeholder.com/600x400" alt="Popup Image 1">
+                <div class="popup-text">
+                    <p>Lorem ipsum 1</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="advice-guy-modal" class="hide">
-        <!-- tähän advice-guy jutut -->
-
+<button id="open-wise-man-modal-popup">Open popup</button>
+    <div id="wise-man-modal" class="popup hide">
+            <div class="popup-content">
+                <span class="close" data-popup="wise-man-modal">&times;</span>
+                <div class="popup-body">
+                </div>
+                    <img src="https://via.placeholder.com/600x400" alt="Popup Image 2">
+                    <div class="popup-text">
+                        <p>You encounter a wise man! He asks a question:</p>
+                        <p>kysymys</p>
+                    </div>   
+                <div class="popup-buttons">
+                    <button id="option1">Option 1</button>
+                    <button id="option2">Option 2</button>
+                    <button id="option3">Option 3</button>
+                </div>                
+            </div>
     </div>
-
+    
 </body>
 </html>
