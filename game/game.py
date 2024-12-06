@@ -57,18 +57,11 @@ class Game:
             self.difficulty_level = 'normal'
         elif difficulty_level_input in ('h', 'hard'):
             self.difficulty_level = 'hard'
-        else:
-            return print('Invalid difficulty level. Please input one of the following: e, n, h')
+        #else:
+        #    return print('Invalid difficulty level. Please input one of the following: e, n, h')
 
         self.wise_man_cost, self.wise_man_reward = get_wise_man_cost_and_reward(self.difficulty_level)
         self.advice_guy_reward = get_advice_guy_reward(self.difficulty_level)
-
-        # hae vihje
-        #want_clue = input("Do you want a clue? Input y (yes) or n (no): ")
-        #if want_clue in ('y', 'yes'):
-        #    want_clue = True
-        #else:
-        #    want_clue = False
 
         # määritä pelaajan aloitusrahan määrä vaikeustason mukaan
         self.money = get_default_money(self.difficulty_level)
@@ -100,6 +93,10 @@ class Game:
         treasure_land_default_airport_icao = countries_and_default_airport_icaos[treasure_land_country]
         treasure_chest_airport_icao = random.choice(treasure_land_airport_icaos)
 
+        # poista aarremaan oletuslentokenttä aarremaan lentokentiltä (jotta kyseinen lentokenttä ei esiintyisi kahdesti tietokannassa)
+        if treasure_land_default_airport_icao in treasure_land_airport_icaos:
+            treasure_land_airport_icaos.remove(treasure_land_default_airport_icao)
+
         # testaa että aarrearkun lentokenttä ei ole sama kuin maan oletuslentokenttä
         while treasure_land_default_airport_icao == treasure_chest_airport_icao:
             treasure_chest_airport_icao = random.choice(treasure_land_airport_icaos)
@@ -108,21 +105,17 @@ class Game:
         wise_man_count = get_wise_man_count(self.difficulty_level)
 
         # arvo tietäjien lentokentät
-        wise_man_airports = [treasure_land_default_airport_icao]
-        wise_man_airports.extend(random.sample(list(treasure_land_airport_icaos), k=wise_man_count - 1))
+        wise_man_airports = [treasure_land_default_airport_icao, treasure_chest_airport_icao]
 
-        # listalla ei saa olla aarrearkun lentokenttää, mutta listalla pitää olla maan oletuslentokenttä
-        # poista aarrearkun lentokenttä tietäjien lentokentistä jos se on listassa
-        while treasure_chest_airport_icao in wise_man_airports:
-            wise_man_airports.remove(treasure_chest_airport_icao)
-
-            # arvo uusi lentokenttä, testaa että kenttä ei ole jo listassa
-            new_airport = random.choice(list(treasure_land_airport_icaos))
-            while new_airport in wise_man_airports:
-                new_airport = random.choice(list(treasure_land_airport_icaos))
-
-            # lisää arvottu uusi lentokenttä listaan
-            wise_man_airports.append(new_airport)
+        for _ in range(wise_man_count - 1):
+            while True:
+                # arvo aarremaan lentokenttä tietäjälle missä ei ole vielä tietäjää
+                random_treasure_land_airport = random.choice(list(treasure_land_airport_icaos))
+                if random_treasure_land_airport not in wise_man_airports:
+                    wise_man_airports.append(random_treasure_land_airport)
+                    break
+        # debug
+        print(f'wise man airports ({len(wise_man_airports)}): {wise_man_airports}')
 
         # hae advice guyn määrä ja arvo lentokentät
         advice_guys_in_countries_count, advice_guys_in_treasure_land_count = get_advice_guy_count(self.difficulty_level)
@@ -154,15 +147,11 @@ class Game:
         # hae juuri tehdyn pelin id (viimeinen id tietokannassa)
         self.id = get_last_game_id()
 
-        # tallenna oletuslentokenttien tiedot tietokantaan
+        # tallenna lentokenttien tiedot tietokantaan
         for airport_icao in itertools.chain(countries_and_default_airport_icaos.values(), treasure_land_airport_icaos):
 
-            question_id = False
-            if airport_icao in wise_man_airports:
-                if airport_icao == treasure_land_default_airport_icao:
-                    question_id = get_random_question_id()
-                else:
-                    question_id = get_random_unused_question_id(self.id)
+            # arvo kysymys jos lentokentällä wise man
+            question_id = get_random_unused_question_id(self.id) if airport_icao in wise_man_airports else False
 
             answered = 0
             has_treasure = 1 if bool(airport_icao == treasure_chest_airport_icao) else 0
@@ -171,6 +160,10 @@ class Game:
             visited = 0
             save_airport_to_game_airports(self.id, airport_icao, question_id, answered, has_treasure,
                                           is_default_airport, has_advice_guy, visited)
+
+        # debug:
+        print(f'oletuslentokentät ({len(countries_and_default_airport_icaos)}): {countries_and_default_airport_icaos.values()}')
+        print(f'aarremaan lentokentät ({len(treasure_land_airport_icaos)}): {treasure_land_airport_icaos}')
 
         # vihje on aarremaan nimen ensimmäinen kirjain
         self.clue = self.get_clue()
