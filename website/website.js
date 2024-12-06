@@ -7,7 +7,6 @@ L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   maxZoom: 20,
   subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
 }).addTo(map);
-//map.setView([60, 24], 7);
 
 const airportMarkers = L.featureGroup().addTo(map);
 
@@ -44,6 +43,7 @@ async function startNewGame() {
   // tästä ylöspäin kaikki formiin
   
   const response = await fetch(newGameUrl + `/${playerName}` + `/${difficultyLevel}`);
+    console.log(response.status)
   if (!response.ok) throw new Error('Invalid server input!');
   const gameData = await response.json();
   gameSetup(gameData);
@@ -83,17 +83,41 @@ function updateStatus(data) {
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
 
+
   // karttamerkit
+  const blueIcon = L.divIcon({className:'blue_icon'})
+  const greenIcon = L.divIcon({className:'green_icon'})
+  const darkgreenIcon = L.divIcon({className:'darkgreen_icon'})
+  const redIcon = L.divIcon({className:'darkred_icon'})
+  const darkredIcon = L.divIcon({className:'blue_icon'})
+
   let marker = L.marker([data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
   map.setView([data.current_location_info.latitude, data.current_location_info.longitude], 4);
 
   // lisää kaikille lentokentille seuraavat kolme riviä:
-  const airport_info = data.available_airports_info[0];  // testiarvo: valitsee aina ensimmäisen kentän
+
+
+/*
+  const airport_info = data.current_location_info[0];  // testiarvo: valitsee aina ensimmäisen kentän
   airportMarkers.addLayer(marker);
   addFlightInfoToMarker(airport_info, marker);
 
+ */
+
+  //alku
+  for (let airport of data.available_airports_info){
+    const airportMarker = L.marker([airport.latitude, airport.longitude]).addTo(map);
+    airportMarkers.addLayer(airportMarker);
+    addFlightInfoToMarker(airport, airportMarker);
+    if (airport.flight_info.can_fly_to && airport.visited === 0) {
+      airportMarker.setIcon(greenIcon)
+      console.log(airport)
+    }
+
+    }
+
   // lisää kaikki lentokentät tähän. löytyy datasta kohdasta available_airports_info. muuta eri värisiksi
-  
+
 }
 
 // lentoinfo markerille ja lentonappi
@@ -133,34 +157,30 @@ function addFlightInfoToMarker(airportInfo, marker) {
   // event napille
   flyButton.addEventListener('click', async function () {
     const response = await fetch(flyToUrl + `/${gameId}/${airportInfo.icao}`);
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error('Invalid server input!');
-    }
     const data = await response.json();
     updateStatus(data);
   });
 }
 
-
 // valitse näistä yksi:
 
 // voit käyttä testaukseen, ei tee uutta peliä
-continueExistingGame();
-
+    continueExistingGame();
 
 // Peliloop (kutsuu muita funktioita)
 
 // aloita peli
-document.querySelector("#start").addEventListener('click', startNewGame);
+    document.querySelector("#start").addEventListener('click', startNewGame);
 
-/*
-while (stillPlaying) {
 
+/*while (stillPlaying) {
 
 } else {
   lopeta peli
 }
-*/
+ */
 
 
 // Function to open a popup
