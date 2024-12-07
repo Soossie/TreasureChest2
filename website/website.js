@@ -29,7 +29,7 @@ const flyToUrl = apiUrl + '/fly-to';
 let gameId;
 let stillPlaying = true;
 
-
+/*
 // aloita uusi peli
 async function startNewGame() {
   // muuta prompt formiksi
@@ -41,11 +41,53 @@ async function startNewGame() {
     difficultyLevel = prompt('Input difficulty level (e / n / h): ');
     console.log(difficultyLevel);
   }
-
+*/
 
 // tästä ylöspäin kaikki formiin
 
-  /* tämä kesken, pitää saada nimi ja vaikeustaso käyttöön funktioiden jälkeen, resolve?
+async function startNewGame() {
+  // kysyy nimen
+  document.querySelector('#player-modal').classList.remove('hide');
+
+  var playerName = await new Promise(function(resolve) {
+    document.querySelector('#player-form').addEventListener('submit', function(evt) {
+      evt.preventDefault();
+      var playerName = document.querySelector('#player-input').value;
+      document.querySelector('#player-modal').classList.add('hide');
+      resolve(playerName);
+    });
+  });
+
+  // kysyy vaikeustason
+  document.querySelector('#difficulty-modal').classList.remove('hide');
+
+  var difficultyLevel = await new Promise(function(resolve) {
+    var buttons = document.querySelectorAll('#difficulty-form input[type="button"]');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() {
+        var difficultyLevel = this.value.toLowerCase();
+        console.log('Selected difficulty level: ' + difficultyLevel);
+        document.querySelector('#difficulty-modal').classList.add('hide');
+        resolve(difficultyLevel);
+      });
+    }
+  });
+
+  var response = await fetch(newGameUrl + '/' + playerName + '/' + difficultyLevel);
+  if (!response.ok) throw new Error('Invalid server input!');
+  var gameData = await response.json();
+  gameSetup(gameData);
+}
+
+
+
+
+
+/*
+
+
+
+  // tämä kesken, pitää saada nimi ja vaikeustaso käyttöön funktioiden jälkeen, resolve?
 async function startNewGame() {
   document.querySelector('#player-modal').classList.remove('hide');
   document.querySelector('#player-form').addEventListener('submit', function(evt) {
@@ -70,14 +112,15 @@ async function startNewGame() {
         }
 
       });
-*/
+
+
 
   const response = await fetch(newGameUrl + `/${playerName}` + `/${difficultyLevel}`);
   if (!response.ok) throw new Error('Invalid server input!');
   const gameData = await response.json();
   gameSetup(gameData);
 }
-
+*/
 
 // jatka olemassa olevaa peliä
 async function continueExistingGame() {
