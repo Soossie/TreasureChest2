@@ -18,7 +18,7 @@ main {
 
 .container {
     width: 96%;
-    height: 100%;
+    height: auto; /*100%;*/
     margin: auto;
     background-image: url("https://images.freeimages.com/images/large-previews/6aa/abstract-1188378.jpg?fmt=webp&h=350");
     background-repeat: no-repeat;
@@ -392,12 +392,15 @@ ol {
 
 b {
     font-weight: normal;
-    /*color: #112f73;
-    font-size: 1.05rem;*/
 }
 
 .no-margin-top {
     margin-top: 0;
+}
+
+#status td, #symbols td {
+    vertical-align: top;
+    line-height: 1.5;
 }
 
 /* Popup container */
@@ -480,7 +483,6 @@ b {
 }
 
 /* Leaflet-kartta formin taakse */
-
 #map {
     z-index: 0;
 }
