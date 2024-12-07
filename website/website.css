@@ -197,12 +197,68 @@ main > div {
     top: 0;
 }
 
-/* tätä ja #player-modal pitää muokata, ei mene kartan päälle */
 #player-form {
     display: flex;
     width: 50%;
     margin: 4rem auto;
     /*flex-direction: column;*/
+}
+
+#difficulty-modal {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    top: 0;
+}
+
+#difficulty-form {
+    display: flex;
+    width: 35%;
+    margin: 4rem auto;
+    background: white;
+    border-radius: 6px;
+}
+
+#difficulty-form p {
+    text-align: center;
+}
+
+.button-container {
+    padding-bottom: 1rem;
+}
+
+/*
+#player-modal, #difficulty-modal{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#player-form, #difficulty-form {
+    display: flex;
+    width: 50%;
+    margin: 4rem auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+*/
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+#difficulty-form {
+    flex-direction: column;
 }
 
 #player-form input {
@@ -440,3 +496,15 @@ b {
     color: black;
     text-decoration: none;
 }
+
+/* Leaflet-kartta formin taakse */
+
+#map {
+    z-index: 0;
+}
+
+#player-form, #difficulty-form {
+    z-index: 1000;
+    position: relative;
+}
+
