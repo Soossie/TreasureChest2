@@ -29,22 +29,7 @@ const flyToUrl = apiUrl + '/fly-to';
 let gameId;
 let stillPlaying = true;
 
-/*
 // aloita uusi peli
-async function startNewGame() {
-  // muuta prompt formiksi
-  const playerName = prompt('Input name: ');
-  let difficultyLevel = prompt('Input difficulty level (e / n / h): ');
-  console.log(difficultyLevel);
-  // kysy vaikeustasoa kunnes pelaaja antaa oikean kirjaimen
-  while (!['e', 'n', 'h'].includes(difficultyLevel)) {
-    difficultyLevel = prompt('Input difficulty level (e / n / h): ');
-    console.log(difficultyLevel);
-  }
-*/
-
-// tästä ylöspäin kaikki formiin
-
 async function startNewGame() {
   // kysyy nimen
   document.querySelector('#player-modal').classList.remove('hide');
@@ -79,49 +64,6 @@ async function startNewGame() {
   gameSetup(gameData);
 }
 
-
-
-
-
-/*
-
-
-
-  // tämä kesken, pitää saada nimi ja vaikeustaso käyttöön funktioiden jälkeen, resolve?
-async function startNewGame() {
-  document.querySelector('#player-modal').classList.remove('hide');
-  document.querySelector('#player-form').addEventListener('submit', function(evt) {
-        evt.preventDefault();
-
-        // kysyy nimen formilla
-        var playerName = document.querySelector('#player-input').value;
-        document.querySelector('#player-modal').classList.add('hide');
-
-        // vaikeustaso
-        document.querySelector('#difficulty-modal').classList.remove('hide');
-
-        var difficultyLevel = '';
-
-        var buttons = document.querySelectorAll(
-            '#difficulty-form input[type="button"]');
-        for (var i = 0; i < buttons.length; i++) {
-          buttons[i].addEventListener('click', function() {
-            difficultyLevel = this.value.toLowerCase();
-            console.log('Selected difficulty level: ' + difficultyLevel);
-          });
-        }
-
-      });
-
-
-
-  const response = await fetch(newGameUrl + `/${playerName}` + `/${difficultyLevel}`);
-  if (!response.ok) throw new Error('Invalid server input!');
-  const gameData = await response.json();
-  gameSetup(gameData);
-}
-*/
-
 // jatka olemassa olevaa peliä
 async function continueExistingGame() {
   const gameId = parseInt(prompt('Input game id: '));
@@ -147,11 +89,9 @@ function gameSetup(gameData) {
 // päivittää pelin tiedot käyttöliittymään
 function updateStatus(data) {
   // pelaajan tiedot
-  document.querySelector(
-      '#player').innerHTML = `${data.game_info.screen_name}`;
+  document.querySelector('#player').innerHTML = `${data.game_info.screen_name}`;
   document.querySelector('#money').innerHTML = `${data.game_info.money}`;
-  document.querySelector(
-      '#location').innerHTML = `${data.current_location_info.name}`;
+  document.querySelector('#location').innerHTML = `${data.current_location_info.name}`;
   document.querySelector('#co2').innerHTML = `${data.game_info.co2_consumed}`;
   document.querySelector('#clue').innerHTML = `${data.game_info.clue}`;
 
@@ -212,6 +152,11 @@ function addFlightInfoToMarker(airportInfo, marker) {
   h4.innerHTML = airportInfo.name;
   flightInfoMarkerPopup.append(h4);
 
+  // näyttää lentokentän maan (pitäisikö näkyä vain maiden välisillä lennoilla?)
+  let countryElem = document.createElement('p');
+  countryElem.innerHTML = airportInfo.country_name;
+  flightInfoMarkerPopup.append(countryElem);
+
   let distanceElem = document.createElement('p');
   distanceElem.innerHTML = `Distance ${airportInfo.flight_info.distance} km`;
   flightInfoMarkerPopup.append(distanceElem);
@@ -244,8 +189,43 @@ function addFlightInfoToMarker(airportInfo, marker) {
     }
     const data = await response.json();
     updateStatus(data);
+
+    // testaa onko wise man, jos on niin kyselyt
+    //wiseManQuestion(data);
+
+    // testaa onko advice guy, jos on niin kyselyt
+
   });
 }
+
+// wise man funktioiden alku, ei vielä toimi / ei ole testattu kunnolla
+
+/*
+// testaa onko wise man, johon ei ole vastattu
+function hasUnansweredWiseMan(data) {
+  if (data.current_location_info.wise_man && data.current_location_info.wise_man.answered === 0) {
+  console.log("Wise man on, ei ole vastattu!");
+  return true
+} else {
+  console.log("No wise man data found.");
+  return false;
+}
+}
+
+// wise man kysyy kysymyksen
+function wiseManQuestion() {
+  if (hasUnansweredWiseMan() === true) {
+    const userAnswer = prompt(`You encounter a wise man! Question: ${data.current_location_info.wise_man.wise_man_question}. Input a, b or c.`);
+    if (userAnswer === data.current_location_info.wise_man.answer) {
+      console.log('Correct!')
+      // anna rahaa
+      // päivitä answered-kohdaksi 1
+    }
+
+  }
+}
+
+*/
 
 // valitse näistä yksi:
 
@@ -261,7 +241,8 @@ document.querySelector('#start').addEventListener('click', startNewGame);
 while (stillPlaying) {
 
 } else {
-  lopeta peli
+  //lopeta peli
+  alert('Out of money! Game over!');
 }
 */
 
