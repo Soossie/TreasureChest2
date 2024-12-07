@@ -246,26 +246,26 @@ while (stillPlaying) {
 }
 */
 
-// Function to open a popup
+// popupit
+
 function openPopup(popupId) {
   var popup = document.getElementById(popupId);
   popup.style.display = 'block';
 }
 
-// Function to close a popup
 function closePopup(popupId) {
   var popup = document.getElementById(popupId);
   popup.style.display = 'none';
 }
 
-// Get the buttons that open the popups
 var btn1 = document.getElementById('open-wise-man-modal-popup');
 var btn2 = document.getElementById('open-advice-guy-modal-popup');
+var btn3 = document.getElementById('open-victory-modal-popup');
+var btn4 = document.getElementById('open-defeat-modal-popup');
+var btn5 = document.getElementById('open-yes-or-no-popup');
 
-// Get the <span> elements that close the popups
 var closeButtons = document.getElementsByClassName('close');
 
-// When the user clicks the button, open the corresponding popup
 btn1.onclick = function() {
   openPopup('wise-man-modal');
 };
@@ -274,7 +274,18 @@ btn2.onclick = function() {
   openPopup('advice-guy-modal');
 };
 
-// When the user clicks on <span> (x), close the corresponding popup
+btn3.onclick = function() {
+  openPopup('victory-modal');
+};
+
+btn4.onclick = function() {
+  openPopup('defeat-modal');
+};
+
+btn5.onclick = function() {
+  openPopup('yes-or-no-modal');
+};
+
 for (var i = 0; i < closeButtons.length; i++) {
   closeButtons[i].onclick = function() {
     var popupId = this.getAttribute('data-popup');
