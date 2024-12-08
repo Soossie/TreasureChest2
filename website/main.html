@@ -69,7 +69,7 @@
                         </tr>
 
                         <tr>
-                            <td><i class="fas fa-circle"></i></td>
+                            <td><i class="fa-solid fa-leaf"></i></td>
                             <td class="hover"></i> CO2: </td>
                             <td><span id="co2">0</span> kg</td>
                         </tr>
@@ -137,14 +137,26 @@
         <form id="difficulty-form">
             <p>Choose difficulty</p>
             <div class="button-container">
-                <input type="button" value="Easy" id="easy">
-                <input type="button" value="Normal" id="normal">
-                <input type="button" value="Hard" id="hard">
+                <input type="button" value="Easy">
+                <input type="button" value="Normal">
+                <input type="button" value="Hard">
             </div>
         </form>
     </div>
 
-<button id="open-advice-guy-modal-popup">Open popup</button>
+<button id="open-yes-or-no-popup" class="hide"></button>
+    <div id="yes-or-no-modal" class="popup hide">
+        <div class="popup-content">
+            <span class="close" data-popup="yes-or-no-modal">&times;</span>
+                <p>Do you want to answer to a question?</p>
+                <div class="popup-buttons">
+                    <button id="yes">Yes</button>
+                    <button id="no">No</button>
+                </div>
+        </div>
+    </div>
+
+<button id="open-advice-guy-modal-popup" class="hide">Open popup</button>
     <div id="advice-guy-modal" class="popup hide">
         <div class="popup-content">
             <span class="close" data-popup="advice-guy-modal">&times;</span>
@@ -157,12 +169,10 @@
         </div>
     </div>
 
-<button id="open-wise-man-modal-popup">Open popup</button>
+<button id="open-wise-man-modal-popup" class="hide">Open popup</button>
     <div id="wise-man-modal" class="popup hide">
             <div class="popup-content">
                 <span class="close" data-popup="wise-man-modal">&times;</span>
-                <div class="popup-body">
-                </div>
                     <img src="https://via.placeholder.com/600x400" alt="Popup Image 2">
                     <div class="popup-text">
                         <p>You encounter a wise man! He asks a question:</p>
@@ -174,6 +184,28 @@
                     <button id="option3">Option 3</button>
                 </div>                
             </div>
+    </div>
+
+<button id="open-victory-modal-popup" class="hide">Open popup</button>
+    <div id="victory-modal" class="popup hide">
+        <div class="popup-content">
+            <span class="close" data-popup="victory-modal">&times;</span>
+                <img src="https://via.placeholder.com/600x400" alt="Popup Image 3">
+                <div class="popup-text">
+                    <p>Congratulations! You have found the treasure!</p>
+            </div>
+        </div>
+    </div>
+
+<button id="open-defeat-modal-popup" class="hide">Open popup</button>
+    <div id="defeat-modal" class="popup hide">
+        <div class="popup-content">
+            <span class="close" data-popup="defeat-modal">&times;</span>
+                <img src="https://via.placeholder.com/600x400" alt="Popup Image 4">
+                <div class="popup-text">
+                    <p>Oh no! You have run out of money!</p>
+            </div>
+        </div>
     </div>
     
 </body>
