@@ -73,34 +73,40 @@ async function continueExistingGame() {
 
 function gameSetup(gameData) {
   gameId = gameData.game_info.id;
-  updateStatus(gameData);
+  updateStatus(gameData, NaN);
 }
 
-// päivittää pelin tiedot käyttöliittymään
-function updateStatus(data) {
-  console.log(data);
-
-  // pelaajan tiedot
+// päivitä pelaajan tiedot
+function updatePlayerInfoPanel(data) {
   document.querySelector('#player').innerHTML = `${data.game_info.screen_name}`;
   document.querySelector('#money').innerHTML = `${data.game_info.money}`;
   document.querySelector('#location').innerHTML = `${data.current_location_info.name}`;
   document.querySelector('#co2').innerHTML = `${data.game_info.co2_consumed}`;
   document.querySelector('#clue').innerHTML = `${data.game_info.clue}`;
+}
 
+// päivitä nykyinen sijainti kartalle
+function updateCurrentLocationMarkerOnly(data) {
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
-
+  
   // kartan zoom. zoomaa lähemmäs jos aarremaassa
   let zoomLevel = 4;
   if (data.game_info.in_treasure_land) zoomLevel = 5;
   // to do: älä muuta zoomia pelin aikana (jätä pelaajan asettama zoom)
   // nyt zoom hyppii matkustaessa mikä on häiritsevää
-
+  
   // nykyisen sijainnin marker
   let marker = L.marker([
     data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
     airportMarkers.addLayer(marker);
     map.setView([data.current_location_info.latitude, data.current_location_info.longitude], zoomLevel);
+}
+
+// päivitä nykyinen sijainti ja kaikki lentokentät kartalle
+function updateMapMarkers(data) {
+  // nykyinen sijainti
+  updateCurrentLocationMarkerOnly(data);
 
   // onko pelaaja aarremaassa, jos on näytetään maan nimi lentokentän lisäksi
   const inTreasureLand = data.game_info.in_treasure_land;
@@ -130,6 +136,49 @@ function updateStatus(data) {
     } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited === 1) {
       airportMarker._icon.classList.add('marker-darkred');
     }
+  }
+}
+
+// ohjelma odottaa x ms. odotuksen aikana nykyinen sijainti ehtii päivittyä kartalle,
+// jolloin esim. mahdollisen tietäjän sattuessa kohdalle pelaajan kartta on keskittynyt uudelle sijainnille
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+// päivittää pelin tiedot käyttöliittymään
+async function updateStatus(data, visitedBefore=false) {
+  console.log(data);
+  
+  updatePlayerInfoPanel(data);
+  
+  // odota x millisekuntia jotta nykyinen sijainti päivittyy kartalle
+  updateCurrentLocationMarkerOnly(data);
+  await delay(200);
+  
+  // tarkista onko kentällä aarre
+  if (data.current_location_info.has_treasure) {
+    stillPlaying = false;
+    alert(`You won!`);
+    //alert(`You won!`);  // tähän pop up, kerro aarre
+    
+  } else {
+    if (data.current_location_info.wise_man) {  // wise man
+      // testaa onko wise man, jos on niin kyselyt
+      wiseManQuestion(data);
+      updatePlayerInfoPanel(data);
+      
+    } else if (data.current_location_info.advice_guy) {  // advice guy
+      // testaa onko kentällä käyty, jos ei ole kerro vinkki
+      if (visitedBefore === false) {
+        adviceGuy(data);
+      }
+    }
+    
+    // tarkista CO2-kulutus
+    co2Consumption(data);
+    
+    // kartan merkit
+    updateMapMarkers(data);
   }
 }
 
@@ -182,21 +231,8 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
       throw new Error('Invalid server input!');
     }
     const data = await response.json();
-    updateStatus(data);
-
-    // testaa onko aarretta
-    treasure(data);
-
-    // tarkista CO2-kulutus
-    co2Consumption(data);
-
-    // testaa onko wise man, jos on niin kyselyt
-    wiseManQuestion(data);
-
-    // testaa onko kentällä käyty, jos ei ole kerro advice
-    if (!airportInfo.visited) {
-      adviceGuy(data);
-    }
+    
+    updateStatus(data, airportInfo.visited);
 
     // päivitä game status tiedot uudelleen? wise man rahat ei päivity ui, mutta dataan kyllä. wise man raha
     //   päivittyy vasta seuraavan lennon yhteydessä
