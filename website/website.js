@@ -206,8 +206,10 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
     // testaa onko wise man, jos on niin kyselyt
     wiseManQuestion(data);
 
-    // testaa onko advice guy, jos on niin kerro advice
-    adviceGuy(data); // tätä pitäisi kutsua ennen visited-kohdan päivittymistä!
+    // testaa onko kentällä käyty, jos ei ole kerro advice
+    if (!airportInfo.visited) {
+      adviceGuy(data);
+    }
   });
 }
 
