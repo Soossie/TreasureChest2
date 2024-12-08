@@ -115,6 +115,7 @@ function updateStatus(data) {
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
 
+
   // karttamerkit
   //const blueIcon = L.divIcon({className:'blue_icon'})
   //const greenIcon = L.divIcon({className:'green_icon'})
@@ -122,41 +123,50 @@ function updateStatus(data) {
   //const redIcon = L.divIcon({className:'darkred_icon'})
   //const darkredIcon = L.divIcon({className:'blue_icon'})
 
+
+
+
+// tähän asti
   let marker = L.marker([
     data.current_location_info.latitude,
     data.current_location_info.longitude]).addTo(map);
-  airportMarkers.addLayer(marker);
-  map.setView([
+    airportMarkers.addLayer(marker);
+    map.setView([
     data.current_location_info.latitude,
     data.current_location_info.longitude], 4);
 
   //alku
   for (let airportInfo of data.available_airports_info) {
-    let airportMarker = L.marker(
-        [airportInfo.latitude, airportInfo.longitude]).
-        addTo(map);
+    let airportMarker = L.marker([airportInfo.latitude, airportInfo.longitude], {
+      icon: L.divIcon({
+        className: 'custom-marker',
+        html: '<div class="marker-icon"></div>',
+        iconSize: [20, 20],
+      })
+    }).addTo(map);
     airportMarkers.addLayer(airportMarker);
     addFlightInfoToMarker(airportInfo, airportMarker);
+    //const markerElement = airportMarker.getElement().querySelector('.marker-icon');
+
 
     // asettaa markereille eri värit riippuen voiko kentälle matkustaa ja onko vierailtu
     if (airportInfo.flight_info.can_fly_to && airportInfo.visited === 0) {
-      airportMarker._icon.style.filter = 'hue-rotate(260deg)';
+      //airportMarker._icon.style.filter = 'hue-rotate(170deg)';
+       airportMarker._icon.classList.add('marker-green');
 
-    } else if (airportInfo.flight_info.can_fly_to && airportInfo.visited ===
-        1) {
-      airportMarker._icon.style.filter = 'hue-rotate(310deg)';
+    } else if (airportInfo.flight_info.can_fly_to && airportInfo.visited === 1) {
+      //airportMarker._icon.style.filter = 'hue-rotate(200deg)';
+       airportMarker._icon.classList.add('marker-darkgreen');
 
-    } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited ===
-        0) {
-      airportMarker._icon.style.filter = 'hue-rotate(100deg)';
+    } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited === 0) {
+      //airportMarker._icon.style.filter = 'hue-rotate(0deg)';
+       airportMarker._icon.classList.add('marker-red');
 
-    } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited ===
-        1) {
-      airportMarker._icon.style.filter = 'hue-rotate(150deg)';
+    } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited === 1) {
+      //airportMarker._icon.style.filter = 'hue-rotate(180deg)';
+      airportMarker._icon.classList.add('marker-darkred');
     }
-
   }
-
 }
 
 // lentoinfo markerille ja lentonappi

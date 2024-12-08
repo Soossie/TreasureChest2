@@ -507,4 +507,41 @@ b {
     z-index: 1000;
     position: relative;
 }
+/*
+.custom-marker .marker-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+ */
+.marker-green {
+    background-color: rgb(236, 144, 6);
+    filter: hue-rotate(90deg);
+    backdrop-filter: hue-rotate(90deg);
+    border-radius: 50%;
 
+
+}
+.marker-darkgreen {
+    background-color: rgb(103, 59, 16);
+    filter: hue-rotate(90deg);
+    backdrop-filter: hue-rotate(90deg);
+    border-radius: 50%;
+
+}
+
+.marker-red {
+  background-color: rgb(213, 6, 236);
+  filter: hue-rotate(90deg);
+  backdrop-filter: hue-rotate(90deg);
+    border-radius: 50%;
+
+}
+
+.marker-darkred {
+    background-color: rgb(72, 14, 119);
+    filter: hue-rotate(90deg);
+    backdrop-filter: hue-rotate(90deg);
+    border-radius: 50%;
+
+}
