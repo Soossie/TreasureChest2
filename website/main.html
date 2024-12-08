@@ -132,10 +132,10 @@
         </form>
     </div>
 
-
     <div id="difficulty-modal" class="hide">
         <form id="difficulty-form">
-            <p>Choose difficulty</p>
+            <p><b>Choose difficulty</b></p>
+            <p class="no-margin-top">Difficulty level determines how many countries and airports the game generates.</p>
             <div class="button-container">
                 <input type="button" value="Easy">
                 <input type="button" value="Normal">
@@ -148,7 +148,8 @@
     <div id="yes-or-no-modal" class="popup hide">
         <div class="popup-content">
             <span class="close" data-popup="yes-or-no-modal">&times;</span>
-                <p>Do you want to answer to a question?</p>
+                <p>You encounter a wise man! Do you want to answer a question?</p>
+                <p id="wise-man-cost"></p>
                 <div class="popup-buttons">
                     <button id="yes">Yes</button>
                     <button id="no">No</button>
@@ -175,13 +176,13 @@
                 <span class="close" data-popup="wise-man-modal">&times;</span>
                     <img src="https://via.placeholder.com/600x400" alt="Popup Image 2">
                     <div class="popup-text">
-                        <p>You encounter a wise man! He asks a question:</p>
-                        <p>kysymys</p>
+                        <p>Wise man question:</p>
+                        <p id="wise-man-question"></p>
                     </div>   
                 <div class="popup-buttons">
-                    <button id="option1">Option 1</button>
-                    <button id="option2">Option 2</button>
-                    <button id="option3">Option 3</button>
+                    <button id="option1">A</button>
+                    <button id="option2">B</button>
+                    <button id="option3">C</button>
                 </div>                
             </div>
     </div>
@@ -203,7 +204,7 @@
             <span class="close" data-popup="defeat-modal">&times;</span>
                 <img src="https://via.placeholder.com/600x400" alt="Popup Image 4">
                 <div class="popup-text">
-                    <p>Oh no! You have run out of money!</p>
+                    <p>Oh no! You have run out of money! Game over!"</p>
             </div>
         </div>
     </div>

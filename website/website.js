@@ -23,12 +23,16 @@ const apiUrl = 'http://127.0.0.1:5000/';
 const newGameUrl = apiUrl + '/new-game';
 const gameInfoUrl = apiUrl + '/game-info';
 const flyToUrl = apiUrl + '/fly-to';
+const wiseManUrl = apiUrl + '/wise-man';
 
 let gameId;
 let stillPlaying = true;
+let co2AlertShown = false;
 
 // aloita uusi peli
 async function startNewGame() {
+  // muuttaa CO2-värin mustaksi
+  document.querySelector('#co2').style.color = 'black';
   // kysyy nimen
   document.querySelector('#player-modal').classList.remove('hide');
 
@@ -84,7 +88,7 @@ function gameSetup(gameData) {
 // päivittää pelin tiedot käyttöliittymään
 function updateStatus(data) {
   console.log(data);
-  
+
   // pelaajan tiedot
   document.querySelector('#player').innerHTML = `${data.game_info.screen_name}`;
   document.querySelector('#money').innerHTML = `${data.game_info.money}`;
@@ -106,7 +110,7 @@ function updateStatus(data) {
     data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
     airportMarkers.addLayer(marker);
     map.setView([data.current_location_info.latitude, data.current_location_info.longitude], zoomLevel);
-    
+
   // onko pelaaja aarremaassa, jos on näytetään maan nimi lentokentän lisäksi
   const inTreasureLand = data.game_info.in_treasure_land;
 
@@ -142,7 +146,7 @@ function updateStatus(data) {
 function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   const flightInfoMarkerPopup = document.createElement('div');
   flightInfoMarkerPopup.classList.add('flight-info-marker');
-  
+
   // lentoinfo
   // näytä maan nimi kansainvälisillä lennoilla ja kentän nimi kotimaisilla lennoilla
   const h4 = document.createElement('h4');
@@ -152,17 +156,17 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   }
   h4.innerHTML = airportNameDisplay;
   flightInfoMarkerPopup.append(h4);
-  
+
   // etäisyys
   let distanceElem = document.createElement('p');
   distanceElem.innerHTML = `Distance ${airportInfo.flight_info.distance} km`;
   flightInfoMarkerPopup.append(distanceElem);
-  
+
   // lipun hinta
   let ticketCostElem = document.createElement('p');
   ticketCostElem.innerHTML = `Ticket cost ${airportInfo.flight_info.ticket_cost} €`;
   flightInfoMarkerPopup.append(ticketCostElem);
-  
+
   // co2 kulutus
   let co2Elem = document.createElement('p');
   co2Elem.innerHTML = `CO2 consumption ${airportInfo.flight_info.co2_consumption} kg`;
@@ -189,6 +193,12 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
     const data = await response.json();
     updateStatus(data);
 
+    // testaa onko aarretta
+    treasure(data);
+
+    // tarkista CO2-kulutus
+    co2Consumption(data);
+
     // testaa onko wise man, jos on niin kyselyt
     wiseManQuestion(data);
 
@@ -196,14 +206,39 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
     if (!airportInfo.visited) {
       adviceGuy(data);
     }
+
+    // päivitä game status tiedot uudelleen? wise man rahat ei päivity ui, mutta dataan kyllä. wise man raha
+    //   päivittyy vasta seuraavan lennon yhteydessä
+
   });
 }
 
+// testaa onko aarretta (aarremaassa)
+function treasure(data) {
+  if (data.game_info.in_treasure_land && data.current_location_info.has_treasure === 1) {
+    alert(`You won!`);  // tähän pop up, kerro aarre
+    // pitäisi estää lentäminen voittoviestin jälkeen
+  } else {
+    console.log('Treasure not found.');
+  }
+}
+
+// testaa CO2-kulutus, jos yli 1000 kg niin tulee alert ja teksti muuttuu punaiseksi
+function co2Consumption(data) {
+  if (data.game_info.co2_consumed >= 1000 && !co2AlertShown) {
+    alert('You have consumed over 1000 kg CO2! You have to pay CO2 emission-based flight tax for each flight.');
+    co2AlertShown = true;
+    // lentolippujen hinta on kalliimpi, miten päivittyy?
+    // päivittää CO2-kulutuksen värin
+    document.querySelector('#co2').style.color = 'red';
+  }
+}
+
+
 // advice guy funktiot
 
-// testaa onko advice guy (mahdollistaa tällä hetkellä neuvon saamisen uudelleen)
-function hasUnVisitedAdviceGuy(data) {
-  // ehdon pitäisi olla: if (data.current_location_info.advice_guy && data.current_location_info.visited === 0)
+// testaa onko advice guy
+function hasAdviceGuy(data) {
   if (data.current_location_info.advice_guy) {
     console.log('Advice guy found!');
     return true;
@@ -213,10 +248,11 @@ function hasUnVisitedAdviceGuy(data) {
   }
 }
 
-// advice guy antaa neuvon
+// advice guy antaa neuvon (rahamäärä päivittyy jo pythonissa)
 function adviceGuy(data) {
-  if (hasUnVisitedAdviceGuy(data)) {
-    alert(`You encounter advice guy! Advice: ${data.current_location_info.advice_guy.advice}`);
+  if (hasAdviceGuy(data)) {
+    alert(`You encounter advice guy! You get ${data.game_info.advice_guy_reward} €. 
+    Advice: ${data.current_location_info.advice_guy.advice}`);
   }
 }
 
@@ -225,7 +261,7 @@ function adviceGuy(data) {
 // testaa onko wise man, johon ei ole vastattu
 function hasUnansweredWiseMan(data) {
   if (data.current_location_info.wise_man && data.current_location_info.wise_man.answered === 0) {
-  console.log("Wise man on, ei ole vastattu!");
+  console.log("Unanswered wise man found!");
   return true;
   } else {
     console.log("No wise man data found.");
@@ -233,15 +269,37 @@ function hasUnansweredWiseMan(data) {
   }
 }
 
-// wise man kysyy kysymyksen (tämä ei vielä päivitä answered-kohtaa)
-function wiseManQuestion(data) {
+// wise man kysyy kysymyksen
+async function wiseManQuestion(data) {
   if (hasUnansweredWiseMan(data)) {
-    const userAnswer = prompt(`You encounter a wise man! Question: ${data.current_location_info.wise_man.wise_man_question}. Input a, b or c.`);
+    // kysy käyttäjältä vastaako vai ei
+    //openPopup(btn5);    // ??
+
+    // päivitä wise man hinta HTML:ään
+    document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €.`;
+
+    const userAnswer = prompt(`You encounter a wise man! Cost: ${data.game_info.wise_man_cost} €. Question: ${data.current_location_info.wise_man.wise_man_question}. Input a, b or c.`);
+
+    // päivitä kysymys HTML
+    document.querySelector('#wise-man-question').innerHTML = `Question: ${data.current_location_info.wise_man.wise_man_question}`;
+
     if (userAnswer === data.current_location_info.wise_man.answer) {
       console.log('Correct!')
-      // anna rahaa, päivitä answered-kohdaksi 1 - fetch wise-man/game id/is correct answer?
+      alert(`Correct answer! You won ${data.game_info.wise_man_reward} €.`);
+
+      // päivittää rahan, kun vastaus oikein
+      const response = await fetch(wiseManUrl + `/${gameId}/` + 1);
+      if (!response.ok) {
+        throw new Error('Invalid server input!');
+      }
     } else {
-      console.log('Wrong answer.')
+      console.log('Wrong answer.');
+      alert('Wrong answer!');
+      // päivittää rahan, kun vastaus väärin
+      const response = await fetch(wiseManUrl + `/${gameId}/` + 0);
+      if (!response.ok) {
+        throw new Error('Invalid server input!');
+      }
     }
 
   }
