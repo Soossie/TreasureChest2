@@ -247,37 +247,6 @@ main > div {
     display: none;
 }
 
-/* Leaflet icons */
-.blue-icon {
-    background-color: #2d7cfb;
-    border-radius: 50%;
-    border: 5px solid rgba(255, 255, 255, 0.5);
-}
-
-.green-icon {
-    background-color: #31d842;
-    border-radius: 50%;
-    border: 5px solid rgba(255, 255, 255, 0.5);
-}
-
-.darkgreen-icon {
-    background-color: #14591c;
-    border-radius: 50%;
-    border: 5px solid rgba(255, 255, 255, 0.5);
-}
-
-.red-icon {
-    background-color: #ff3042;
-    border-radius: 50%;
-    border: 5px solid rgba(255, 255, 255, 0.5);
-}
-
-.darkred-icon {
-    background-color: #980011;
-    border-radius: 50%;
-    border: 5px solid rgba(255, 255, 255, 0.5);
-}
-
 /* hover */
 ion-icon:hover {
     font-size: 1.5rem;
@@ -488,20 +457,15 @@ b {
     z-index: 1000;
     position: relative;
 }
-/*
-.custom-marker .marker-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-}
- */
+
+/* Leaflet kartta symboli värit */
 .marker-green {
     background-color: rgb(236, 144, 6);
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
-
 }
+
 .marker-darkgreen {
     background-color: rgb(103, 59, 16);
     filter: hue-rotate(90deg);

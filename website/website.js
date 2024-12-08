@@ -10,18 +10,16 @@ L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 
 const airportMarkers = L.featureGroup().addTo(map);
 
-//let marker = L.marker([60.3172, 24.963]).addTo(map); // esimerkki marker
-
 /*
 //Jos haluamme, voimme lisätä openstreetmapin googlemapin sijaan.
 const map = L.map('map').setView([60.23, 24.74], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
-let marker = L.marker([60.3172, 24.963]).addTo(map);
- */
+//const airportMarkers = L.featureGroup().addTo(map);
+*/
 
-const apiUrl = 'http://127.0.0.1:3000/';
+const apiUrl = 'http://127.0.0.1:5000/';
 const newGameUrl = apiUrl + '/new-game';
 const gameInfoUrl = apiUrl + '/game-info';
 const flyToUrl = apiUrl + '/fly-to';
@@ -96,14 +94,7 @@ function updateStatus(data) {
 
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
-  
-  // karttamerkit
-  //const blueIcon = L.divIcon({className:'blue_icon'})
-  //const greenIcon = L.divIcon({className:'green_icon'})
-  //const darkgreenIcon = L.divIcon({className:'darkgreen_icon'})
-  //const redIcon = L.divIcon({className:'darkred_icon'})
-  //const darkredIcon = L.divIcon({className:'blue_icon'})
-  
+
   // kartan zoom. zoomaa lähemmäs jos aarremaassa
   let zoomLevel = 4;
   if (data.game_info.in_treasure_land) zoomLevel = 5;
@@ -119,7 +110,7 @@ function updateStatus(data) {
   // onko pelaaja aarremaassa, jos on näytetään maan nimi lentokentän lisäksi
   const inTreasureLand = data.game_info.in_treasure_land;
 
-  // aseta kaikkien kenttien markerit kartalle
+  // kaikkien kenttien markerit kartalle
   for (let airportInfo of data.available_airports_info) {
     let airportMarker = L.marker([airportInfo.latitude, airportInfo.longitude], {
       icon: L.divIcon({
@@ -130,23 +121,18 @@ function updateStatus(data) {
     }).addTo(map);
     airportMarkers.addLayer(airportMarker);
     addFlightInfoToMarker(airportInfo, airportMarker, inTreasureLand);
-    //const markerElement = airportMarker.getElement().querySelector('.marker-icon');
 
-    // asettaa markereille eri värit riippuen voiko kentälle matkustaa ja onko vierailtu
+    // markereille eri värit riippuen voiko kentälle matkustaa ja onko vierailtu
     if (airportInfo.flight_info.can_fly_to && airportInfo.visited === 0) {
-      //airportMarker._icon.style.filter = 'hue-rotate(170deg)';
        airportMarker._icon.classList.add('marker-green');
 
     } else if (airportInfo.flight_info.can_fly_to && airportInfo.visited === 1) {
-      //airportMarker._icon.style.filter = 'hue-rotate(200deg)';
        airportMarker._icon.classList.add('marker-darkgreen');
 
     } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited === 0) {
-      //airportMarker._icon.style.filter = 'hue-rotate(0deg)';
        airportMarker._icon.classList.add('marker-red');
 
     } else if (!airportInfo.flight_info.can_fly_to && airportInfo.visited === 1) {
-      //airportMarker._icon.style.filter = 'hue-rotate(180deg)';
       airportMarker._icon.classList.add('marker-darkred');
     }
   }
