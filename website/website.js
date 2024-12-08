@@ -124,7 +124,7 @@ function updateStatus(data) {
       icon: L.divIcon({
         className: 'custom-marker',
         html: '<div class="marker-icon"></div>',
-        iconSize: [20, 20],
+        iconSize: [25, 25],
       })
     }).addTo(map);
     airportMarkers.addLayer(airportMarker);
