@@ -131,7 +131,6 @@ function updateStatus(data) {
     addFlightInfoToMarker(airportInfo, airportMarker);
     //const markerElement = airportMarker.getElement().querySelector('.marker-icon');
 
-
     // asettaa markereille eri värit riippuen voiko kentälle matkustaa ja onko vierailtu
     if (airportInfo.flight_info.can_fly_to && airportInfo.visited === 0) {
       //airportMarker._icon.style.filter = 'hue-rotate(170deg)';

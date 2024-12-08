@@ -501,14 +501,12 @@ b {
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
 
-
 }
 .marker-darkgreen {
     background-color: rgb(103, 59, 16);
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
-
 }
 
 .marker-red {
@@ -516,7 +514,6 @@ b {
   filter: hue-rotate(90deg);
   backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
-
 }
 
 .marker-darkred {
@@ -524,5 +521,4 @@ b {
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
-
 }
