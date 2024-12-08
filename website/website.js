@@ -10,7 +10,7 @@ L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 
 const airportMarkers = L.featureGroup().addTo(map);
 
-const apiUrl = 'http://127.0.0.1:5000/';
+const apiUrl = 'http://127.0.0.1:3000/';
 const newGameUrl = apiUrl + '/new-game';
 const gameInfoUrl = apiUrl + '/game-info';
 const flyToUrl = apiUrl + '/fly-to';
@@ -107,7 +107,7 @@ function updateStatus(data) {
       icon: L.divIcon({
         className: 'custom-marker',
         html: '<div class="marker-icon"></div>',
-        iconSize: [25, 25],
+        iconSize: [18, 18],
       })
     }).addTo(map);
     airportMarkers.addLayer(airportMarker);

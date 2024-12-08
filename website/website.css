@@ -460,14 +460,14 @@ b {
 
 /* Leaflet kartta symboli värit */
 .marker-green {
-    background-color: rgb(236, 144, 6);
+    background-color: rgb(236, 155, 6);
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
 }
 
 .marker-darkgreen {
-    background-color: rgb(103, 59, 16);
+    background-color: rgba(103, 59, 16, 0.96);(103, 59, 16);
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
