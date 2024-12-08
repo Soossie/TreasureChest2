@@ -477,7 +477,7 @@ b {
   background-color: rgb(213, 6, 236);
   filter: hue-rotate(90deg);
   backdrop-filter: hue-rotate(90deg);
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 .marker-darkred {
