@@ -200,41 +200,62 @@ function addFlightInfoToMarker(airportInfo, marker) {
     updateStatus(data);
 
     // testaa onko wise man, jos on niin kyselyt
-    //wiseManQuestion(data);
+    wiseManQuestion(data);
 
-    // testaa onko advice guy, jos on niin kyselyt
-
+    // testaa onko advice guy, jos on niin kerro advice
+    adviceGuy(data); // tätä pitäisi kutsua ennen visited-kohdan päivittymistä!
   });
 }
 
-// wise man funktioiden alku, ei vielä toimi / ei ole testattu kunnolla
+// advice guy funktiot
 
-/*
+// testaa onko advice guy (mahdollistaa tällä hetkellä neuvon saamisen uudelleen)
+function hasUnVisitedAdviceGuy(data) {
+  // ehdon pitäisi olla: if (data.current_location_info.advice_guy && data.current_location_info.visited === 0)
+  if (data.current_location_info.advice_guy) {
+    console.log('Advice guy found!');
+    return true;
+  } else {
+    console.log('No advice guy here.')
+    return false;
+  }
+}
+
+// advice guy antaa neuvon
+function adviceGuy(data) {
+  if (hasUnVisitedAdviceGuy(data)) {
+    alert(`You encounter advice guy! Advice: ${data.current_location_info.advice_guy.advice}`);
+  }
+}
+
+// wise man funktioiden alku
+
 // testaa onko wise man, johon ei ole vastattu
 function hasUnansweredWiseMan(data) {
   if (data.current_location_info.wise_man && data.current_location_info.wise_man.answered === 0) {
   console.log("Wise man on, ei ole vastattu!");
-  return true
-} else {
-  console.log("No wise man data found.");
-  return false;
-}
+  return true;
+  } else {
+    console.log("No wise man data found.");
+    return false;
+  }
 }
 
-// wise man kysyy kysymyksen
-function wiseManQuestion() {
-  if (hasUnansweredWiseMan() === true) {
+// wise man kysyy kysymyksen (tämä ei vielä päivitä answered-kohtaa)
+function wiseManQuestion(data) {
+  if (hasUnansweredWiseMan(data)) {
     const userAnswer = prompt(`You encounter a wise man! Question: ${data.current_location_info.wise_man.wise_man_question}. Input a, b or c.`);
     if (userAnswer === data.current_location_info.wise_man.answer) {
       console.log('Correct!')
-      // anna rahaa
-      // päivitä answered-kohdaksi 1
+      // anna rahaa, päivitä answered-kohdaksi 1 - fetch wise-man/game id/is correct answer?
+    } else {
+      console.log('Wrong answer.')
     }
 
   }
 }
 
-*/
+
 
 // valitse näistä yksi:
 
