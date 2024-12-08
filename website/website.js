@@ -10,7 +10,7 @@ L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 
 const airportMarkers = L.featureGroup().addTo(map);
 
-const apiUrl = 'http://127.0.0.1:5000/';
+const apiUrl = 'http://127.0.0.1:3000/';
 const newGameUrl = apiUrl + '/new-game';
 const gameInfoUrl = apiUrl + '/game-info';
 const flyToUrl = apiUrl + '/fly-to';
@@ -175,7 +175,7 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
 
   marker.bindPopup(flightInfoMarkerPopup);
 
-  // event napille
+  // event napille, peliloop? pitäisikö tähän laittaa while (stillPlaying)?
   flyButton.addEventListener('click', async function() {
     const response = await fetch(flyToUrl + `/${gameId}/${airportInfo.icao}`);
     if (!response.ok) {
@@ -198,8 +198,10 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
       adviceGuy(data);
     }
 
+    // tarkista rahat / lentonappien värit. Peli loppuu jos ei voi matkustaa --> loppuviesti
+
     // päivitä game status tiedot uudelleen? wise man rahat ei päivity ui, mutta dataan kyllä. wise man raha
-    //   päivittyy vasta seuraavan lennon yhteydessä
+    //   päivittyy vasta seuraavan lennon yhteydessä --> wise man palautus tallenna funktioon?
 
   });
 }
@@ -225,9 +227,6 @@ function co2Consumption(data) {
   }
 }
 
-
-// advice guy funktiot
-
 // testaa onko advice guy
 function hasAdviceGuy(data) {
   if (data.current_location_info.advice_guy) {
@@ -246,8 +245,6 @@ function adviceGuy(data) {
     Advice: ${data.current_location_info.advice_guy.advice}`);
   }
 }
-
-// wise man funktioiden alku
 
 // testaa onko wise man, johon ei ole vastattu
 function hasUnansweredWiseMan(data) {
