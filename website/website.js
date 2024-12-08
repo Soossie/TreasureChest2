@@ -10,15 +10,6 @@ L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 
 const airportMarkers = L.featureGroup().addTo(map);
 
-/*
-//Jos haluamme, voimme lisätä openstreetmapin googlemapin sijaan.
-const map = L.map('map').setView([60.23, 24.74], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
-const airportMarkers = L.featureGroup().addTo(map);
-*/
-
 const apiUrl = 'http://127.0.0.1:5000/';
 const newGameUrl = apiUrl + '/new-game';
 const gameInfoUrl = apiUrl + '/game-info';
