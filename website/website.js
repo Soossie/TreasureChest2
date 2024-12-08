@@ -79,15 +79,14 @@ async function continueExistingGame() {
 }
 
 function gameSetup(gameData) {
-  //const gameData = await startNewGame();
-  console.log(gameData);
   gameId = gameData.game_info.id;
-
   updateStatus(gameData);
 }
 
 // päivittää pelin tiedot käyttöliittymään
 function updateStatus(data) {
+  console.log(data);
+  
   // pelaajan tiedot
   document.querySelector('#player').innerHTML = `${data.game_info.screen_name}`;
   document.querySelector('#money').innerHTML = `${data.game_info.money}`;
@@ -97,28 +96,30 @@ function updateStatus(data) {
 
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
-
-
+  
   // karttamerkit
   //const blueIcon = L.divIcon({className:'blue_icon'})
   //const greenIcon = L.divIcon({className:'green_icon'})
   //const darkgreenIcon = L.divIcon({className:'darkgreen_icon'})
   //const redIcon = L.divIcon({className:'darkred_icon'})
   //const darkredIcon = L.divIcon({className:'blue_icon'})
+  
+  // kartan zoom. zoomaa lähemmäs jos aarremaassa
+  let zoomLevel = 4;
+  if (data.game_info.in_treasure_land) zoomLevel = 5;
+  // to do: älä muuta zoomia pelin aikana (jätä pelaajan asettama zoom)
+  // nyt zoom hyppii matkustaessa mikä on häiritsevää
 
-
-
-
-// tähän asti
+  // nykyisen sijainnin marker
   let marker = L.marker([
-    data.current_location_info.latitude,
-    data.current_location_info.longitude]).addTo(map);
+    data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
     airportMarkers.addLayer(marker);
-    map.setView([
-    data.current_location_info.latitude,
-    data.current_location_info.longitude], 4);
+    map.setView([data.current_location_info.latitude, data.current_location_info.longitude], zoomLevel);
+    
+  // onko pelaaja aarremaassa, jos on näytetään maan nimi lentokentän lisäksi
+  const inTreasureLand = data.game_info.in_treasure_land;
 
-  //alku
+  // aseta kaikkien kenttien markerit kartalle
   for (let airportInfo of data.available_airports_info) {
     let airportMarker = L.marker([airportInfo.latitude, airportInfo.longitude], {
       icon: L.divIcon({
@@ -128,7 +129,7 @@ function updateStatus(data) {
       })
     }).addTo(map);
     airportMarkers.addLayer(airportMarker);
-    addFlightInfoToMarker(airportInfo, airportMarker);
+    addFlightInfoToMarker(airportInfo, airportMarker, inTreasureLand);
     //const markerElement = airportMarker.getElement().querySelector('.marker-icon');
 
     // asettaa markereille eri värit riippuen voiko kentälle matkustaa ja onko vierailtu
@@ -152,28 +153,31 @@ function updateStatus(data) {
 }
 
 // lentoinfo markerille ja lentonappi
-function addFlightInfoToMarker(airportInfo, marker) {
+function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   const flightInfoMarkerPopup = document.createElement('div');
   flightInfoMarkerPopup.classList.add('flight-info-marker');
-
+  
   // lentoinfo
+  // näytä maan nimi kansainvälisillä lennoilla ja kentän nimi kotimaisilla lennoilla
   const h4 = document.createElement('h4');
-  h4.innerHTML = airportInfo.name;
+  let airportNameDisplay = airportInfo.name;
+  if (!inTreasureLand) {
+    airportNameDisplay = `${airportInfo.country_name}`;
+  }
+  h4.innerHTML = airportNameDisplay;
   flightInfoMarkerPopup.append(h4);
-
-  // näyttää lentokentän maan (pitäisikö näkyä vain maiden välisillä lennoilla?)
-  let countryElem = document.createElement('p');
-  countryElem.innerHTML = airportInfo.country_name;
-  flightInfoMarkerPopup.append(countryElem);
-
+  
+  // etäisyys
   let distanceElem = document.createElement('p');
   distanceElem.innerHTML = `Distance ${airportInfo.flight_info.distance} km`;
   flightInfoMarkerPopup.append(distanceElem);
-
+  
+  // lipun hinta
   let ticketCostElem = document.createElement('p');
   ticketCostElem.innerHTML = `Ticket cost ${airportInfo.flight_info.ticket_cost} €`;
   flightInfoMarkerPopup.append(ticketCostElem);
-
+  
+  // co2 kulutus
   let co2Elem = document.createElement('p');
   co2Elem.innerHTML = `CO2 consumption ${airportInfo.flight_info.co2_consumption} kg`;
   flightInfoMarkerPopup.append(co2Elem);
