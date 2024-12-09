@@ -286,8 +286,6 @@ function adviceGuy(data) {
 }
 
 
-
-
 // testaa onko wise man, johon ei ole vastattu
 function hasUnansweredWiseMan(data) {
   if (data.current_location_info.wise_man && data.current_location_info.wise_man.answered === 0) {
