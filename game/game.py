@@ -211,7 +211,7 @@ class Game:
         max_interval = int(math.ceil(distance_to_treasure / 100)) * 100 + bluff_km
         if min_interval < 0: min_interval = 0
 
-        return f'{min_interval} km - {max_interval} km'
+        return f'{min_interval} - {max_interval} km'
 
 
     # palauttaa luokan tiedot json-muodossa
