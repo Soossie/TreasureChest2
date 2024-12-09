@@ -465,10 +465,11 @@ ol {
 
 /* Leaflet kartta symboli värit */
 .marker-green {
-    background-color: rgb(236, 155, 6);
+    background-color: rgb(205, 119, 6);
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2)
 }
 
 .marker-darkgreen {
@@ -476,18 +477,21 @@ ol {
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2)
 }
 
 .marker-red {
-  background-color: rgb(213, 6, 236);
+  background-color: rgb(166, 10, 177);
   filter: hue-rotate(90deg);
   backdrop-filter: hue-rotate(90deg);
   border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1)
 }
 
 .marker-darkred {
-    background-color: rgb(72, 14, 119);
+    background-color: rgb(67, 12, 112);
     filter: hue-rotate(90deg);
     backdrop-filter: hue-rotate(90deg);
     border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2)
 }

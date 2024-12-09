@@ -85,22 +85,38 @@ function updatePlayerInfoPanel(data) {
   document.querySelector('#clue').innerHTML = `${data.game_info.clue}`;
 }
 
+let userZoomLevel = 4;
+map.on('zoomend', function () {
+  userZoomLevel = map.getZoom();
+});
+
+function handleTreasureLandEntry(inTreasureLand) {
+   const currentZoom = userZoomLevel || map.getZoom();
+   if (inTreasureLand) {
+    if (currentZoom < 7) {
+      map.setZoom(7);
+    }
+  } else {
+    map.setZoom(userZoomLevel);
+  }
+}
+
 // päivitä nykyinen sijainti kartalle
 function updateCurrentLocationMarkerOnly(data) {
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
 
-  // kartan zoom. zoomaa lähemmäs jos aarremaassa
-  let zoomLevel = 4;
-  if (data.game_info.in_treasure_land) zoomLevel = 5;
-  // to do: älä muuta zoomia pelin aikana (jätä pelaajan asettama zoom)
-  // nyt zoom hyppii matkustaessa mikä on häiritsevää
+  // Käytä pelaajan asettamaa zoom-tasoa
+  let zoomLevel = userZoomLevel !== null ? userZoomLevel : 4;
+  if (data.game_info.in_treasure_land) {
+      zoomLevel = 7;
+  }
+  handleTreasureLandEntry(data.game_info.in_treasure_land)
 
   // nykyisen sijainnin marker
-  let marker = L.marker([
-    data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
-    airportMarkers.addLayer(marker);
-    map.setView([data.current_location_info.latitude, data.current_location_info.longitude], zoomLevel);
+  let marker = L.marker([data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
+  airportMarkers.addLayer(marker);
+  map.setView([data.current_location_info.latitude, data.current_location_info.longitude], zoomLevel);
 }
 
 // päivitä nykyinen sijainti ja kaikki lentokentät kartalle
@@ -117,7 +133,7 @@ function updateMapMarkers(data) {
       icon: L.divIcon({
         className: 'custom-marker',
         html: '<div class="marker-icon"></div>',
-        iconSize: [18, 18],
+        iconSize: [12, 12],
       })
     }).addTo(map);
     airportMarkers.addLayer(airportMarker);
