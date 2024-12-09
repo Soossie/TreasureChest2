@@ -165,16 +165,17 @@ class FlightInfo:
         self.game_id = game_id
         self.current_location = get_current_location(game_id)
         self.destination_icao = destination_icao
-        self.distance = self.get_distance_to_airport()
+        self.distance = self.get_distance_to_airport(self.current_location, self.destination_icao)
         self.ticket_cost = self.count_ticket_cost()
         self.co2_consumption = self.get_co2_consumption()
         self.can_fly_to = self.has_enough_money_for_flight()
 
     # laske lentokenttien välinen etäisyys
-    def get_distance_to_airport(self):
+    @classmethod
+    def get_distance_to_airport(cls, current_location, destination_icao):
         # hae koordinaatit Airport-luokasta
-        airport1 = Airport(self.current_location)
-        airport2 = Airport(self.destination_icao)
+        airport1 = Airport(current_location)
+        airport2 = Airport(destination_icao)
 
         coordinates1 = (airport1.latitude, airport1.longitude)  #get_airport_coordinates(airport_icao1)
         coordinates2 = (airport2.latitude, airport2.longitude)  #get_airport_coordinates(airport_icao2)

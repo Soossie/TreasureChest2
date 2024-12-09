@@ -137,12 +137,6 @@ def get_random_unused_question_id(game_id):
     cursor.execute(sql)
     return cursor.fetchone()[0]
 
-def get_random_question_id():
-    sql = f'select id from wise_man_questions order by rand();'
-    cursor = db.get_conn().cursor(buffered=True)
-    cursor.execute(sql)
-    return cursor.fetchone()[0]
-
 # hae käytössä oleva raha
 def get_player_money(game_id):
     sql = f'select money from game where id = "{game_id}";'
@@ -181,98 +175,11 @@ def get_wise_man_cost_and_reward(difficulty_level):
     result = cursor.fetchone()
     return result
 
-"""
-def meet_wise_man_if_exists(wise_man, game_id, wise_man_cost, wise_man_reward, money):
-    location = get_current_location(game_id)
-    if wise_man is not None:
-        question = get_wise_man_question_and_answer(location, game_id)[0]
-        answer = get_wise_man_question_and_answer(location, game_id)[1]
-        time.sleep(0.5)
-        user_input = input(f'You encountered a wise man. Do you want to buy a question? Cost: {wise_man_cost} €.\n'
-              f'Input y (yes) or n (no): ')
-        if money < wise_man_cost:
-            user_input = 'n'
-            print('You do not have enough money to buy a question.')
-            time.sleep(2)
-        user_input = user_input.lower()
-        while user_input not in ('y', 'yes', 'n', 'no'):
-            user_input = input('Invalid input. Input y (yes) or n (no): ')
-        if user_input in ('y', 'yes'):
-            answered_value = get_answered_value(game_id, wise_man)[0]
-            if answered_value == 1:
-                print("You have answered the question already.")
-            else:
-                money -= wise_man_cost
-                update_column_answered(game_id, wise_man)
-                time.sleep(0.5)
-                print(f'You have {money} €.')
-                time.sleep(0.5)
-                print(f'Question: {question}')
-                user_answer = input('Input answer (a, b or c): ')
-                user_answer = user_answer.lower()
-                while user_answer not in ('a', 'b', 'c'):
-                    user_answer = input('Invalid input. Input answer (a, b or c): ')
-                    user_answer = user_answer.lower()
-                if user_answer == answer:
-                    money += wise_man_reward
-                    print(f'Correct! You won {wise_man_reward} €.')
-                    time.sleep(0.5)
-                    print(f'You have {money} €.')
-                    time.sleep(0.5)
-                else:
-                    print(f'Wrong! Correct answer is {answer}.')
-                    time.sleep(0.5)
-        elif user_input in ('n', 'no'):
-            print('No question this time. Bye!\n')
-            time.sleep(0.5)
-    else:
-        print('No wise man here.')
-        time.sleep(0.5)
-    return money
-"""
-
 # päivitä game_airports-taulun sarake answered
 def update_wise_man_question_answered(game_id, wise_man_question_id):
     sql = f'update game_airports set answered = 1 where game_id = {game_id} and wise_man_question_id = {wise_man_question_id};'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
-
-# hae answered-sarakkeen arvo
-def get_wise_man_question_answered_value(game_id, wise_man_question_id):
-    sql = f'select answered from game_airports where game_id = {game_id} and wise_man_question_id = {wise_man_question_id};'
-    cursor = db.get_conn().cursor(buffered=True)
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    return result
-
-"""
-# pelaaja häviää - rahat loppuu tai ei riitä mihinkään lentolippuun
-def game_over(game_id):
-    message = "Out of money! You cannot afford a ticket. Game over!"
-    for char in message:
-        print(char, end='', flush=True)
-        time.sleep(0.1)
-    print()
-    sys.exit()
-
-def game_won(game_id, difficulty_level):
-    time.sleep(0.5)
-    message = '\nYou open the treasure chest and find...'
-    message2 = f'\na {get_random_reward(difficulty_level)}!'
-    message3 = f'\nCongratulations! You won the game!'
-    for char in message:
-        print(char, end='', flush=True)
-        time.sleep(0.05)
-    time.sleep(3)
-    for char in message2:
-        print(char, end='', flush=True)
-        time.sleep(0.25)
-    time.sleep(1)
-    for char in message3:
-        print(char, end='', flush=True)
-        time.sleep(0.05)
-    sys.exit()
-"""
 
 def add_or_remove_money(game_id, amount, add=False, remove=False):
     if not add and not remove:
@@ -309,14 +216,6 @@ def update_column_visited(game_id, location):
     sql = f'update game_airports set visited = 1 where game_id = {game_id} and airport_ident = "{location}";'
     cursor = db.get_conn().cursor(buffered=True)
     cursor.execute(sql)
-
-# hae visited-sarakkeen arvo
-def get_visited_value(game_id, airport_icao):
-    sql = f'select visited from game_airports where game_id = {game_id} and airport_ident = "{airport_icao}";'
-    cursor = db.get_conn().cursor(buffered=True)
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    return result
 
 # hae neuvo
 def get_advice():
