@@ -154,8 +154,10 @@ def get_current_location(game_id):
     return result[0]
 
 # hae palkinto, arvo vaikeustason mukaan
-def get_random_reward(difficulty_level):
-    sql = f'select name, id from rewards where difficulty_level = "{difficulty_level}" order by rand() limit 1;'
+def get_random_treasure(game_id):
+    sql = (f'select name, id from rewards '
+           f'where difficulty_level = (select difficulty_level from game where id = {game_id}) '
+           f'order by rand() limit 1;')
     cursor = db.get_conn().cursor()
     cursor.execute(sql)
     result = cursor.fetchone()

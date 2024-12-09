@@ -2,7 +2,7 @@ import geopy.distance
 
 from database import Database
 from game_functions import get_current_location, get_advice, get_treasure_land_country_name, get_player_co2_consumed, \
-    get_player_money
+    get_player_money, get_random_treasure
 
 db = Database()
 
@@ -126,7 +126,10 @@ class GameAirports:
         # poista aarteen tieto jos pelaaja ei ole kentällä
         if airport_icao != get_current_location(self.game_id):
             info.pop('has_treasure')
-
+        else:
+            # arvo ja lisää aarre kentän tietoihin jos nykyinen kenttä on aarrekenttä
+            if info['has_treasure'] == 1:
+                info.update({'treasure': get_random_treasure(self.game_id)})
         airport_info.update(info)
 
         # näytä wise man, advice guy vain jos pelaaja kentällä
