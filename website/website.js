@@ -186,10 +186,15 @@ async function updateStatus(visitedBefore=false) {
       updatePlayerInfoPanel();
 
     } else if (gameData.current_location_info.advice_guy) {  // advice guy
+      console.log('Advice guy found');
+      console.log('visited before value :' + visitedBefore);
       // testaa onko kentällä käyty, jos ei ole kerro vinkki
-      if (visitedBefore === false) {
+      if (!visitedBefore) {
+        console.log('unvisited advice guy found!');
         adviceGuy();
       }
+    } else {
+      console.log('No treasure, wise man or advice guy here.');
     }
 
     // tarkista CO2-kulutus
@@ -300,10 +305,8 @@ function co2Consumption() {
 // testaa onko advice guy
 function hasAdviceGuy() {
   if (gameData.current_location_info.advice_guy) {
-    console.log('Advice guy found!');
     return true;
   } else {
-    console.log('No advice guy here.')
     return false;
   }
 }
