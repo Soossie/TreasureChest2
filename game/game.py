@@ -203,6 +203,7 @@ class Game:
             for bluff in bluff_km:
                 if distance_to_treasure <= bluff:
                     return bluff_km[bluff]
+            return 600  # failsafe bluff, jos maan etäisyydet ovat suuret
 
         bluff_km = get_bluff_km()
 
