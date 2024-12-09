@@ -19,6 +19,7 @@ const wiseManUrl = apiUrl + '/wise-man';
 let gameId;
 let gameData;
 let co2AlertShown = false;
+let treasureLandAlertShown = false;
 
 // aloita uusi peli
 async function startNewGame() {
@@ -174,12 +175,22 @@ async function updateStatus(visitedBefore=false) {
   updateCurrentLocationMarkerOnly();
   await delay(200);
 
+
+  // tarkista onko pelaaja aarremaassa, näytä alert yhden kerran
+  const inTreasureLand = gameData.game_info.in_treasure_land;
+  if (inTreasureLand && !treasureLandAlertShown) {
+    alert('The treasure is in this country! Now, find the airport where the treasure is located.');
+    treasureLandAlertShown = true;
+  }
+
   // tarkista onko kentällä aarre
   if (gameData.current_location_info.has_treasure) {
-    openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
-    //alert(`You won!`);  // tähän pop up, kerro aarre
+    // wise man viimeinen kysymys
+    finalWiseManQuestion();
+    // victory modal siirretty final wise maniin
 
   } else {
+
     if (gameData.current_location_info.wise_man) {  // wise man
       // testaa onko wise man, jos on niin kyselyt
       await wiseManQuestion();
@@ -281,11 +292,11 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   }
 }
 
-// testaa onko aarretta (aarremaassa)
+// testaa onko aarretta (aarremaassa) // tämä on turha funktio??
 function treasure() {
   if (gameData.game_info.in_treasure_land && gameData.current_location_info.has_treasure === 1) {
+
     openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
-    // pitäisi estää lentäminen voittoviestin jälkeen
   } else {
     console.log('Treasure not found.');
   }
@@ -338,6 +349,9 @@ function hasUnansweredWiseMan() {
 
 // wise man kysyy haluaako pelaaja kuulla kysymyksen sekä kysyy kysymyksen
 async function wiseManQuestion() {
+  // päivitä wise man teksti (jos pelaaja löytää aarteen edellisessä pelissä, teksti on eri)
+  document.querySelector('#final-wise-man-text').innerHTML = 'Wise man question:';
+
   // päivitä wise man hinta HTML:ään
   document.querySelector('#wise-man-cost').innerHTML = `Cost: ${gameData.game_info.wise_man_cost} €`;
   if (hasUnansweredWiseMan() && (await handleYesOrNoQuestion()) === 'yes') {
@@ -382,6 +396,37 @@ async function wiseManQuestion() {
   }
 }
 
+// final wise man aarteen luona, pakko vastata
+async function finalWiseManQuestion() {
+  if (hasUnansweredWiseMan()) {
+    // päivitä wise man teksti
+    document.querySelector('#final-wise-man-text').innerHTML = 'You found the treasure chest! ' +
+        'A greedy wise man guards the chest and demands you answer the final question. ' +
+        'Answer correctly to win the treasure.';
+
+    // päivitä kysymys HTML:ään
+    document.querySelector('#wise-man-question').innerHTML = `${gameData.current_location_info.wise_man.wise_man_question}`;
+
+    // kysy kysymys
+    const userAnswer = await handleWiseManQuestion();
+
+    // 1 oikea vastaus, 0 väärä vastaus
+    let isCorrectAnswer = userAnswer === gameData.current_location_info.wise_man.answer ? 1 : 0;
+
+    // tulostukset riippuen oliko vastaus oikein vai väärin
+    if (isCorrectAnswer === 1) {
+      console.log('Correct! You won the treasure!')
+
+      // avaa voitto pop up
+      openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
+
+    } else {
+      console.log('Wrong answer. Game over!');
+      openPopup('defeat-modal2', 'https://st2.depositphotos.com/1074442/7027/i/450/depositphotos_70278557-stock-photo-fallen-chess-king-as-a.jpg');
+
+    }
+  }
+}
 
 
 // valitse näistä yksi:
