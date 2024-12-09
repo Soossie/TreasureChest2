@@ -299,13 +299,14 @@ function hasUnansweredWiseMan(data) {
 
 // wise man kysyy haluaako pelaaja kuulla kysymyksen sekä kysyy kysymyksen
 async function wiseManQuestion(data) {
-
+  // päivitä wise man hinta HTML:ään
+  document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €`;
   if (hasUnansweredWiseMan(data) && (await handleYesOrNoQuestion()) === 'yes') {
     // päivitä wise man hinta HTML:ään
-    document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €.`;
+    document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €`;
 
     // päivitä kysymys HTML:ään
-    document.querySelector('#wise-man-question').innerHTML = `Question: ${data.current_location_info.wise_man.wise_man_question}`;
+    document.querySelector('#wise-man-question').innerHTML = `${data.current_location_info.wise_man.wise_man_question}`;
 
     // kysy kysymys sekä odota vastausta
     const userAnswer = await handleWiseManQuestion();

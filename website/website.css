@@ -374,7 +374,6 @@ ol {
     line-height: 1.5;
 }
 
-
 .popup {
     position: fixed;
     z-index: 1000;
@@ -401,7 +400,9 @@ ol {
     justify-content: center;
     align-items: center;
     text-align: center;
+    /*top: -20%;       testi */
 }
+
 
 .popup-body {
     display: flex;
