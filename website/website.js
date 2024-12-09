@@ -442,7 +442,7 @@ document.querySelector('#start').addEventListener('click', startNewGame);
 document.querySelector('#treasure').addEventListener('click', function () {
   //alert(`Treasure chest opened! The treasure is ${gameData.current_location_info.treasure}!`);
 
-  // sulje form
+  // sulje form (tämä ei vielä toimi!)
   document.querySelector('#victory-modal').classList.add('hide');
 
   // lisää aarre formille
@@ -458,8 +458,6 @@ document.querySelector('#last-close-button').addEventListener('click', function 
   evt.preventDefault();
   document.getElementById('opened-chest-modal').classList.add('hide');
 })
-
-
 
 
 
