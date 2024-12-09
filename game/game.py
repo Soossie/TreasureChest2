@@ -1,8 +1,9 @@
 import itertools
+import math
 
 from game_functions import *
 import random
-from airport import Airport
+from airport import Airport, GameAirports, FlightInfo
 
 
 class Game:
@@ -17,8 +18,9 @@ class Game:
 
         obj.wise_man_cost, obj.wise_man_reward = get_wise_man_cost_and_reward(obj.difficulty_level)
         obj.advice_guy_reward = get_advice_guy_reward(obj.difficulty_level)
-        obj.clue = obj.get_clue()
         obj.in_treasure_land = bool(Airport(obj.location).country_name == get_treasure_land_country_name(obj.id))
+        obj.clue = obj.get_clue()
+        #obj.distance_to_treasure_airport = obj.get_distance_to_treasure_airport(obj.id)
         return obj
 
     def __init__(self):
@@ -37,18 +39,10 @@ class Game:
         self.advice_guy_reward = None
         self.clue = None
         self.in_treasure_land = None
+        #self.distance_to_treasure_airport = None
 
-    # def start_game(self, player, difficulty_level, want_clue):  # argumentit haetaan javascriptin puolelta
     def start_game(self, player_name, difficulty_level_input):
         self.screen_name = player_name
-
-        # esittelee vaikeustasot
-        #print('\nDifficulty levels: easy, normal, hard.\n'
-        #      'Difficulty level determines how many countries and airports the game generates.')
-
-        #while not self.difficulty_level:
-        #    # kysyy käyttäjältä vaikeustason ja muuttaa syöteen pieniksi kirjaimiksi
-        #    difficulty_level_input = input('Choose difficulty level. Input e (easy), n (normal), h (hard): ').lower()
 
         # valitsee vaikeustason käyttäjän antaman syötteen perusteella
         if difficulty_level_input in ('e', 'easy'):
@@ -57,8 +51,6 @@ class Game:
             self.difficulty_level = 'normal'
         elif difficulty_level_input in ('h', 'hard'):
             self.difficulty_level = 'hard'
-        #else:
-        #    return print('Invalid difficulty level. Please input one of the following: e, n, h')
 
         self.wise_man_cost, self.wise_man_reward = get_wise_man_cost_and_reward(self.difficulty_level)
         self.advice_guy_reward = get_advice_guy_reward(self.difficulty_level)
@@ -168,6 +160,7 @@ class Game:
         # vihje on aarremaan nimen ensimmäinen kirjain
         self.clue = self.get_clue()
         self.in_treasure_land = bool(Airport(self.location).country_name == get_treasure_land_country_name(self.id))
+        #self.distance_to_treasure_airport = self.get_distance_to_treasure_airport(self.id)
 
         # lisää pelaadan kotilentokenttä käytyjen kenttien listaan
         update_column_visited(self.id, self.home_airport)
@@ -190,9 +183,48 @@ class Game:
         return data
 
     def get_clue(self):
-        treasure_land_country_name = get_treasure_land_country_name(self.id)
-        return f'The treasure is hidden in a country that begins with the letter {treasure_land_country_name[0]}.'
+        # vihje on aarremaan ensimmäinen kirjain jos pelaaja ei ole aarremaassa
+        if not self.in_treasure_land:
+            treasure_land_country_name = get_treasure_land_country_name(self.id)
+            return f'Country that begins with the letter {treasure_land_country_name[0]}'
+            #return f'The treasure is hidden in a country that begins with the letter {treasure_land_country_name[0]}.'
+
+        # vihje on suuntaa antava etäisyys aarrekentälle jos pelaaja on aarremaassa
+        distance_to_treasure = self.get_distance_to_treasure_airport(self.id)
+
+        # hakee etäisyyteen lisättävän km määrän, vaihtelee riippuen kuinka kaukana pelaaja on aarteesta (hot & cold periaate)
+        def get_bluff_km():
+            bluff_km = {
+                100: 50,
+                200: 100,
+                600: 200,
+                800: 400,
+            }
+            for bluff in bluff_km:
+                if distance_to_treasure <= bluff:
+                    return bluff_km[bluff]
+
+        bluff_km = get_bluff_km()
+
+        # laskee vihjeen min ja max, etäisyyden ja bluffin perusteella
+        min_interval = int(math.floor(distance_to_treasure / 100)) * 100 - bluff_km
+        max_interval = int(math.ceil(distance_to_treasure / 100)) * 100 + bluff_km
+        if min_interval < 0: min_interval = 0
+
+        return f'{min_interval} km - {max_interval} km'
+
 
     # palauttaa luokan tiedot json-muodossa
     def get_game_info(self):
         return self.__dict__
+
+    @classmethod
+    def get_distance_to_treasure_airport(cls, game_id):
+        obj = GameAirports(game_id)
+        current_location = get_current_location(obj.game_id)
+
+        for airport_icao in obj.game_airports:
+            airport_info = obj.get_game_airports_table_info_for_airport(airport_icao)
+            if 'has_treasure' in airport_info and airport_info['has_treasure'] == 1:
+                return FlightInfo.get_distance_to_airport(current_location, airport_icao)
+        return False
