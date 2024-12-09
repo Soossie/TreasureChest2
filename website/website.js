@@ -158,7 +158,7 @@ async function updateStatus(data, visitedBefore=false) {
   // tarkista onko kentällä aarre
   if (data.current_location_info.has_treasure) {
     stillPlaying = false;
-    alert(`You won!`);
+    openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
     //alert(`You won!`);  // tähän pop up, kerro aarre
     
   } else {
@@ -243,7 +243,7 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
 // testaa onko aarretta (aarremaassa)
 function treasure(data) {
   if (data.game_info.in_treasure_land && data.current_location_info.has_treasure === 1) {
-    alert(`You won!`);  // tähän pop up, kerro aarre
+    openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
     // pitäisi estää lentäminen voittoviestin jälkeen
   } else {
     console.log('Treasure not found.');
@@ -278,10 +278,18 @@ function hasAdviceGuy(data) {
 // advice guy antaa neuvon (rahamäärä päivittyy jo pythonissa)
 function adviceGuy(data) {
   if (hasAdviceGuy(data)) {
-    alert(`You encounter advice guy! You get ${data.game_info.advice_guy_reward} €. 
-    Advice: ${data.current_location_info.advice_guy.advice}`);
+
+    // päivitä advice guy palkinto ja neuvo HTML:ään
+    document.querySelector('#advice-guy-money').innerHTML = 'You encounter an advice guy!';
+    document.querySelector('#advice-guy-money2').innerHTML = `You get ${data.game_info.advice_guy_reward} €.`;
+    document.querySelector('#advice-guy-advice').innerHTML = `Advice: ${data.current_location_info.advice_guy.advice}`;
+
+    openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
   }
 }
+
+
+
 
 // wise man funktioiden alku
 
@@ -296,23 +304,27 @@ function hasUnansweredWiseMan(data) {
   }
 }
 
-// wise man kysyy kysymyksen
+// wise man kysyy haluaako pelaaja kuulla kysymyksen sekä kysyy kysymyksen
 async function wiseManQuestion(data) {
-  if (hasUnansweredWiseMan(data)) {
-    // kysy käyttäjältä vastaako vai ei
-    //openPopup(btn5);    // ??
 
+  if (hasUnansweredWiseMan(data) && (await handleYesOrNoQuestion()) === 'yes') {
     // päivitä wise man hinta HTML:ään
     document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €.`;
 
-    const userAnswer = prompt(`You encounter a wise man! Cost: ${data.game_info.wise_man_cost} €. Question: ${data.current_location_info.wise_man.wise_man_question}. Input a, b or c.`);
-
-    // päivitä kysymys HTML
+    // päivitä kysymys HTML:ään
     document.querySelector('#wise-man-question').innerHTML = `Question: ${data.current_location_info.wise_man.wise_man_question}`;
+
+    // kysy kysymys sekä odota vastausta
+    const userAnswer = await handleWiseManQuestion();
 
     if (userAnswer === data.current_location_info.wise_man.answer) {
       console.log('Correct!')
-      alert(`Correct answer! You won ${data.game_info.wise_man_reward} €.`);
+
+      // päivitä voittoraha HTML:ään
+      document.querySelector('#moneyAmount').innerHTML = `Correct answer! You won ${data.game_info.wise_man_reward} €.`;
+
+      // avaa oikea vastaus popup
+      await openPopup('right-answer-modal', 'https://media.tenor.com/1UgbfxIH5ywAAAAe/11.png');
 
       // päivittää rahan, kun vastaus oikein
       const response = await fetch(wiseManUrl + `/${gameId}/` + 1);
@@ -321,7 +333,10 @@ async function wiseManQuestion(data) {
       }
     } else {
       console.log('Wrong answer.');
-      alert('Wrong answer!');
+      await openPopup('wrong-answer-modal', 'https://i.redd.it/rcw85kdf7ls41.jpg');
+
+      // päivitä häviöraha HTML:ään
+      document.querySelector('#moneyAmount').innerHTML = 'Wrong answer!';
       // päivittää rahan, kun vastaus väärin
       const response = await fetch(wiseManUrl + `/${gameId}/` + 0);
       if (!response.ok) {
@@ -355,13 +370,72 @@ while (stillPlaying) {
 
 // popupit
 
-function openPopup(popupId) {
-  var popup = document.getElementById(popupId);
-  popup.style.display = 'block';
+function openPopup(popupId, imageUrl) {
+  return new Promise((resolve) => {
+    var popup = document.getElementById(popupId);
+    var imgElement = popup.querySelector('.popup-content img')
+
+    if (imgElement && imageUrl) {
+      imgElement.src = imageUrl;
+    }
+
+    popup.classList.remove('hide');
+    popup.style.display = 'block';
+
+    var yesButton = popup.querySelector('#yes');
+    var noButton = popup.querySelector('#no');
+    var option1Button = popup.querySelector('#option1');
+    var option2Button = popup.querySelector('#option2');
+    var option3Button = popup.querySelector('#option3');
+    var closeButton = popup.querySelector('.close');
+
+    if (yesButton) {
+      yesButton.onclick = function() {
+        resolve('yes');
+        closePopup(popupId);
+      };
+    }
+
+    if (noButton) {
+      noButton.onclick = function() {
+        resolve('no');
+        closePopup(popupId);
+      };
+    }
+
+    if (option1Button) {
+      option1Button.onclick = function() {
+        resolve('a');
+        closePopup(popupId);
+      };
+    }
+
+    if (option2Button) {
+      option2Button.onclick = function() {
+        resolve('b');
+        closePopup(popupId);
+      };
+    }
+
+    if (option3Button) {
+      option3Button.onclick = function() {
+        resolve('c');
+        closePopup(popupId);
+      };
+    }
+
+    if (closeButton) {
+      closeButton.onclick = function() {
+        resolve(null);
+        closePopup(popupId);
+      };
+    }
+  });
 }
 
 function closePopup(popupId) {
   var popup = document.getElementById(popupId);
+  popup.classList.add('hide');
   popup.style.display = 'none';
 }
 
@@ -370,28 +444,38 @@ var btn2 = document.getElementById('open-advice-guy-modal-popup');
 var btn3 = document.getElementById('open-victory-modal-popup');
 var btn4 = document.getElementById('open-defeat-modal-popup');
 var btn5 = document.getElementById('open-yes-or-no-popup');
+var btn6 = document.getElementById('open-right-answer-popup');
+var btn7 = document.getElementById('open-wrong-answer-popup');
 
 var closeButtons = document.getElementsByClassName('close');
 
 btn1.onclick = function() {
-  openPopup('wise-man-modal');
+  openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
 };
 
 btn2.onclick = function() {
-  openPopup('advice-guy-modal');
+  openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
 };
 
 btn3.onclick = function() {
-  openPopup('victory-modal');
+  openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
 };
 
 btn4.onclick = function() {
-  openPopup('defeat-modal');
+  openPopup('defeat-modal', 'https://st2.depositphotos.com/1074442/7027/i/450/depositphotos_70278557-stock-photo-fallen-chess-king-as-a.jpg');
 };
 
 btn5.onclick = function() {
-  openPopup('yes-or-no-modal');
+  openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
 };
+
+btn6.onclick = function() {
+  openPopup('right-answer-modal', 'https://media.tenor.com/1UgbfxIH5ywAAAAe/11.png');
+}
+
+btn7.onclick = function() {
+  openPopup('wrong-answer-modal', 'https://i.redd.it/rcw85kdf7ls41.jpg');
+}
 
 for (var i = 0; i < closeButtons.length; i++) {
   closeButtons[i].onclick = function() {
@@ -400,3 +484,14 @@ for (var i = 0; i < closeButtons.length; i++) {
   };
 }
 
+async function handleWiseManQuestion() {
+  const result = await openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
+  console.log('user answer:', result);
+  return result;
+}
+
+async function handleYesOrNoQuestion() {
+  const result = await openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
+  console.log('user answer:', result);
+  return result;
+}
