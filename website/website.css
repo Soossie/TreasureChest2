@@ -400,6 +400,7 @@ ol {
     position: relative;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .popup-body {
@@ -409,6 +410,7 @@ ol {
 
 .popup-content img {
     max-width: 80%;
+    max-height: 30rem;
     height: auto;
     border-radius: 6px;
     box-shadow: rgba(0, 0, 0, 0.3) 3px 3px 10px;
