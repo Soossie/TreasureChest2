@@ -200,6 +200,7 @@ async function updateStatus(visitedBefore=false) {
     
     if (!canTravelToAnyAvailableAirport()) {
       // game over
+      openPopup('defeat-modal', 'https://st2.depositphotos.com/1074442/7027/i/450/depositphotos_70278557-stock-photo-fallen-chess-king-as-a.jpg');
     }
   }
 }
