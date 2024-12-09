@@ -17,7 +17,7 @@ const flyToUrl = apiUrl + '/fly-to';
 const wiseManUrl = apiUrl + '/wise-man';
 
 let gameId;
-let stillPlaying = true;
+let gameData;
 let co2AlertShown = false;
 
 // aloita uusi peli
@@ -53,8 +53,8 @@ async function startNewGame() {
 
   var response = await fetch(newGameUrl + '/' + playerName + '/' + difficultyLevel);
   if (!response.ok) throw new Error('Invalid server input!');
-  var gameData = await response.json();
-  gameSetup(gameData);
+  gameData = await response.json();
+  gameSetup();
 }
 
 // jatka olemassa olevaa peliä
@@ -67,22 +67,22 @@ async function continueExistingGame() {
 
   const response = await fetch(gameInfoUrl + `/${gameId}`);
   if (!response.ok) throw new Error('Invalid server input!');
-  const gameData = await response.json();
-  gameSetup(gameData);
+  gameData = await response.json();
+  gameSetup();
 }
 
-function gameSetup(gameData) {
+function gameSetup() {
   gameId = gameData.game_info.id;
-  updateStatus(gameData, NaN);
+  updateStatus(NaN);
 }
 
 // päivitä pelaajan tiedot
-function updatePlayerInfoPanel(data) {
-  document.querySelector('#player').innerHTML = `${data.game_info.screen_name}`;
-  document.querySelector('#money').innerHTML = `${data.game_info.money}`;
-  document.querySelector('#location').innerHTML = `${data.current_location_info.name}`;
-  document.querySelector('#co2').innerHTML = `${data.game_info.co2_consumed}`;
-  document.querySelector('#clue').innerHTML = `${data.game_info.clue}`;
+function updatePlayerInfoPanel() {
+  document.querySelector('#player').innerHTML = `${gameData.game_info.screen_name}`;
+  document.querySelector('#money').innerHTML = `${gameData.game_info.money}`;
+  document.querySelector('#location').innerHTML = `${gameData.current_location_info.name}`;
+  document.querySelector('#co2').innerHTML = `${gameData.game_info.co2_consumed}`;
+  document.querySelector('#clue').innerHTML = `${gameData.game_info.clue}`;
 }
 
 let userZoomLevel = 4;
@@ -90,45 +90,48 @@ map.on('zoomend', function () {
   userZoomLevel = map.getZoom();
 });
 
+/*
 function handleTreasureLandEntry(inTreasureLand) {
    const currentZoom = userZoomLevel || map.getZoom();
    if (inTreasureLand) {
-    if (currentZoom < 7) {
-      map.setZoom(7);
-    }
-  } else {
-    map.setZoom(userZoomLevel);
-  }
+     if (currentZoom < 7) {
+       map.setZoom(7);
+     }
+   } else {
+     map.setZoom(userZoomLevel);
+   }
 }
+ */
 
 // päivitä nykyinen sijainti kartalle
-function updateCurrentLocationMarkerOnly(data) {
+function updateCurrentLocationMarkerOnly() {
   // tyhjentää kartan merkeistä
   airportMarkers.clearLayers();
 
   // Käytä pelaajan asettamaa zoom-tasoa
   let zoomLevel = userZoomLevel !== null ? userZoomLevel : 4;
-  if (data.game_info.in_treasure_land) {
-      zoomLevel = 7;
-  }
-  handleTreasureLandEntry(data.game_info.in_treasure_land)
+  //if (data.game_info.in_treasure_land) {
+  //    zoomLevel = 7;
+  //}
+  //handleTreasureLandEntry(data.game_info.in_treasure_land)
+  map.setZoom(userZoomLevel);
 
   // nykyisen sijainnin marker
-  let marker = L.marker([data.current_location_info.latitude, data.current_location_info.longitude]).addTo(map);
+  let marker = L.marker([gameData.current_location_info.latitude, gameData.current_location_info.longitude]).addTo(map);
   airportMarkers.addLayer(marker);
-  map.setView([data.current_location_info.latitude, data.current_location_info.longitude], zoomLevel);
+  map.setView([gameData.current_location_info.latitude, gameData.current_location_info.longitude], zoomLevel);
 }
 
 // päivitä nykyinen sijainti ja kaikki lentokentät kartalle
-function updateMapMarkers(data) {
+function updateMapMarkers() {
   // nykyinen sijainti
-  updateCurrentLocationMarkerOnly(data);
+  updateCurrentLocationMarkerOnly();
 
   // onko pelaaja aarremaassa, jos on näytetään maan nimi lentokentän lisäksi
-  const inTreasureLand = data.game_info.in_treasure_land;
+  const inTreasureLand = gameData.game_info.in_treasure_land;
 
   // kaikkien kenttien markerit kartalle
-  for (let airportInfo of data.available_airports_info) {
+  for (let airportInfo of gameData.available_airports_info) {
     let airportMarker = L.marker([airportInfo.latitude, airportInfo.longitude], {
       icon: L.divIcon({
         className: 'custom-marker',
@@ -162,40 +165,53 @@ function delay(time) {
 }
 
 // päivittää pelin tiedot käyttöliittymään
-async function updateStatus(data, visitedBefore=false) {
-  console.log(data);
+async function updateStatus(visitedBefore=false) {
+  console.log(gameData);
 
-  updatePlayerInfoPanel(data);
+  updatePlayerInfoPanel();
 
   // odota x millisekuntia jotta nykyinen sijainti päivittyy kartalle
-  updateCurrentLocationMarkerOnly(data);
+  updateCurrentLocationMarkerOnly();
   await delay(200);
 
   // tarkista onko kentällä aarre
-  if (data.current_location_info.has_treasure) {
-    stillPlaying = false;
+  if (gameData.current_location_info.has_treasure) {
     openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
     //alert(`You won!`);  // tähän pop up, kerro aarre
 
   } else {
-    if (data.current_location_info.wise_man) {  // wise man
+    if (gameData.current_location_info.wise_man) {  // wise man
       // testaa onko wise man, jos on niin kyselyt
-      wiseManQuestion(data);
-      updatePlayerInfoPanel(data);
+      await wiseManQuestion();
+      updatePlayerInfoPanel();
 
-    } else if (data.current_location_info.advice_guy) {  // advice guy
+    } else if (gameData.current_location_info.advice_guy) {  // advice guy
       // testaa onko kentällä käyty, jos ei ole kerro vinkki
       if (visitedBefore === false) {
-        adviceGuy(data);
+        adviceGuy();
       }
     }
 
     // tarkista CO2-kulutus
-    co2Consumption(data);
+    co2Consumption();
 
     // kartan merkit
-    updateMapMarkers(data);
+    updateMapMarkers();
+    
+    if (!canTravelToAnyAvailableAirport()) {
+      // game over
+    }
   }
+}
+
+// testaa onko pelaajalla tarpeeksi rahaa matkustaa vähintään yhdelle lentokentälle
+function canTravelToAnyAvailableAirport() {
+  for (let airport of gameData.available_airports_info) {
+    if (airport.flight_info.can_fly_to) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // lentoinfo markerille ja lentonappi
@@ -227,38 +243,41 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   let co2Elem = document.createElement('p');
   co2Elem.innerHTML = `CO2 consumption ${airportInfo.flight_info.co2_consumption} kg`;
   flightInfoMarkerPopup.append(co2Elem);
-
-  // lentonappi
-  const flyButton = document.createElement('button');
-  flyButton.classList.add('button');
-  flyButton.innerHTML = 'Fly';
-
-  // mahdollistaa napin keskittämisen
-  const flyButtonContainer = document.createElement('div');
-  flyButtonContainer.append(flyButton);
-  flightInfoMarkerPopup.append(flyButtonContainer);
-
+  
+  // lisää markerille popup
   marker.bindPopup(flightInfoMarkerPopup);
-
-  // event napille
-  flyButton.addEventListener('click', async function() {
-    const response = await fetch(flyToUrl + `/${gameId}/${airportInfo.icao}`);
-    if (!response.ok) {
-      throw new Error('Invalid server input!');
-    }
-    const data = await response.json();
-
-    updateStatus(data, airportInfo.visited);
-
-    // päivitä game status tiedot uudelleen? wise man rahat ei päivity ui, mutta dataan kyllä. wise man raha
-    //   päivittyy vasta seuraavan lennon yhteydessä --> wise man palautus tallenna funktioon?
-
-  });
+  
+  // jos voi lentää, lisää lentonappi
+  if (airportInfo.flight_info.can_fly_to) {
+    // lentonappi
+    const flyButton = document.createElement('button');
+    flyButton.classList.add('button');
+    flyButton.innerHTML = 'Fly';
+    
+    // mahdollistaa napin keskittämisen
+    const flyButtonContainer = document.createElement('div');
+    flyButtonContainer.append(flyButton);
+    flightInfoMarkerPopup.append(flyButtonContainer);
+  
+    // event napille
+    flyButton.addEventListener('click', async function() {
+      const response = await fetch(flyToUrl + `/${gameId}/${airportInfo.icao}`);
+      if (!response.ok) {
+        throw new Error('Invalid server input!');
+      }
+      gameData = await response.json();
+      updateStatus(airportInfo.visited);
+  
+      // päivitä game status tiedot uudelleen? wise man rahat ei päivity ui, mutta dataan kyllä. wise man raha
+      //   päivittyy vasta seuraavan lennon yhteydessä --> wise man palautus tallenna funktioon?
+  
+    });
+  }
 }
 
 // testaa onko aarretta (aarremaassa)
-function treasure(data) {
-  if (data.game_info.in_treasure_land && data.current_location_info.has_treasure === 1) {
+function treasure() {
+  if (gameData.game_info.in_treasure_land && gameData.current_location_info.has_treasure === 1) {
     openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
     // pitäisi estää lentäminen voittoviestin jälkeen
   } else {
@@ -267,8 +286,8 @@ function treasure(data) {
 }
 
 // testaa CO2-kulutus, jos yli 1000 kg niin tulee alert ja teksti muuttuu punaiseksi
-function co2Consumption(data) {
-  if (data.game_info.co2_consumed >= 1000 && !co2AlertShown) {
+function co2Consumption() {
+  if (gameData.game_info.co2_consumed >= 1000 && !co2AlertShown) {
     alert('You have consumed over 1000 kg CO2! You have to pay CO2 emission-based flight tax for each flight.');
     co2AlertShown = true;
     // lentolippujen hinta on kalliimpi, miten päivittyy?
@@ -278,8 +297,8 @@ function co2Consumption(data) {
 }
 
 // testaa onko advice guy
-function hasAdviceGuy(data) {
-  if (data.current_location_info.advice_guy) {
+function hasAdviceGuy() {
+  if (gameData.current_location_info.advice_guy) {
     console.log('Advice guy found!');
     return true;
   } else {
@@ -289,13 +308,13 @@ function hasAdviceGuy(data) {
 }
 
 // advice guy antaa neuvon (rahamäärä päivittyy jo pythonissa)
-function adviceGuy(data) {
-  if (hasAdviceGuy(data)) {
+function adviceGuy() {
+  if (hasAdviceGuy()) {
 
     // päivitä advice guy palkinto ja neuvo HTML:ään
     document.querySelector('#advice-guy-money').innerHTML = 'You encounter an advice guy!';
-    document.querySelector('#advice-guy-money2').innerHTML = `You get ${data.game_info.advice_guy_reward} €.`;
-    document.querySelector('#advice-guy-advice').innerHTML = `Advice: ${data.current_location_info.advice_guy.advice}`;
+    document.querySelector('#advice-guy-money2').innerHTML = `You get ${gameData.game_info.advice_guy_reward} €.`;
+    document.querySelector('#advice-guy-advice').innerHTML = `Advice: ${gameData.current_location_info.advice_guy.advice}`;
 
     openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
   }
@@ -303,8 +322,8 @@ function adviceGuy(data) {
 
 
 // testaa onko wise man, johon ei ole vastattu
-function hasUnansweredWiseMan(data) {
-  if (data.current_location_info.wise_man && data.current_location_info.wise_man.answered === 0) {
+function hasUnansweredWiseMan() {
+  if (gameData.current_location_info.wise_man && gameData.current_location_info.wise_man.answered === 0) {
   console.log("Unanswered wise man found!");
   return true;
   } else {
@@ -314,46 +333,48 @@ function hasUnansweredWiseMan(data) {
 }
 
 // wise man kysyy haluaako pelaaja kuulla kysymyksen sekä kysyy kysymyksen
-async function wiseManQuestion(data) {
+async function wiseManQuestion() {
   // päivitä wise man hinta HTML:ään
-  document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €`;
-  if (hasUnansweredWiseMan(data) && (await handleYesOrNoQuestion()) === 'yes') {
+  document.querySelector('#wise-man-cost').innerHTML = `Cost: ${gameData.game_info.wise_man_cost} €`;
+  if (hasUnansweredWiseMan() && (await handleYesOrNoQuestion()) === 'yes') {
     // päivitä wise man hinta HTML:ään
-    document.querySelector('#wise-man-cost').innerHTML = `Cost: ${data.game_info.wise_man_cost} €`;
+    document.querySelector('#wise-man-cost').innerHTML = `Cost: ${gameData.game_info.wise_man_cost} €`;
 
     // päivitä kysymys HTML:ään
-    document.querySelector('#wise-man-question').innerHTML = `${data.current_location_info.wise_man.wise_man_question}`;
+    document.querySelector('#wise-man-question').innerHTML = `${gameData.current_location_info.wise_man.wise_man_question}`;
 
     // kysy kysymys sekä odota vastausta
     const userAnswer = await handleWiseManQuestion();
-
-    if (userAnswer === data.current_location_info.wise_man.answer) {
+    
+    // 1 oikea vastaus, 0 väärä vastaus
+    let isCorrectAnswer = userAnswer === gameData.current_location_info.wise_man.answer ? 1 : 0;
+    
+    // tulostukset riippuen oliko vastaus oikein vai väärin
+    if (isCorrectAnswer === 1) {
       console.log('Correct!')
 
       // päivitä voittoraha HTML:ään
-      document.querySelector('#moneyAmount').innerHTML = `Correct answer! You won ${data.game_info.wise_man_reward} €.`;
+      document.querySelector('#moneyAmount').innerHTML = `Correct answer! You won ${gameData.game_info.wise_man_reward} €.`;
 
       // avaa oikea vastaus popup
       await openPopup('right-answer-modal', 'https://media.tenor.com/1UgbfxIH5ywAAAAe/11.png');
-
-      // päivittää rahan, kun vastaus oikein
-      const response = await fetch(wiseManUrl + `/${gameId}/` + 1);
-      if (!response.ok) {
-        throw new Error('Invalid server input!');
-      }
+      
     } else {
       console.log('Wrong answer.');
       await openPopup('wrong-answer-modal', 'https://i.redd.it/rcw85kdf7ls41.jpg');
 
       // päivitä häviöraha HTML:ään
       document.querySelector('#moneyAmount').innerHTML = 'Wrong answer!';
-      // päivittää rahan, kun vastaus väärin
-      const response = await fetch(wiseManUrl + `/${gameId}/` + 0);
-      if (!response.ok) {
-        throw new Error('Invalid server input!');
-      }
     }
-
+    
+    // lähettää tiedon vastauksen oikeellisuudesta palvelimelle, joka lisää tai poistaa rahaa
+    const response = await fetch(wiseManUrl + `/${gameId}/` + isCorrectAnswer);
+    if (!response.ok) {
+      throw new Error('Invalid server input!');
+    }
+    // päivittynyt data
+    gameData = await response.json();
+    console.log(gameData);
   }
 }
 
@@ -368,15 +389,6 @@ continueExistingGame();
 
 // aloita peli
 document.querySelector('#start').addEventListener('click', startNewGame);
-
-/*
-while (stillPlaying) {
-
-} else {
-  //lopeta peli
-  alert('Out of money! Game over!');
-}
-*/
 
 // popupit
 
