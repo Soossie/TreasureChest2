@@ -453,8 +453,8 @@ document.querySelector('#treasure').addEventListener('click', function () {
   document.querySelector('#opened-chest-modal').classList.remove('hide');
 })
 
-// sulje aarre-form
-document.querySelector('#last-close-button').addEventListener('click', function (evt) {
+// sulje form close-napista
+document.querySelector('.close-button').addEventListener('click', function (evt) {
   evt.preventDefault();
   document.getElementById('opened-chest-modal').classList.add('hide');
 })
