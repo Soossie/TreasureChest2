@@ -418,7 +418,7 @@ async function finalWiseManQuestion() {
       console.log('Correct! You won the treasure!')
 
       // avaa voitto pop up
-      openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
+      openPopup('victory-modal', 'https://images.freeimages.com/images/large-previews/863/chest-1558928.jpg?fmt=webp&w=500'); /*'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');*/
 
     } else {
       console.log('Wrong answer. Game over!');
@@ -434,10 +434,34 @@ async function finalWiseManQuestion() {
 // voit käyttä testaukseen, ei tee uutta peliä
 continueExistingGame();
 
-// Peliloop (kutsuu muita funktioita)
 
 // aloita peli
 document.querySelector('#start').addEventListener('click', startNewGame);
+
+// aarrearkun avaus
+document.querySelector('#treasure').addEventListener('click', function () {
+  //alert(`Treasure chest opened! The treasure is ${gameData.current_location_info.treasure}!`);
+
+  // sulje form
+  document.querySelector('#victory-modal').classList.add('hide');
+
+  // lisää aarre formille
+  document.querySelector('#treasure-text').innerHTML = `The treasure is ${gameData.current_location_info.treasure}!
+  Congratulations!`;
+
+  // avaa aarre-form
+  document.querySelector('#opened-chest-modal').classList.remove('hide');
+})
+
+// sulje aarre-form
+document.querySelector('#last-close-button').addEventListener('click', function (evt) {
+  evt.preventDefault();
+  document.getElementById('opened-chest-modal').classList.add('hide');
+})
+
+
+
+
 
 // popupit
 
@@ -566,3 +590,4 @@ async function handleYesOrNoQuestion() {
   console.log('user answer:', result);
   return result;
 }
+

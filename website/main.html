@@ -144,6 +144,16 @@
         </form>
     </div>
 
+    <div id="opened-chest-modal" class="hide">
+        <form id="opened-chest-form" class="popup-content">
+                <img src="https://images.freeimages.com/images/large-previews/23a/chest-open-1-1558930.jpg?fmt=webp&h=350" alt="Opened chest">
+                <div class="popup-text">
+                    <p id="treasure-text"></p>
+                    <button id="last-close-button" class="padding-button">Close</button>
+            </div>
+        </form>
+    </div>
+
 <button id="open-yes-or-no-popup">Open popup</button>
     <div id="yes-or-no-modal" class="popup hide">
         <div class="popup-content">
@@ -196,8 +206,8 @@
                 <div class="popup-text">
                     <p>Correct answer! The treasure chest is yours!</p>
                     <p>Open the chest to discover your reward.</p>
-                    <div class="poput-buttons">
-                        <button id="treasure">Open</button>
+                    <div>
+                        <button id="treasure" class="padding-button">Open</button>
                     </div>
             </div>
         </div>

@@ -189,7 +189,7 @@ main > div {
     color: #980011;
 }
 
-#player-modal {
+#player-modal, #difficulty-modal, #opened-chest-modal {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.8);
@@ -204,6 +204,7 @@ main > div {
     border-radius: 6px;
 }
 
+/* tämä jo ylempänä, toimiiko?
 #difficulty-modal {
     width: 100vw;
     height: 100vh;
@@ -211,8 +212,9 @@ main > div {
     position: absolute;
     top: 0;
 }
+*/
 
-#difficulty-form {
+#difficulty-form, #opened-chest-form {
     display: flex;
     width: 35%;
     margin: 4rem auto;
@@ -223,7 +225,6 @@ main > div {
 #difficulty-form p {
     text-align: center;
 }
-
 
 
 .button-container {
@@ -244,7 +245,7 @@ main > div {
     padding: 0.5rem;
 }
 
-/* tätä käytetään player-modal piilottamiseen, myös wise-man- ja advice-guy, js:llä poistetaan hide-luokka? */
+/* Modal piilottaminen */
 .hide {
     display: none;
 }
@@ -432,6 +433,11 @@ ol {
 
 .popup-buttons button {
     flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+}
+
+.padding-button {
     margin: 0 5px;
     padding: 10px;
 }
