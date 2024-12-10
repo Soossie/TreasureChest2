@@ -440,7 +440,6 @@ document.querySelector('#start').addEventListener('click', startNewGame);
 
 // aarrearkun avaus
 document.querySelector('#treasure').addEventListener('click', function () {
-  //alert(`Treasure chest opened! The treasure is ${gameData.current_location_info.treasure}!`);
 
   // lisää aarre formille
   document.querySelector('#treasure-text').innerHTML = `The treasure is <b>${gameData.current_location_info.treasure}</b>!
@@ -455,8 +454,6 @@ document.querySelector('.close-button').addEventListener('click', function (evt)
   evt.preventDefault();
   document.getElementById('opened-chest-modal').classList.add('hide');
 })
-
-
 
 // popupit
 

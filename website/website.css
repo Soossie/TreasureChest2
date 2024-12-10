@@ -70,10 +70,6 @@ nav ul li a {
     color: black;
 }
 
-.rules {
-    margin-right: 0;
-}
-
 nav ul li:hover {
     background-color: black;
 }
@@ -203,16 +199,6 @@ main > div {
     margin: 4rem auto;
     border-radius: 6px;
 }
-
-/* tämä jo ylempänä, toimiiko?
-#difficulty-modal {
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8);
-    position: absolute;
-    top: 0;
-}
-*/
 
 #difficulty-form, #opened-chest-form {
     display: flex;
@@ -385,6 +371,14 @@ ol {
     background-color: rgba(0,0,0,0.4);
 }
 
+.rules {
+    margin: 0.5rem;
+}
+
+.about {
+    margin-right: 0;
+}
+
 /* Popup content */
 .popup-content {
     background-color: #fefefe;
@@ -420,7 +414,6 @@ ol {
     margin-right: 1rem;
     flex: 1;
 }
-
 
 .popup-text {
     flex: 1;
