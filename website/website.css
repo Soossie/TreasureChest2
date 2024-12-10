@@ -64,6 +64,9 @@ nav ul li {
     transition: all 300ms;
     margin: 0.5rem;
 }
+.rules {
+    margin-right: 0 !important;
+}
 
 nav ul li a {
     text-decoration: none;
