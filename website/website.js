@@ -72,9 +72,12 @@ async function continueExistingGame() {
   gameData = await response.json();
   gameSetup();
 }
-/*
-
  */
+
+// debug, ei tee uutta peliä
+//continueExistingGame();
+
+
 function gameSetup() {
   gameId = gameData.game_info.id;
   updateStatus(NaN);
@@ -422,13 +425,6 @@ async function finalWiseManQuestion() {
     }
   }
 }
-
-
-// valitse näistä yksi:
-
-// voit käyttä testaukseen, ei tee uutta peliä
-continueExistingGame();
-
 
 // aloita peli
 document.querySelector('#start').addEventListener('click', startNewGame);
