@@ -443,7 +443,7 @@ document.querySelector('#treasure').addEventListener('click', function () {
   //alert(`Treasure chest opened! The treasure is ${gameData.current_location_info.treasure}!`);
 
   // lisää aarre formille
-  document.querySelector('#treasure-text').innerHTML = `The treasure is ${gameData.current_location_info.treasure}!
+  document.querySelector('#treasure-text').innerHTML = `The treasure is <b>${gameData.current_location_info.treasure}</b>!
   Congratulations!`;
 
   // avaa aarre-form
