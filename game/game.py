@@ -20,7 +20,6 @@ class Game:
         obj.advice_guy_reward = get_advice_guy_reward(obj.difficulty_level)
         obj.in_treasure_land = bool(Airport(obj.location).country_name == get_treasure_land_country_name(obj.id))
         obj.clue = obj.get_clue()
-        #obj.distance_to_treasure_airport = obj.get_distance_to_treasure_airport(obj.id)
         return obj
 
     def __init__(self):
@@ -39,7 +38,6 @@ class Game:
         self.advice_guy_reward = None
         self.clue = None
         self.in_treasure_land = None
-        #self.distance_to_treasure_airport = None
 
     def start_game(self, player_name, difficulty_level_input):
         self.screen_name = player_name
@@ -107,7 +105,7 @@ class Game:
                     wise_man_airports.append(random_treasure_land_airport)
                     break
         # debug
-        print(f'wise man airports ({len(wise_man_airports)}): {wise_man_airports}')
+        print(f'Wise man airports ({len(wise_man_airports)}): {wise_man_airports}')
 
         # hae advice guyn määrä ja arvo lentokentät
         advice_guys_in_countries_count, advice_guys_in_treasure_land_count = get_advice_guy_count(self.difficulty_level)
@@ -132,6 +130,9 @@ class Game:
                     or new_airport == treasure_chest_airport_icao):
                 continue
             advice_guy_airports_in_treasure_land.append(new_airport)
+        # debug
+        print(f'Advice guy airports ({len(advice_guy_airports_in_countries + advice_guy_airports_in_treasure_land)}): '
+              f'{advice_guy_airports_in_countries + advice_guy_airports_in_treasure_land}')
 
         # tallenna pelaajan tiedot game tauluun
         input_player_info(self.screen_name, self.money, self.home_airport, self.location, self.difficulty_level, self.co2_consumed)
@@ -154,8 +155,9 @@ class Game:
                                           is_default_airport, has_advice_guy, visited)
 
         # debug:
-        print(f'oletuslentokentät ({len(countries_and_default_airport_icaos)}): {countries_and_default_airport_icaos.values()}')
-        print(f'aarremaan lentokentät ({len(treasure_land_airport_icaos)}): {treasure_land_airport_icaos}')
+        print(f'Default airports ({len(countries_and_default_airport_icaos)}): {countries_and_default_airport_icaos.values()}')
+        print(f'Treasure land airports ({len(treasure_land_airport_icaos)}): {treasure_land_airport_icaos}')
+        print(f'Treasure airport: {treasure_chest_airport_icao}')
 
         # vihje on aarremaan nimen ensimmäinen kirjain
         self.clue = self.get_clue()
@@ -187,7 +189,6 @@ class Game:
         if not self.in_treasure_land:
             treasure_land_country_name = get_treasure_land_country_name(self.id)
             return f'Country that begins with the letter {treasure_land_country_name[0]}'
-            #return f'The treasure is hidden in a country that begins with the letter {treasure_land_country_name[0]}.'
 
         # vihje on suuntaa antava etäisyys aarrekentälle jos pelaaja on aarremaassa
         distance_to_treasure = self.get_distance_to_treasure_airport(self.id)

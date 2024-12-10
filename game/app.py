@@ -121,15 +121,6 @@ def new_game(player_name, difficulty_level):
     try:
         game = Game()
         game.start_game(player_name, difficulty_level)
-
-        # testaukseen: tulosta aarrelentokentän icao
-        game_airports = GameAirports(game.id)
-        for airport_icao in game_airports.game_airports:
-            airport_info = game_airports.get_game_airports_table_info_for_airport(airport_icao)
-
-            if airport_info['has_treasure']:
-                print(f'Treasure airport: {airport_icao}')
-
         return game_info(game.id)
 
     except ValueError:
