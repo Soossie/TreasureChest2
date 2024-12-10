@@ -97,19 +97,6 @@ map.on('zoomend', function () {
   userZoomLevel = map.getZoom();
 });
 
-/*
-function handleTreasureLandEntry(inTreasureLand) {
-   const currentZoom = userZoomLevel || map.getZoom();
-   if (inTreasureLand) {
-     if (currentZoom < 7) {
-       map.setZoom(7);
-     }
-   } else {
-     map.setZoom(userZoomLevel);
-   }
-}
- */
-
 // päivitä nykyinen sijainti kartalle
 function updateCurrentLocationMarkerOnly() {
   // tyhjentää kartan merkeistä
