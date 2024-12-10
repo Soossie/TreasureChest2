@@ -45,7 +45,6 @@ async function startNewGame() {
     for (var i = 0; i < buttons.length; i++) {
       buttons[i].addEventListener('click', function() {
         var difficultyLevel = this.value.toLowerCase();
-        console.log('Selected difficulty level: ' + difficultyLevel);
         document.querySelector('#difficulty-modal').classList.add('hide');
         resolve(difficultyLevel);
       });
@@ -58,6 +57,8 @@ async function startNewGame() {
   gameSetup();
 }
 
+// debuggaus
+/*
 // jatka olemassa olevaa peliä
 async function continueExistingGame() {
   const gameId = parseInt(prompt('Input game id: '));
@@ -71,7 +72,9 @@ async function continueExistingGame() {
   gameData = await response.json();
   gameSetup();
 }
+/*
 
+ */
 function gameSetup() {
   gameId = gameData.game_info.id;
   updateStatus(NaN);
@@ -197,15 +200,11 @@ async function updateStatus(visitedBefore=false) {
       updatePlayerInfoPanel();
 
     } else if (gameData.current_location_info.advice_guy) {  // advice guy
-      console.log('Advice guy found');
-      console.log('visited before value :' + visitedBefore);
       // testaa onko kentällä käyty, jos ei ole kerro vinkki
       if (!visitedBefore) {
-        console.log('unvisited advice guy found!');
         adviceGuy();
       }
     } else {
-      console.log('No treasure, wise man or advice guy here.');
     }
 
     // tarkista CO2-kulutus
@@ -292,15 +291,17 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   }
 }
 
-// testaa onko aarretta (aarremaassa) // tämä on turha funktio??
+
+/*
+// testaa onko aarretta (aarremaassa)
 function treasure() {
   if (gameData.game_info.in_treasure_land && gameData.current_location_info.has_treasure === 1) {
 
     openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
   } else {
-    console.log('Treasure not found.');
   }
 }
+*/
 
 // testaa CO2-kulutus, jos yli 1000 kg niin tulee alert ja teksti muuttuu punaiseksi
 function co2Consumption() {
@@ -339,10 +340,8 @@ function adviceGuy() {
 // testaa onko wise man, johon ei ole vastattu
 function hasUnansweredWiseMan() {
   if (gameData.current_location_info.wise_man && gameData.current_location_info.wise_man.answered === 0) {
-  console.log("Unanswered wise man found!");
   return true;
   } else {
-    console.log("No wise man data found.");
     return false;
   }
 }
@@ -369,7 +368,6 @@ async function wiseManQuestion() {
     
     // tulostukset riippuen oliko vastaus oikein vai väärin
     if (isCorrectAnswer === 1) {
-      console.log('Correct!')
 
       // päivitä voittoraha HTML:ään
       document.querySelector('#moneyAmount').innerHTML = `Correct answer! You won ${gameData.game_info.wise_man_reward} €.`;
@@ -378,7 +376,6 @@ async function wiseManQuestion() {
       await openPopup('right-answer-modal', 'https://media.tenor.com/1UgbfxIH5ywAAAAe/11.png');
       
     } else {
-      console.log('Wrong answer.');
       await openPopup('wrong-answer-modal', 'https://i.redd.it/rcw85kdf7ls41.jpg');
 
       // päivitä häviöraha HTML:ään
@@ -415,13 +412,11 @@ async function finalWiseManQuestion() {
 
     // tulostukset riippuen oliko vastaus oikein vai väärin
     if (isCorrectAnswer === 1) {
-      console.log('Correct! You won the treasure!')
 
       // avaa voitto pop up
       await openPopup('victory-modal', 'https://images.freeimages.com/images/large-previews/863/chest-1558928.jpg?fmt=webp&w=500'); /*'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');*/
 
     } else {
-      console.log('Wrong answer. Game over!');
       openPopup('defeat-modal2', 'https://st2.depositphotos.com/1074442/7027/i/450/depositphotos_70278557-stock-photo-fallen-chess-king-as-a.jpg');
 
     }
@@ -581,13 +576,11 @@ for (var i = 0; i < closeButtons.length; i++) {
 
 async function handleWiseManQuestion() {
   const result = await openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
-  console.log('user answer:', result);
   return result;
 }
 
 async function handleYesOrNoQuestion() {
   const result = await openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
-  console.log('user answer:', result);
   return result;
 }
 
