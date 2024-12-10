@@ -1,7 +1,5 @@
 'use strict';
 
-// scrollaa loppuun
-
 const map = L.map('map', {tap: false});
 L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   maxZoom: 20,
@@ -86,9 +84,9 @@ function gameSetup() {
 // päivitä pelaajan tiedot
 function updatePlayerInfoPanel() {
   document.querySelector('#player').innerHTML = `${gameData.game_info.screen_name}`;
-  document.querySelector('#money').innerHTML = `${gameData.game_info.money}`;
+  document.querySelector('#money').innerHTML = `${gameData.game_info.money} €`;
   document.querySelector('#location').innerHTML = `${gameData.current_location_info.name}`;
-  document.querySelector('#co2').innerHTML = `${gameData.game_info.co2_consumed}`;
+  document.querySelector('#co2').innerHTML = `${gameData.game_info.co2_consumed} kg`;
   document.querySelector('#clue').innerHTML = `${gameData.game_info.clue}`;
 }
 
@@ -104,10 +102,6 @@ function updateCurrentLocationMarkerOnly() {
 
   // Käytä pelaajan asettamaa zoom-tasoa
   let zoomLevel = userZoomLevel !== null ? userZoomLevel : 4;
-  //if (data.game_info.in_treasure_land) {
-  //    zoomLevel = 7;
-  //}
-  //handleTreasureLandEntry(data.game_info.in_treasure_land)
   map.setZoom(userZoomLevel);
 
   // nykyisen sijainnin marker
@@ -161,7 +155,6 @@ function delay(time) {
 // päivittää pelin tiedot käyttöliittymään
 async function updateStatus(visitedBefore=false) {
   console.log(gameData);
-
   updatePlayerInfoPanel();
 
   // odota x millisekuntia jotta nykyinen sijainti päivittyy kartalle
@@ -183,7 +176,6 @@ async function updateStatus(visitedBefore=false) {
     // victory modal siirretty final wise maniin
 
   } else {
-
     if (gameData.current_location_info.wise_man) {  // wise man
       // testaa onko wise man, jos on niin kyselyt
       await wiseManQuestion();
@@ -194,17 +186,14 @@ async function updateStatus(visitedBefore=false) {
       if (!visitedBefore) {
         adviceGuy();
       }
-    } else {
     }
-
+    
     // tarkista CO2-kulutus
     co2Consumption();
-
     // kartan merkit
     updateMapMarkers();
     
     if (!canTravelToAnyAvailableAirport()) {
-      // game over
       openPopup('defeat-modal', 'https://st2.depositphotos.com/1074442/7027/i/450/depositphotos_70278557-stock-photo-fallen-chess-king-as-a.jpg');
     }
   }
@@ -273,25 +262,9 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
       }
       gameData = await response.json();
       updateStatus(airportInfo.visited);
-  
-      // päivitä game status tiedot uudelleen? wise man rahat ei päivity ui, mutta dataan kyllä. wise man raha
-      //   päivittyy vasta seuraavan lennon yhteydessä --> wise man palautus tallenna funktioon?
-  
     });
   }
 }
-
-
-/*
-// testaa onko aarretta (aarremaassa)
-function treasure() {
-  if (gameData.game_info.in_treasure_land && gameData.current_location_info.has_treasure === 1) {
-
-    openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
-  } else {
-  }
-}
-*/
 
 // testaa CO2-kulutus, jos yli 1000 kg niin tulee alert ja teksti muuttuu punaiseksi
 function co2Consumption() {
@@ -304,28 +277,15 @@ function co2Consumption() {
   }
 }
 
-// testaa onko advice guy
-function hasAdviceGuy() {
-  if (gameData.current_location_info.advice_guy) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 // advice guy antaa neuvon (rahamäärä päivittyy jo pythonissa)
 function adviceGuy() {
-  if (hasAdviceGuy()) {
+  // päivitä advice guy palkinto ja neuvo HTML:ään
+  document.querySelector('#advice-guy-money').innerHTML = 'You encounter an advice guy!';
+  document.querySelector('#advice-guy-money2').innerHTML = `You get ${gameData.game_info.advice_guy_reward} €.`;
+  document.querySelector('#advice-guy-advice').innerHTML = `Advice: ${gameData.current_location_info.advice_guy.advice}`;
 
-    // päivitä advice guy palkinto ja neuvo HTML:ään
-    document.querySelector('#advice-guy-money').innerHTML = 'You encounter an advice guy!';
-    document.querySelector('#advice-guy-money2').innerHTML = `You get ${gameData.game_info.advice_guy_reward} €.`;
-    document.querySelector('#advice-guy-advice').innerHTML = `Advice: ${gameData.current_location_info.advice_guy.advice}`;
-
-    openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
-  }
+  openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
 }
-
 
 // testaa onko wise man, johon ei ole vastattu
 function hasUnansweredWiseMan() {
@@ -522,12 +482,10 @@ for (var i = 0; i < closeButtons.length; i++) {
 }
 
 async function handleWiseManQuestion() {
-  const result = await openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
-  return result;
+  return await openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
 }
 
 async function handleYesOrNoQuestion() {
-  const result = await openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
-  return result;
+  return await openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
 }
 
