@@ -271,13 +271,13 @@ function co2Consumption() {
   if (gameData.game_info.co2_consumed >= 1000 && !co2AlertShown) {
     alert('You have consumed over 1000 kg CO2! You have to pay CO2 emission-based flight tax for each flight.');
     co2AlertShown = true;
-    // lentolippujen hinta on kalliimpi, miten päivittyy?
+
     // päivittää CO2-kulutuksen värin
     document.querySelector('#co2').style.color = 'red';
   }
 }
 
-// advice guy antaa neuvon (rahamäärä päivittyy jo pythonissa)
+// advice guy antaa neuvon
 function adviceGuy() {
   // päivitä advice guy palkinto ja neuvo HTML:ään
   document.querySelector('#advice-guy-money').innerHTML = 'You encounter an advice guy!';
