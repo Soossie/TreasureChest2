@@ -525,43 +525,7 @@ function closePopup(popupId) {
   popup.style.display = 'none';
 }
 
-var btn1 = document.getElementById('open-wise-man-modal-popup');
-var btn2 = document.getElementById('open-advice-guy-modal-popup');
-var btn3 = document.getElementById('open-victory-modal-popup');
-var btn4 = document.getElementById('open-defeat-modal-popup');
-var btn5 = document.getElementById('open-yes-or-no-popup');
-var btn6 = document.getElementById('open-right-answer-popup');
-var btn7 = document.getElementById('open-wrong-answer-popup');
-
 var closeButtons = document.getElementsByClassName('close');
-
-btn1.onclick = function() {
-  openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
-};
-
-btn2.onclick = function() {
-  openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
-};
-
-btn3.onclick = function() {
-  openPopup('victory-modal', 'https://www.commandpostgames.com/wp-content/uploads/2017/03/victory.jpg');
-};
-
-btn4.onclick = function() {
-  openPopup('defeat-modal', 'https://st2.depositphotos.com/1074442/7027/i/450/depositphotos_70278557-stock-photo-fallen-chess-king-as-a.jpg');
-};
-
-btn5.onclick = function() {
-  openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
-};
-
-btn6.onclick = function() {
-  openPopup('right-answer-modal', 'https://media.tenor.com/1UgbfxIH5ywAAAAe/11.png');
-}
-
-btn7.onclick = function() {
-  openPopup('wrong-answer-modal', 'https://i.redd.it/rcw85kdf7ls41.jpg');
-}
 
 for (var i = 0; i < closeButtons.length; i++) {
   closeButtons[i].onclick = function() {
