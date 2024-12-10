@@ -469,52 +469,52 @@ function openPopup(popupId, imageUrl) {
     var treasureButton = popup.querySelector('#treasure');
 
     if (yesButton) {
-      yesButton.onclick = function() {
+      yesButton.addEventListener('click', function() {
         resolve('yes');
         closePopup(popupId);
-      };
+      });
     }
 
     if (noButton) {
-      noButton.onclick = function() {
+      noButton.addEventListener('click', function() {
         resolve('no');
         closePopup(popupId);
-      };
+      });
     }
 
     if (option1Button) {
-      option1Button.onclick = function() {
+      option1Button.addEventListener('click', function() {
         resolve('a');
         closePopup(popupId);
-      };
+      });
     }
 
     if (option2Button) {
-      option2Button.onclick = function() {
+      option2Button.addEventListener('click', function() {
         resolve('b');
         closePopup(popupId);
-      };
+      });
     }
 
     if (option3Button) {
-      option3Button.onclick = function() {
+      option3Button.addEventListener('click', function() {
         resolve('c');
         closePopup(popupId);
-      };
+      });
     }
 
     if (closeButton) {
-      closeButton.onclick = function() {
+      closeButton.addEventListener('click', function() {
         resolve(null);
         closePopup(popupId);
-      };
+      });
     }
 
     if (treasureButton) {
-      treasureButton.onclick = function() {
+      treasureButton.addEventListener('click', function() {
         resolve('treasure');
         closePopup(popupId);
-      };
+      });
     }
   });
 }
@@ -528,10 +528,10 @@ function closePopup(popupId) {
 var closeButtons = document.getElementsByClassName('close');
 
 for (var i = 0; i < closeButtons.length; i++) {
-  closeButtons[i].onclick = function() {
+  closeButtons[i].addEventListener('click', function() {
     var popupId = this.getAttribute('data-popup');
     closePopup(popupId);
-  };
+  });
 }
 
 async function handleWiseManQuestion() {
