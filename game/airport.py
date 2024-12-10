@@ -170,6 +170,7 @@ class FlightInfo:
         self.destination_icao = destination_icao
         self.distance = self.get_distance_to_airport(self.current_location, self.destination_icao)
         self.ticket_cost = self.count_ticket_cost()
+        print(self.ticket_cost)
         self.co2_consumption = self.get_co2_consumption()
         self.can_fly_to = self.has_enough_money_for_flight()
 
@@ -189,7 +190,6 @@ class FlightInfo:
 
     # laske lentolipun hinta etäisyyden ja kansainvälisyyden perusteella
     def count_ticket_cost(self):
-        #distance = get_distance_between_airports(current_location_icao, destination_icao)
         international_flight = self.is_international_flight()
 
         price = {
@@ -198,10 +198,16 @@ class FlightInfo:
         }
         price = price['international'] if international_flight else price['domestic']
 
+        # lippu on 20% kalliimpi mikäli pelaaja on ylittänyt co2 budjetin
+        over_co2_budget = bool(get_player_co2_consumed(self.game_id) > 1000)
+
         for max_distance, multiplier in price:
             if self.distance < max_distance:
-                return int(100 + multiplier * self.distance)
-        return 100  # failsafe
+                math_formula = int(100 + multiplier * self.distance)
+                return int(math_formula * 1.20) if over_co2_budget else math_formula
+        # failsafe
+        failsafe_cost = 100
+        return int(failsafe_cost * 1.20) if over_co2_budget else failsafe_cost
 
     def is_international_flight(self):
         sql = (f'select iso_country from airport '
@@ -212,10 +218,7 @@ class FlightInfo:
         return result[0][0] != result[1][0] if len(result) == 2 else True
 
     def get_co2_consumption(self):
-        over_co2_budget = get_player_co2_consumed(self.game_id)
-        math_formula = int(0.140 * self.distance)
-        # lippu on 20% kalliimpi mikäli pelaaja on ylittänyt co2 budjetin
-        return int(math_formula * 1.20) if over_co2_budget else math_formula
+        return int(0.140 * self.distance)
 
     def has_enough_money_for_flight(self):
         return self.ticket_cost <= get_player_money(self.game_id)
