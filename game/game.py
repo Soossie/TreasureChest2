@@ -36,8 +36,8 @@ class Game:
         self.wise_man_cost = None
         self.wise_man_reward = None
         self.advice_guy_reward = None
-        self.clue = None
         self.in_treasure_land = None
+        self.clue = None
 
     def start_game(self, player_name, difficulty_level_input):
         self.screen_name = player_name
@@ -159,10 +159,8 @@ class Game:
         print(f'Treasure land airports ({len(treasure_land_airport_icaos)}): {treasure_land_airport_icaos}')
         print(f'Treasure airport: {treasure_chest_airport_icao}')
 
-        # vihje on aarremaan nimen ensimmäinen kirjain
         self.clue = self.get_clue()
         self.in_treasure_land = bool(Airport(self.location).country_name == get_treasure_land_country_name(self.id))
-        #self.distance_to_treasure_airport = self.get_distance_to_treasure_airport(self.id)
 
         # lisää pelaadan kotilentokenttä käytyjen kenttien listaan
         update_column_visited(self.id, self.home_airport)
