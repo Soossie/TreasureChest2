@@ -188,7 +188,7 @@ main > div {
     color: #980011;
 }
 
-#player-modal, #difficulty-modal, #opened-chest-modal, #co2-modal {
+#player-modal, #difficulty-modal, #opened-chest-modal, #co2-modal, #story-modal, #treasure-land-modal {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.8);
@@ -203,7 +203,7 @@ main > div {
     border-radius: 6px;
 }
 
-#difficulty-form, #opened-chest-form, #co2-form {
+#difficulty-form, #opened-chest-form, #co2-form, #story-form, #treasure-land-form {
     display: flex;
     width: 35%;
     margin: 4rem auto;
@@ -211,7 +211,7 @@ main > div {
     border-radius: 6px;
 }
 
-#co2-form p {
+#co2-form p, #story-form p, #treasure-land-form p {
     text-align: center;
     margin: 1rem;
 }
@@ -220,6 +220,18 @@ main > div {
     text-align: center;
 }
 
+#story-form {
+    line-height: 1.3;
+}
+
+#story-form p {
+    margin-top: 0;
+}
+
+.first-p {
+    padding-top: 1.5rem;
+    font-size: larger;
+}
 
 .button-container {
     padding-bottom: 1rem;
@@ -231,7 +243,7 @@ main > div {
     margin-top: 10px;
 }
 
-#difficulty-form, #co2-form {
+#difficulty-form, #co2-form, #story-form, #treasure-land-form {
     flex-direction: column;
 }
 

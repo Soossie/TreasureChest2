@@ -53,6 +53,9 @@ async function startNewGame() {
   if (!response.ok) throw new Error('Invalid server input!');
   gameData = await response.json();
   gameSetup();
+
+  // näytä story
+  document.querySelector('#story-modal').classList.remove('hide');
 }
 
 // debuggaus
@@ -165,7 +168,10 @@ async function updateStatus(visitedBefore=false) {
   // tarkista onko pelaaja aarremaassa, näytä alert yhden kerran
   const inTreasureLand = gameData.game_info.in_treasure_land;
   if (inTreasureLand && !treasureLandAlertShown) {
-    alert('The treasure is in this country! Now, find the airport where the treasure is located.');
+    // näytä ilmoitus
+    document.querySelector('#treasure-land-modal').classList.remove('hide');
+
+    //alert('The treasure is in this country! Now, find the airport where the treasure is located.');
     treasureLandAlertShown = true;
   }
 
@@ -281,6 +287,16 @@ function co2Consumption() {
 // sulje co2-form
 document.querySelector('#close-co2').addEventListener('click', function () {
   document.querySelector('#co2-modal').classList.add('hide');
+})
+
+// sulje story-form
+document.querySelector('#close-story').addEventListener('click', function () {
+  document.querySelector('#story-modal').classList.add('hide');
+})
+
+// sulje treasure-land-form
+document.querySelector('#close-treasure-land').addEventListener('click', function () {
+  document.querySelector('#treasure-land-modal').classList.add('hide');
 })
 
 // advice guy antaa neuvon

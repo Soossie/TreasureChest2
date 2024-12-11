@@ -115,12 +115,7 @@
                 </section>
 
             </div>
-
         </main>
-
-        <footer>
-            <!-- jos jää aikaa niin lentokentän säätietoja yms-->
-        </footer>
     </div>
 
     <div id="player-modal" class="hide">
@@ -135,9 +130,23 @@
             <p><b>Choose difficulty</b></p>
             <p class="no-margin-top">Difficulty level determines how many countries and airports the game generates.</p>
             <div class="button-container">
-                <input type="button" value="Easy">
-                <input type="button" value="Normal">
-                <input type="button" value="Hard">
+                <input class="padding-button" type="button" value="Easy">
+                <input class="padding-button" type="button" value="Normal">
+                <input class="padding-button" type="button" value="Hard">
+            </div>
+        </form>
+    </div>
+
+    <div id="story-modal" class="hide">
+        <form id="story-form">
+            <p class="first-p"><b>Welcome to the hunt for the Treasure Chest!</b></p>
+            <p class="no-margin-top">You are an adventurer and want to find the famous treasure chest, so you start an adventure across Europe.</p>
+            <p>First, search for the right country and the right airport where the treasure is hidden.</p>
+            <p>Along the way, you will encounter wise men and advice guys who can give you more money and motivation to continue your journey.</p>
+            <p>Try to travel wisely – if you run out of money before finding the treasure, your game is over.</p>
+            <p><b>Now, find the country where the treasure is hidden.</b></p>
+            <div class="button-container no-margin-top">
+                <input id="close-story" class="padding-button" type="button" value="OK">
             </div>
         </form>
     </div>
@@ -147,6 +156,15 @@
             <p>You have consumed over 1000 kg CO2! You have to pay CO2 emission-based flight tax for each flight.</p>
             <div class="button-container no-margin-top">
                 <input id="close-co2" class="padding-button" type="button" value="OK">
+            </div>
+        </form>
+    </div>
+
+    <div id="treasure-land-modal" class="hide">
+        <form id="treasure-land-form">
+            <p>The treasure is in this country! Now, find the airport where the treasure is located.</p>
+            <div class="button-container no-margin-top">
+                <input id="close-treasure-land" class="padding-button" type="button" value="OK">
             </div>
         </form>
     </div>
