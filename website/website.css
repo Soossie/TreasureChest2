@@ -418,7 +418,6 @@ ol {
     text-align: center;
 }
 
-
 .popup-body {
     display: flex;
     align-items: center;
@@ -462,6 +461,7 @@ ol {
 }
 
 /* Close button */
+
 .close {
     color: #aaa;
     font-size: 28px;
@@ -479,6 +479,7 @@ ol {
 }
 
 /* Leaflet-kartta formin taakse */
+
 #map {
     z-index: 0;
 }
@@ -489,6 +490,7 @@ ol {
 }
 
 /* Leaflet kartta symboli värit */
+
 .marker-green {
     background-color: rgb(205, 119, 6);
     filter: hue-rotate(90deg);
