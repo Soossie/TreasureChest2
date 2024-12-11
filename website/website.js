@@ -269,13 +269,19 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
 // testaa CO2-kulutus, jos yli 1000 kg niin tulee alert ja teksti muuttuu punaiseksi
 function co2Consumption() {
   if (gameData.game_info.co2_consumed >= 1000 && !co2AlertShown) {
-    alert('You have consumed over 1000 kg CO2! You have to pay CO2 emission-based flight tax for each flight.');
+    // avaa CO2-modal
+    document.querySelector('#co2-modal').classList.remove('hide');
     co2AlertShown = true;
 
     // päivittää CO2-kulutuksen värin
     document.querySelector('#co2').style.color = 'red';
   }
 }
+
+// sulje co2-form
+document.querySelector('#close-co2').addEventListener('click', function () {
+  document.querySelector('#co2-modal').classList.add('hide');
+})
 
 // advice guy antaa neuvon
 function adviceGuy() {
@@ -346,16 +352,11 @@ async function wiseManQuestion() {
 // final wise man aarteen luona, pakko vastata
 async function finalWiseManQuestion() {
   if (hasUnansweredWiseMan()) {
-    // päivitä wise man teksti
-    document.querySelector('#final-wise-man-text').innerHTML = 'You found the treasure chest! ' +
-        'A greedy wise man guards the chest and demands you answer the final question. ' +
-        'Answer correctly to win the treasure.';
-
-    // päivitä kysymys HTML:ään
-    document.querySelector('#wise-man-question').innerHTML = `${gameData.current_location_info.wise_man.wise_man_question}`;
+    // päivitä kysymys
+    document.querySelector('#wise-man-question2').innerHTML = `${gameData.current_location_info.wise_man.wise_man_question}`;
 
     // kysy kysymys
-    const userAnswer = await handleWiseManQuestion();
+    const userAnswer = await handleLastWiseManQuestion();
 
     // 1 oikea vastaus, 0 väärä vastaus
     let isCorrectAnswer = userAnswer === gameData.current_location_info.wise_man.answer ? 1 : 0;
@@ -412,6 +413,9 @@ function openPopup(popupId, imageUrl) {
     var option1Button = popup.querySelector('#option1');
     var option2Button = popup.querySelector('#option2');
     var option3Button = popup.querySelector('#option3');
+    var optionAButton = popup.querySelector('#optionA');
+    var optionBButton = popup.querySelector('#optionB');
+    var optionCButton = popup.querySelector('#optionC');
     var closeButton = popup.querySelector('.close');
     var treasureButton = popup.querySelector('#treasure');
 
@@ -450,6 +454,27 @@ function openPopup(popupId, imageUrl) {
       });
     }
 
+    if (optionAButton) {
+      optionAButton.addEventListener('click', function() {
+        resolve('a');
+        closePopup(popupId);
+      });
+    }
+
+    if (optionBButton) {
+      optionBButton.addEventListener('click', function() {
+        resolve('b');
+        closePopup(popupId);
+      });
+    }
+
+    if (optionCButton) {
+      optionCButton.addEventListener('click', function() {
+        resolve('c');
+        closePopup(popupId);
+      });
+    }
+
     if (closeButton) {
       closeButton.addEventListener('click', function() {
         resolve(null);
@@ -483,6 +508,10 @@ for (var i = 0; i < closeButtons.length; i++) {
 
 async function handleWiseManQuestion() {
   return await openPopup('wise-man-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
+}
+
+async function handleLastWiseManQuestion() {
+  return await openPopup('final-wise-man-modal', 'https://cdn.pixabay.com/photo/2019/08/07/18/00/lotr-4391263_1280.png');
 }
 
 async function handleYesOrNoQuestion() {

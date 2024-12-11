@@ -188,7 +188,7 @@ main > div {
     color: #980011;
 }
 
-#player-modal, #difficulty-modal, #opened-chest-modal {
+#player-modal, #difficulty-modal, #opened-chest-modal, #co2-modal {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.8);
@@ -203,12 +203,17 @@ main > div {
     border-radius: 6px;
 }
 
-#difficulty-form, #opened-chest-form {
+#difficulty-form, #opened-chest-form, #co2-form {
     display: flex;
     width: 35%;
     margin: 4rem auto;
     background: white;
     border-radius: 6px;
+}
+
+#co2-form p {
+    text-align: center;
+    margin: 1rem;
 }
 
 #difficulty-form p {
@@ -226,7 +231,7 @@ main > div {
     margin-top: 10px;
 }
 
-#difficulty-form {
+#difficulty-form, #co2-form {
     flex-direction: column;
 }
 
@@ -431,6 +436,12 @@ ol {
     flex: 1;
     margin: 0 5px;
     padding: 10px;
+}
+
+#wise-man-image {
+    width: auto;
+    height: auto;
+    max-height: 18rem;
 }
 
 .padding-button {
