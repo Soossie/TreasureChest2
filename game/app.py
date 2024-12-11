@@ -33,12 +33,10 @@ def wise_man(game_id, is_correct_answer):
 
         # poista ja/tai lisää rahaa riippuen oliko vastaus oikein
         if int(is_correct_answer) == 1:
-            # poista ja lisää rahaa
             amount = game.wise_man_reward - game.wise_man_cost
             add_or_remove_money(game_id, amount, add=True)
 
         elif int(is_correct_answer) == 0:
-            # poista rahaa
             amount = game.wise_man_cost
             add_or_remove_money(game_id, amount, remove=True)
 
@@ -48,7 +46,7 @@ def wise_man(game_id, is_correct_answer):
         status_code = 400
         response = {
             'status': status_code,
-            'description': 'This is error message',
+            'description': 'Unable to continue',
         }
     json_response = json.dumps(response)
     return Response(response=json_response, status=status_code, mimetype='application/json')
@@ -87,7 +85,7 @@ def fly_to(game_id, destination_icao):
         status_code = 400
         response = {
             'status': status_code,
-            'description': 'This is error message',
+            'description': 'Unable to continue',
         }
     json_response = json.dumps(response)
     return Response(response=json_response, status=status_code, mimetype='application/json')
@@ -109,7 +107,7 @@ def game_info(game_id):
         status_code = 400
         response = {
             'status': status_code,
-            'description': 'This is error message',
+            'description': 'Unable to continue',
         }
     json_response = json.dumps(response)
     return Response(response=json_response, status=status_code, mimetype='application/json')
@@ -127,7 +125,7 @@ def new_game(player_name, difficulty_level):
         status_code = 400
         response = {
             'status': status_code,
-            'description': 'This is error message',
+            'description': 'Unable to continue',
         }
     json_response = json.dumps(response)
     return Response(response=json_response, status=status_code, mimetype='application/json')
