@@ -22,8 +22,7 @@ To play, you must have MariaDB and mysql installed.
     The game can be run in a code editor, such as PyCharm or VS Code
 
 
-Ennen pelin suoritusta on muodostettava yhteys tietokantaan. 
-Luo **.env** niminen tiedosto game-kansioon ja kopioi siihen seuraavat tiedot:
+5. Before running the game, you need to establish a connection to the database. Create a file named **.env** in the game folder and copy the following information into it: 
 
 ```python
 HOST=localhost
@@ -32,5 +31,4 @@ DB_USER=treasure
 DB_PASS=chest
 ```
 
-Voit muokata tietoja mikäli tietokantasi on erilainen.
-Lataa myös paketti python-dotenv.
+You can modify the information if your database is different. Also, download the python-dotenv package.
