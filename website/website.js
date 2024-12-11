@@ -21,6 +21,8 @@ let treasureLandAlertShown = false;
 
 // aloita uusi peli
 async function startNewGame() {
+  // nollaa treasureLandAlertShown
+  treasureLandAlertShown = false;
   // muuttaa CO2-värin mustaksi
   document.querySelector('#co2').style.color = 'black';
   // kysyy nimen
@@ -77,7 +79,6 @@ async function continueExistingGame() {
 
 // debug, ei tee uutta peliä
 //continueExistingGame();
-
 
 function gameSetup() {
   gameId = gameData.game_info.id;
@@ -164,22 +165,26 @@ async function updateStatus(visitedBefore=false) {
   updateCurrentLocationMarkerOnly();
   await delay(200);
 
-
-  // tarkista onko pelaaja aarremaassa, näytä alert yhden kerran
+  // tarkista onko pelaaja aarremaassa
   const inTreasureLand = gameData.game_info.in_treasure_land;
   if (inTreasureLand && !treasureLandAlertShown) {
-    // näytä ilmoitus
+    // näytä ilmoitus (yhden kerran)
     document.querySelector('#treasure-land-modal').classList.remove('hide');
-
-    //alert('The treasure is in this country! Now, find the airport where the treasure is located.');
     treasureLandAlertShown = true;
+
+    // odota, että käyttäjä sulkee ilmoituksen
+    await new Promise(function(resolve) {
+      document.querySelector('#close-treasure-land').addEventListener('click', function () {
+        document.querySelector('#treasure-land-modal').classList.add('hide');
+        resolve();
+      })
+    })
   }
 
   // tarkista onko kentällä aarre
   if (gameData.current_location_info.has_treasure) {
     // wise man viimeinen kysymys
     finalWiseManQuestion();
-    // victory modal siirretty final wise maniin
 
   } else {
     if (gameData.current_location_info.wise_man) {  // wise man
@@ -272,7 +277,7 @@ function addFlightInfoToMarker(airportInfo, marker, inTreasureLand) {
   }
 }
 
-// testaa CO2-kulutus, jos yli 1000 kg niin tulee alert ja teksti muuttuu punaiseksi
+// testaa CO2-kulutus
 function co2Consumption() {
   if (gameData.game_info.co2_consumed >= 1000 && !co2AlertShown) {
     // avaa CO2-modal
@@ -305,7 +310,6 @@ function adviceGuy() {
   document.querySelector('#advice-guy-money').innerHTML = 'You encounter an advice guy!';
   document.querySelector('#advice-guy-money2').innerHTML = `You get ${gameData.game_info.advice_guy_reward} €.`;
   document.querySelector('#advice-guy-advice').innerHTML = `Advice: ${gameData.current_location_info.advice_guy.advice}`;
-
   openPopup('advice-guy-modal', 'https://cloudfront-us-east-1.images.arcpublishing.com/bostonglobe/MIBPKIJCBDUDEWE5TPCVMOKMNA.JPG');
 }
 
@@ -533,4 +537,3 @@ async function handleLastWiseManQuestion() {
 async function handleYesOrNoQuestion() {
   return await openPopup('yes-or-no-modal', 'https://miro.medium.com/v2/resize:fit:1024/1*CBHr0zEVsCe_sWubk6mviw.jpeg');
 }
-
