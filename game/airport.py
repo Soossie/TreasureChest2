@@ -6,16 +6,14 @@ from game_functions import get_current_location, get_advice, get_treasure_land_c
 
 db = Database()
 
-
+# lentokentän perustiedot suoraan tietokannasta
 class Airport:
     def __init__(self, icao):
         self.icao = icao
         self.name = self.get_airport_name()
         self.latitude, self.longitude = self.get_airport_coordinates()
         self.country_name = self.get_airport_country_name()
-        self.iata_code = self.get_airport_iata_code()
 
-    # hae lentokentän nimi
     def get_airport_name(self):
         sql = f'select name from airport where ident = "{self.icao}";'
         cursor = db.get_conn().cursor()
@@ -23,7 +21,6 @@ class Airport:
         result = cursor.fetchone()
         return result[0]
 
-    # hae lentokentän koordinaatit
     def get_airport_coordinates(self):
         sql = f'select latitude_deg, longitude_deg from airport where ident = "{self.icao}";'
         cursor = db.get_conn().cursor()
@@ -31,18 +28,9 @@ class Airport:
         result = cursor.fetchone()
         return result
 
-    # hae lentokentän maan nimi
     def get_airport_country_name(self):
         sql = (f'select country.name from country inner join airport on country.iso_country = airport.iso_country '
                f'where ident = "{self.icao}";')
-        cursor = db.get_conn().cursor()
-        cursor.execute(sql)
-        result = cursor.fetchone()
-        return result[0]
-
-    # hae lentokentän iata koodi
-    def get_airport_iata_code(self):
-        sql = f'select iata_code from airport where ident="{self.icao}";'
         cursor = db.get_conn().cursor()
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -52,7 +40,7 @@ class Airport:
     def get_airport_info(self):
         return self.__dict__
 
-
+# kaikki pelin sisäiset lentokenttien tiedot (uniikit joka pelissä)
 class GameAirports:
     def __init__(self, game_id):
         self.game_id = game_id
@@ -162,7 +150,7 @@ class GameAirports:
         airport_info = self.get_airport_info(current_location_icao)
         return airport_info
 
-
+# tiedot tietylle lentokentälle lentämisestä
 class FlightInfo:
     def __init__(self, game_id, destination_icao):
         self.game_id = game_id
@@ -232,7 +220,7 @@ class FlightInfo:
             'can_fly_to': self.can_fly_to,
         }
 
-
+# kaikkien hetkellisesti saatavilla olevien lentokenttien kaikki tiedot
 class AvailableAirports(GameAirports):
     def __init__(self, game_id):
         super().__init__(game_id)
@@ -246,7 +234,7 @@ class AvailableAirports(GameAirports):
         available_airports = []
         current_location_info = self.get_current_airport_info_json()
 
-        # jos pelaaja on aarremaassa, hae kaikki aarremaan lentokentät
+        # jos pelaaja on aarremaassa, hae kaikki aarremaan lentokenttien tiedot
         if current_location_info['country_name'] == treasure_land_country_name:
             for airport_info in all_game_airports_info:
 
