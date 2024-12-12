@@ -1,7 +1,7 @@
 body {
     margin: 0 1rem;
     padding: 0;
-    font-family: Verdana, Geneva, Tahoma, sans-serif; /* vaihda fontit */
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     scroll-behavior: smooth;
     display: flex;
     background-color: white;
